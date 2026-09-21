@@ -3,7 +3,7 @@ export type SymbolId = (typeof SYMBOL_IDS)[number]
 
 export type Result = 'nothing' | 'silver' | 'gold'
 export type Winnings = { pulls: number; silver: number; gold: number }
-export type SpendResult = { balance: number; result: Result }
+export type SpendResult = { balance: number; results: Result[] }
 
 /** 5-point star inside a 64x64 box, shared by the reel symbol and the badges. */
 export const STAR_POINTS =
@@ -27,8 +27,10 @@ export function reelsFor(result: Result): SymbolId[] {
   return reels
 }
 
+const isResult = (v: unknown): v is Result => v === 'nothing' || v === 'silver' || v === 'gold'
+
 export function isSpendResult(v: unknown): v is SpendResult {
   if (typeof v !== 'object' || v === null) return false
   const o = v as Record<string, unknown>
-  return typeof o.balance === 'number' && (o.result === 'nothing' || o.result === 'silver' || o.result === 'gold')
+  return typeof o.balance === 'number' && Array.isArray(o.results) && o.results.every(isResult)
 }

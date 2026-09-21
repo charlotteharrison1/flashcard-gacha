@@ -10,8 +10,9 @@ import {
 import { INITIAL_REELS, randomFill, type Result, type SymbolId } from '../lib/slots'
 import { SlotSymbol } from './SlotSymbol'
 
-export type Spin = { id: number; from: SymbolId[]; final: SymbolId[] }
-/** idle -> (coin) loading -> loaded -> (lever) spinning -> done */
+/** `fast` spins (from a 10-coin batch) play at a fraction of the time and skip the slow-crawl tension. */
+export type Spin = { id: number; from: SymbolId[]; final: SymbolId[]; fast?: boolean }
+/** idle -> (coin) loading -> loaded -> (lever) spinning -> done. `done` returns to armed while pulls remain. */
 export type SlotPhase = 'idle' | 'loading' | 'loaded' | 'spinning' | 'done'
 
 // --- Reel timing (tweak these) ----------------------------------------------
@@ -22,9 +23,10 @@ const TENSION_DECEL = 2600 // ...and crawls into place
 const WINDUP_MS = 250 // small backwards dip before the reel takes off
 const ACCEL_MS = 600
 const SETTLE_MS = 350 // overshoot bounce back onto the symbol
-const V = 13 // cruising speed, in symbols per second
+const V = 13 // cruising speed, in symbols per second (not scaled, so fast spins don't strobe)
 const WINDUP_CELLS = 0.35
 const OVERSHOOT = 0.22
+const FAST = 0.3 // time scale for spins from a 10-coin batch: ~1.6s per spin instead of ~5s
 
 const EASE_IN = 'cubic-bezier(0.55, 0.085, 0.68, 0.53)' // quad-in: average speed = V/2
 const EASE_OUT = 'cubic-bezier(0.33, 1, 0.68, 1)' // cubic-out: average speed = V/3
@@ -45,12 +47,16 @@ const one = () => randomFill(1)[0]
  * wind-up, accelerate, cruise, decelerate, overshoot, settle. The strip is built forwards
  * (index 0 = spare cell for the wind-up, 1 = where the reel was, last-1 = target, last = spare
  * for the overshoot) and rendered reversed so symbols travel downwards like a real reel.
+ * `k` scales every phase in time (1 = normal, FAST = quick).
  */
-function buildReel(from: SymbolId, target: SymbolId, duration: number, decel: number): ReelPlan {
-  const cruiseMs = Math.max(0, duration - WINDUP_MS - ACCEL_MS - decel - SETTLE_MS)
+function buildReel(from: SymbolId, target: SymbolId, duration: number, decel: number, k: number): ReelPlan {
+  const windup = WINDUP_MS * k
+  const accel = ACCEL_MS * k
+  const settle = SETTLE_MS * k
+  const cruiseMs = Math.max(0, duration - windup - accel - decel - settle)
   const start = 1
   const afterWindup = start - WINDUP_CELLS
-  const afterAccel = afterWindup + (V * ACCEL_MS) / 2000
+  const afterAccel = afterWindup + (V * accel) / 2000
   const afterCruise = afterAccel + (V * cruiseMs) / 1000
   const last = Math.max(start + 3, Math.round(afterCruise + (V * decel) / 3000 - OVERSHOOT))
 
@@ -62,10 +68,10 @@ function buildReel(from: SymbolId, target: SymbolId, duration: number, decel: nu
 
   const frames: Keyframe[] = [
     { offset: 0, transform: y(start), easing: 'ease-out' },
-    { offset: at(WINDUP_MS), transform: y(afterWindup), easing: EASE_IN },
-    { offset: at(WINDUP_MS + ACCEL_MS), transform: y(afterAccel), easing: 'linear' },
-    { offset: at(WINDUP_MS + ACCEL_MS + cruiseMs), transform: y(afterCruise), easing: EASE_OUT },
-    { offset: at(duration - SETTLE_MS), transform: y(last + OVERSHOOT), easing: 'ease-in-out' },
+    { offset: at(windup), transform: y(afterWindup), easing: EASE_IN },
+    { offset: at(windup + accel), transform: y(afterAccel), easing: 'linear' },
+    { offset: at(windup + accel + cruiseMs), transform: y(afterCruise), easing: EASE_OUT },
+    { offset: at(duration - settle), transform: y(last + OVERSHOOT), easing: 'ease-in-out' },
     { offset: 1, transform: y(last) },
   ]
   return { strip: strip.reverse(), frames, duration }
@@ -75,6 +81,12 @@ type Props = {
   spin: Spin | null
   phase: SlotPhase
   outcome: Result | null
+  /** A loaded pull is waiting and the lever will fire it. */
+  armed: boolean
+  /** Loaded pulls not yet played. */
+  remaining: number
+  /** How many coins are being inserted right now (drives the coin-drop animation). */
+  inserting: number
   /** Bumps each time the player tries the lever without a coin, to wiggle the coin slot. */
   nudge: number
   canInsert: boolean
@@ -84,20 +96,34 @@ type Props = {
   onBlocked: () => void
 }
 
-export default function SlotMachine({ spin, phase, outcome, nudge, canInsert, onLanded, onCoin, onPull, onBlocked }: Props) {
+export default function SlotMachine({
+  spin,
+  phase,
+  outcome,
+  armed,
+  remaining,
+  inserting,
+  nudge,
+  canInsert,
+  onLanded,
+  onCoin,
+  onPull,
+  onBlocked,
+}: Props) {
   const stripRefs = useRef<(HTMLDivElement | null)[]>([])
   const armRef = useRef<HTMLDivElement>(null)
   const pivotRef = useRef<HTMLDivElement>(null)
   const drag = useRef({ active: false, pulled: false })
   const timers = useRef<number[]>([])
-  const armed = phase === 'loaded'
-  const tension = !!spin && spin.final[0] === spin.final[1]
+  const tension = !!spin && !spin.fast && spin.final[0] === spin.final[1]
 
   const reels = useMemo<ReelPlan[] | null>(() => {
     if (!spin) return null
+    const k = spin.fast ? FAST : 1
+    const crawl = !spin.fast && spin.final[0] === spin.final[1]
     return spin.final.map((target, i) => {
-      const slow = spin.final[0] === spin.final[1] && i === 2
-      return buildReel(spin.from[i], target, slow ? TENSION_STOP : STOPS[i], slow ? TENSION_DECEL : DECEL)
+      const slow = crawl && i === 2
+      return buildReel(spin.from[i], target, (slow ? TENSION_STOP : STOPS[i]) * k, (slow ? TENSION_DECEL : DECEL) * k, k)
     })
   }, [spin])
 
@@ -153,7 +179,7 @@ export default function SlotMachine({ spin, phase, outcome, nudge, canInsert, on
   }
 
   function denied() {
-    onBlocked()
+    if (phase === 'idle' || phase === 'done') onBlocked() // no wiggle while reels are running
     setAngle(LEVER_REST + 14, 90, 'ease-out') // a dead "clunk": the lever won't go down without a coin
     later(snapBack, 140)
   }
@@ -198,8 +224,8 @@ export default function SlotMachine({ spin, phase, outcome, nudge, canInsert, on
     .filter(Boolean)
     .join(' ')
 
-  const coinLabel =
-    phase === 'loaded' ? 'Ready' : phase === 'loading' ? 'Inserting…' : phase === 'spinning' ? 'Spinning' : canInsert ? 'Insert coin' : 'No coins'
+  const coinLabel = phase === 'loading' ? 'Inserting…' : phase === 'spinning' ? 'Spinning' : armed ? `${remaining} loaded` : ''
+  const drops = Math.min(inserting, 5)
 
   return (
     <div className="machine">
@@ -231,15 +257,23 @@ export default function SlotMachine({ spin, phase, outcome, nudge, canInsert, on
 
         <div className={`coin-panel${nudge ? ' nudge' : ''}`} key={nudge}>
           <button
-            className={`coin-slot${phase === 'loaded' ? ' ready' : ''}${phase === 'loading' || phase === 'spinning' ? ' busy' : ''}`}
+            className={`coin-slot${armed ? ' ready' : ''}${phase === 'loading' || phase === 'spinning' ? ' busy' : ''}`}
             onClick={onCoin}
             disabled={!canInsert}
-            aria-label="Insert a coin to load a pull"
+            aria-label="Insert 1 coin to load a pull"
           >
             <span className="coin-lamp" aria-hidden="true" />
             <span className="coin-slit" aria-hidden="true" />
             <span className="coin-label">{coinLabel}</span>
-            {phase === 'loading' && <span className="coin-drop" aria-hidden="true" />}
+            {phase === 'loading' &&
+              Array.from({ length: drops }, (_, i) => (
+                <span
+                  key={i}
+                  className="coin-drop"
+                  aria-hidden="true"
+                  style={{ left: `calc(50% + ${(i - (drops - 1) / 2) * 16}px)`, animationDelay: `${i * 90}ms` }}
+                />
+              ))}
           </button>
         </div>
       </div>

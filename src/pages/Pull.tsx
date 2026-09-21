@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { PULL_COST, useEarnings } from '../lib/earnings'
+import { BULK_PULLS, PULL_COST, useEarnings } from '../lib/earnings'
 import { INITIAL_REELS, isSpendResult, reelsFor, type Result, type SymbolId, type Winnings } from '../lib/slots'
 import Earnings from '../components/Earnings'
 import Badge from '../components/Badge'
 import Confetti from '../components/Confetti'
 import SlotMachine, { type SlotPhase, type Spin } from '../components/SlotMachine'
 
-type Pending = { id: number; result: Result; final: SymbolId[] }
+type Pending = { id: number; result: Result; final: SymbolId[]; fast: boolean }
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`
 
 export default function Pull() {
   const { balance, setBalance, error: loadError } = useEarnings()
@@ -18,9 +19,12 @@ export default function Pull() {
   const [phase, setPhase] = useState<SlotPhase>('idle')
   const [spin, setSpin] = useState<Spin | null>(null)
   const [outcome, setOutcome] = useState<Result | null>(null)
+  const [remaining, setRemaining] = useState(0) // loaded pulls the lever hasn't played yet
+  const [inserting, setInserting] = useState(1)
   const [nudge, setNudge] = useState(0)
   const [error, setError] = useState<string | null>(null)
-  const pending = useRef<Pending | null>(null)
+  const queue = useRef<Pending[]>([]) // pulls paid for and rolled, waiting for the lever
+  const current = useRef<Pending | null>(null) // the pull whose reels are spinning
   const spinCount = useRef(0)
 
   useEffect(() => {
@@ -29,33 +33,37 @@ export default function Pull() {
     })
   }, [])
 
-  const canAfford = (balance ?? 0) >= PULL_COST
-  const canLoad = (phase === 'idle' || phase === 'done') && canAfford
+  const idleish = phase === 'idle' || phase === 'done'
+  const canLoad = (n: number) => idleish && remaining === 0 && (balance ?? 0) >= PULL_COST * n
+  const armed = remaining > 0 && (phase === 'loaded' || phase === 'done')
 
-  // Step 1: the coin. Pays for the pull and rolls the result in the database; nothing is revealed until the lever is pulled.
-  async function loadCoin() {
-    if (!canLoad) return
+  // Step 1: coins. Pays for the pulls and rolls every result in the database; nothing is revealed until the lever is pulled.
+  async function loadCoins(count: number) {
+    if (!canLoad(count)) return
     setPhase('loading')
+    setInserting(count)
     setError(null)
     setOutcome(null)
     // Minimum wait so the coin-drop animation always gets to play.
-    const [{ data, error }] = await Promise.all([supabase.rpc('spend_pull'), wait(600)])
+    const [{ data, error }] = await Promise.all([supabase.rpc('spend_pulls', { p_count: count }), wait(count > 1 ? 1000 : 600)])
     if (error || !isSpendResult(data)) {
-      setError(error?.message ?? 'Pull failed. Have you run supabase/migrations/0003_slots.sql?')
+      setError(error?.message ?? 'Pull failed. Have you run supabase/migrations/0004_bulk_pulls.sql?')
       setPhase('idle')
       return
     }
-    const id = ++spinCount.current
-    pending.current = { id, result: data.result, final: reelsFor(data.result) }
-    setBalance(data.balance) // the coin is gone as soon as it's in the slot
+    queue.current = data.results.map((result) => ({ id: ++spinCount.current, result, final: reelsFor(result), fast: count > 1 }))
+    setRemaining(queue.current.length)
+    setBalance(data.balance) // the coins are gone as soon as they're in the slot
     setPhase('loaded')
   }
 
-  // Step 2: the lever. Plays the reels for the result that's already been rolled.
+  // Step 2: the lever. Plays the next loaded pull; bulk pulls play fast.
   const pullLever = useCallback(() => {
-    const p = pending.current
-    if (!p) return
-    setSpin((prev) => ({ id: p.id, from: prev ? prev.final : INITIAL_REELS, final: p.final }))
+    const next = queue.current.shift()
+    if (!next) return
+    current.current = next
+    setRemaining(queue.current.length)
+    setSpin((prev) => ({ id: next.id, from: prev ? prev.final : INITIAL_REELS, final: next.final, fast: next.fast }))
     setPhase('spinning')
   }, [])
 
@@ -64,7 +72,7 @@ export default function Pull() {
 
   // Winnings and the result banner update only once the reels have actually stopped.
   const handleLanded = useCallback((id: number) => {
-    const p = pending.current
+    const p = current.current
     if (!p || p.id !== id) return
     setOutcome(p.result)
     setWinnings((w) =>
@@ -77,7 +85,8 @@ export default function Pull() {
     setPhase('done')
   }, [])
 
-  const noCoinHint = nudge > 0 && (phase === 'idle' || phase === 'done')
+  const noCoinHint = nudge > 0 && idleish && remaining === 0
+  const broke = balance !== null && balance < PULL_COST
 
   return (
     <div className="pull">
@@ -91,8 +100,8 @@ export default function Pull() {
 
       {loadError && (
         <p className="error">
-          Couldn't load earnings: {loadError}. Have you run <code>supabase/migrations/0002_pulls.sql</code> and{' '}
-          <code>0003_slots.sql</code>?
+          Couldn't load earnings: {loadError}. Have you run <code>supabase/migrations/0002_pulls.sql</code>,{' '}
+          <code>0003_slots.sql</code> and <code>0004_bulk_pulls.sql</code>?
         </p>
       )}
 
@@ -103,19 +112,20 @@ export default function Pull() {
         spin={spin}
         phase={phase}
         outcome={outcome}
+        armed={armed}
+        remaining={remaining}
+        inserting={inserting}
         nudge={nudge}
-        canInsert={canLoad}
+        canInsert={canLoad(1)}
         onLanded={handleLanded}
-        onCoin={loadCoin}
+        onCoin={() => loadCoins(1)}
         onPull={pullLever}
         onBlocked={blocked}
       />
 
       <div className="slot-result" aria-live="polite">
-        {phase === 'loading' && <span className="muted">Inserting coin…</span>}
-        {phase === 'loaded' && <span className="gold-text">Coin loaded. Drag the lever down!</span>}
+        {phase === 'loading' && <span className="muted">Inserting {plural(inserting, 'coin')}…</span>}
         {phase === 'spinning' && <span className="muted">Spinning…</span>}
-        {noCoinHint && <span className="muted">Insert a coin first.</span>}
         {phase === 'done' && outcome === 'gold' && (
           <>
             <Badge tier="gold" className="badge badge-sm" />
@@ -128,19 +138,26 @@ export default function Pull() {
             <span className="silver-text">Silver badge!</span>
           </>
         )}
-        {phase === 'done' && outcome === 'nothing' && !noCoinHint && <span className="muted">Nothing this time.</span>}
+        {phase === 'done' && outcome === 'nothing' && <span className="muted">Nothing this time.</span>}
+        {armed && <span className="gold-text">{plural(remaining, 'pull')} loaded. Drag the lever down!</span>}
+        {noCoinHint && <span className="muted">Insert a coin first.</span>}
       </div>
 
       <div className="pull-actions">
-        <button className="spend" onClick={loadCoin} disabled={!canLoad}>
-          Spend
-        </button>
+        <div className="buttons">
+          <button className="spend sm" onClick={() => loadCoins(1)} disabled={!canLoad(1)}>
+            Insert 1 coin
+          </button>
+          <button className="spend sm" onClick={() => loadCoins(BULK_PULLS)} disabled={!canLoad(BULK_PULLS)}>
+            Insert {BULK_PULLS} coins
+          </button>
+        </div>
         <p className="muted">
           {balance === null
             ? ' '
-            : canAfford
-              ? `Costs ${PULL_COST} earnings. Same as clicking the coin slot.`
-              : `Costs ${PULL_COST}. Earn ${PULL_COST - balance} more by studying.`}
+            : broke
+              ? 'Out of coins. Earn more by studying.'
+              : `${plural(PULL_COST, 'coin')} per pull. ${BULK_PULLS} coins loads ${BULK_PULLS} fast pulls.`}
         </p>
         <p className="muted odds">Odds per pull: gold 1% · silver 9% · nothing 90%</p>
         {error && <p className="error">{error}</p>}

@@ -12,7 +12,7 @@ const BURST = Array.from({ length: SPIKES * 2 }, (_, i) => {
 /** Big "ON SALE" sticker with a bobbing gold SPEND button in the middle. The whole sticker links to the pull screen. */
 export default function SaleSticker() {
   return (
-    <Link to="/pull" className="sale" aria-label={`Spend ${PULL_COST} earnings on a pull`}>
+    <Link to="/pull" className="sale" aria-label="Spend coins on pulls">
       <svg className="sale-burst" viewBox="0 0 200 200" aria-hidden="true" strokeLinejoin="round">
         <defs>
           <radialGradient id="sale-grad" cx="35%" cy="30%" r="80%">
@@ -27,7 +27,9 @@ export default function SaleSticker() {
       <span className="sale-shine" aria-hidden="true" />
       <span className="sale-tag">On sale</span>
       <span className="button spend sale-btn">Spend</span>
-      <span className="sale-cost">{PULL_COST} earnings</span>
+      <span className="sale-cost">
+        {PULL_COST} coin{PULL_COST === 1 ? '' : 's'} per pull
+      </span>
     </Link>
   )
 }
