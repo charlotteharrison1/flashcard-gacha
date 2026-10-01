@@ -22,8 +22,8 @@ export default function AttachmentPicker({ targetRef, value, setValue }: Props) 
     setBusy(true)
     setError(null)
     try {
-      const url = await uploadImage(file, 'cards')
-      insertAtCursor(targetRef.current, value, setValue, `![](${url})`)
+      const { path } = await uploadImage(file, 'cards')
+      insertAtCursor(targetRef.current, value, setValue, `![](${path})`)
     } catch (err) {
       setError(errorMessage(err, 'Upload failed.'))
     } finally {

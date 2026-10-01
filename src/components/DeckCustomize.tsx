@@ -26,7 +26,7 @@ export default function DeckCustomize({ deckId, color, iconUrl, onSaved }: Props
     setBusy(true)
     setError(null)
     try {
-      const url = await uploadImage(file, 'deck-icons')
+      const { url } = await uploadImage(file, 'deck-icons')
       const { error } = await supabase.from('decks').update({ icon_url: url }).eq('id', deckId)
       if (error) throw error
       onSaved()

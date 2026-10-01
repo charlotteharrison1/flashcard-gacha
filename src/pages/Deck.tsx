@@ -115,26 +115,6 @@ export default function Deck() {
       {customizing && <DeckCustomize deckId={id} color={deck.color} iconUrl={deck.icon_url} onSaved={load} />}
 
       <section className="panel">
-        <h3>Study options</h3>
-        <label className="row nowrap">
-          <input
-            type="checkbox"
-            checked={deck.show_both}
-            onChange={(e) => updateStudySetting({ show_both: e.target.checked })}
-          />
-          Keep the answer on screen with the question (no flip)
-        </label>
-        <label className="row nowrap">
-          <input
-            type="checkbox"
-            checked={deck.float_anim}
-            onChange={(e) => updateStudySetting({ float_anim: e.target.checked })}
-          />
-          Floating animation on the study card
-        </label>
-      </section>
-
-      <section className="panel">
         <h3>Add a card</h3>
         <form onSubmit={add} className="stack">
           <div className="field-block">
@@ -189,6 +169,26 @@ export default function Deck() {
             {adding ? 'Adding…' : 'Add card'}
           </button>
         </form>
+      </section>
+
+      <section className="panel">
+        <h3>Study options</h3>
+        <label className="row nowrap">
+          <input
+            type="checkbox"
+            checked={deck.show_both}
+            onChange={(e) => updateStudySetting({ show_both: e.target.checked })}
+          />
+          Keep the answer on screen with the question (no flip)
+        </label>
+        <label className="row nowrap">
+          <input
+            type="checkbox"
+            checked={deck.float_anim}
+            onChange={(e) => updateStudySetting({ float_anim: e.target.checked })}
+          />
+          Floating animation on the study card
+        </label>
       </section>
 
       <CsvImport deckId={id} onImported={load} />

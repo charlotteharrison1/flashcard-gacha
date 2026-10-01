@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { schedule } from '../lib/scheduler'
 import { deckSuit, isRedSuit } from '../lib/theme'
 import { useEarnings } from '../lib/earnings'
+import { useAuth } from '../lib/auth'
 import type { Card, Deck, Rating } from '../lib/types'
 import Confetti from '../components/Confetti'
 import Earnings from '../components/Earnings'
@@ -25,6 +26,8 @@ type DeckSettings = Pick<Deck, 'show_both' | 'float_anim'>
 export default function Study() {
   const { id = '' } = useParams()
   const { balance, setBalance } = useEarnings()
+  const { session } = useAuth()
+  const userId = session?.user.id ?? '' // Study is behind an authenticated route, so this is always set
   const [deck, setDeck] = useState<DeckSettings | null>(null)
   const [queue, setQueue] = useState<Card[] | null>(null)
   const [total, setTotal] = useState(0)
@@ -192,14 +195,14 @@ export default function Study() {
               {suit}
             </span>
             <div className={`face-text ${fontClass}`}>
-              <CardText text={card.front} />
+              <CardText text={card.front} userId={userId} />
             </div>
             {!revealed && <span className="face-hint">Click or press space to reveal the answer</span>}
             {revealed && (
               <>
                 <hr className="combined-divider" />
                 <div className={`face-text ${fontClass}`}>
-                  <CardText text={card.back} />
+                  <CardText text={card.back} userId={userId} />
                 </div>
               </>
             )}
@@ -223,7 +226,7 @@ export default function Study() {
                   {suit}
                 </span>
                 <div className={`face-text ${fontClass}`}>
-                  <CardText text={card.front} />
+                  <CardText text={card.front} userId={userId} />
                 </div>
                 {!revealed && <span className="face-hint">Click or press space to flip</span>}
               </div>
@@ -237,7 +240,7 @@ export default function Study() {
                   {suit}
                 </span>
                 <div className={`face-text ${fontClass}`}>
-                  <CardText text={card.back} />
+                  <CardText text={card.back} userId={userId} />
                 </div>
               </div>
             </div>
