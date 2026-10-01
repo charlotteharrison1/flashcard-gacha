@@ -246,7 +246,7 @@ button.danger { color: var(--red); }
 
 /* ---------- Earnings (coin pile) + SPEND sticker ---------- */
 
-.wallet { display: flex; align-items: center; justify-content: center; gap: clamp(4px, 1.5vw, 16px); flex-wrap: wrap; margin: 8px 0 4px; }
+.wallet { display: flex; align-items: center; justify-content: center; gap: clamp(4px, 1.5vw, 16px); flex-wrap: wrap; max-width: 560px; margin: 8px auto 4px; }
 
 .earnings-box { display: flex; align-items: center; gap: 16px; }
 .coin-pile { width: clamp(150px, 16vw, 210px); height: auto; flex-shrink: 0; overflow: visible; }
