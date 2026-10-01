@@ -7,7 +7,7 @@ export default function Earnings({ balance, compact = false }: { balance: number
       <div className="earn-text">
         <span className="earn-label">Earnings</span>
         <span className="earn-value">{balance ?? '–'}</span>
-        {!compact && <span className="earn-sub">1 per card reviewed</span>}
+        {!compact && <span className="earn-sub">1–5 per correct card</span>}
       </div>
     </div>
   )

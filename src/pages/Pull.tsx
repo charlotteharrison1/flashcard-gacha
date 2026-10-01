@@ -7,6 +7,7 @@ import Earnings from '../components/Earnings'
 import Badge from '../components/Badge'
 import Confetti from '../components/Confetti'
 import SlotMachine, { type SlotPhase, type Spin } from '../components/SlotMachine'
+import BigSpinOverlay, { type BigSpinItem } from '../components/BigSpinOverlay'
 
 type Pending = { id: number; result: Result; final: SymbolId[]; fast: boolean }
 
@@ -22,9 +23,12 @@ export default function Pull() {
   const [remaining, setRemaining] = useState(0) // loaded pulls the lever hasn't played yet
   const [inserting, setInserting] = useState(1)
   const [nudge, setNudge] = useState(0)
+  const [resultKey, setResultKey] = useState(0) // bumps on every reveal, so confetti always replays
+  const [bigSpin, setBigSpin] = useState<BigSpinItem[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const queue = useRef<Pending[]>([]) // pulls paid for and rolled, waiting for the lever
   const current = useRef<Pending | null>(null) // the pull whose reels are spinning
+  const bulk = useRef(false) // a 10-coin batch: one lever drag reveals all of it at once
   const spinCount = useRef(0)
 
   useEffect(() => {
@@ -52,13 +56,23 @@ export default function Pull() {
       return
     }
     queue.current = data.results.map((result) => ({ id: ++spinCount.current, result, final: reelsFor(result), fast: count > 1 }))
+    bulk.current = count > 1
     setRemaining(queue.current.length)
     setBalance(data.balance) // the coins are gone as soon as they're in the slot
     setPhase('loaded')
   }
 
-  // Step 2: the lever. Plays the next loaded pull; bulk pulls play fast.
+  // Step 2: the lever. A single pull plays its reels normally; a 10-coin batch expands
+  // to fill the screen and spins every pull in the batch at the same time.
   const pullLever = useCallback(() => {
+    if (bulk.current) {
+      const items: BigSpinItem[] = queue.current.map((p) => ({ id: p.id, final: p.final, result: p.result }))
+      queue.current = []
+      setRemaining(0)
+      setPhase('spinning')
+      setBigSpin(items)
+      return
+    }
     const next = queue.current.shift()
     if (!next) return
     current.current = next
@@ -66,6 +80,25 @@ export default function Pull() {
     setSpin((prev) => ({ id: next.id, from: prev ? prev.final : INITIAL_REELS, final: next.final, fast: next.fast }))
     setPhase('spinning')
   }, [])
+
+  // The overlay has finished its 30-reel reveal: fold every result into winnings at once.
+  function finishBigSpin(items: BigSpinItem[]) {
+    setWinnings(
+      (w) =>
+        w && {
+          pulls: w.pulls + items.length,
+          silver: w.silver + items.filter((i) => i.result === 'silver').length,
+          gold: w.gold + items.filter((i) => i.result === 'gold').length,
+        },
+    )
+    const anyGold = items.some((i) => i.result === 'gold')
+    const anySilver = items.some((i) => i.result === 'silver')
+    setOutcome(anyGold ? 'gold' : anySilver ? 'silver' : 'nothing')
+    setResultKey((k) => k + 1)
+    setBigSpin(null)
+    bulk.current = false
+    setPhase('done')
+  }
 
   // Lever tried without a coin: wiggle the coin slot.
   const blocked = useCallback(() => setNudge((n) => n + 1), [])
@@ -82,6 +115,7 @@ export default function Pull() {
         gold: w.gold + (p.result === 'gold' ? 1 : 0),
       },
     )
+    setResultKey((k) => k + 1)
     setPhase('done')
   }, [])
 
@@ -105,8 +139,9 @@ export default function Pull() {
         </p>
       )}
 
-      {outcome === 'gold' && <Confetti key={spin?.id} count={130} />}
-      {outcome === 'silver' && <Confetti key={spin?.id} count={45} />}
+      {outcome === 'gold' && <Confetti key={resultKey} count={130} />}
+      {outcome === 'silver' && <Confetti key={resultKey} count={45} />}
+      {bigSpin && <BigSpinOverlay items={bigSpin} onDone={() => finishBigSpin(bigSpin)} />}
 
       <SlotMachine
         spin={spin}

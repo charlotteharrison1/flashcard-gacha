@@ -1,6 +1,7 @@
 import { useState, type ChangeEvent } from 'react'
 import { supabase } from '../lib/supabase'
-import { mapRows, parseCsv } from '../lib/csv'
+import { mapRows, parseTabularFile } from '../lib/csv'
+import { errorMessage } from '../lib/errors'
 
 const CHUNK = 500
 
@@ -20,14 +21,14 @@ export default function CsvImport({ deckId, onImported }: { deckId: string; onIm
     setError(null)
     setStatus(null)
     try {
-      const parsed = await parseCsv(file)
-      if (parsed.length === 0 || parsed[0].length < 2) throw new Error('CSV needs at least two columns.')
+      const parsed = await parseTabularFile(file)
+      if (parsed.length === 0 || parsed[0].length < 2) throw new Error('File needs at least two columns.')
       setRows(parsed)
       setFrontCol(0)
       setBackCol(1)
     } catch (err) {
       setRows(null)
-      setError(err instanceof Error ? err.message : 'Could not read that file.')
+      setError(errorMessage(err, 'Could not read that file.'))
     }
   }
 
@@ -57,15 +58,16 @@ export default function CsvImport({ deckId, onImported }: { deckId: string; onIm
 
   return (
     <section className="panel">
-      <h3>Import from CSV</h3>
-      <input type="file" accept=".csv,text/csv" onChange={pick} />
+      <h3>Import from CSV or text file</h3>
+      <input type="file" accept=".csv,.txt,.tsv,text/csv,text/plain,text/tab-separated-values" onChange={pick} />
       <div className="format-help">
         <p>
           <strong>Accepted format</strong>
         </p>
         <ul>
           <li>
-            A <code>.csv</code> file saved as UTF-8, up to 5 MB.
+            A <code>.csv</code>, <code>.tsv</code> or <code>.txt</code> file saved as UTF-8, up to 5 MB. The delimiter (comma, tab,
+            etc.) is detected automatically.
           </li>
           <li>One card per row: one column for the front, another for the back.</li>
           <li>
@@ -74,6 +76,10 @@ export default function CsvImport({ deckId, onImported }: { deckId: string; onIm
           </li>
           <li>Rows with a blank front or back are skipped, and text over 5,000 characters is cut off.</li>
           <li>Wrap any cell that contains a comma or line break in double quotes.</li>
+          <li>
+            Anki plain-text exports (Export → Notes in Plain Text) work directly: <code>#</code> metadata lines are ignored, and{' '}
+            <code>#html:true</code> fields are converted to this app's formatting instead of showing raw tags.
+          </li>
         </ul>
         <pre>{`front,back\nbonjour,hello\n"Capital of France, city",Paris`}</pre>
       </div>

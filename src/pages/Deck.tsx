@@ -1,9 +1,14 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import type { Card, Deck as DeckType } from '../lib/types'
-import { deckColor, deckSuit } from '../lib/theme'
+import { deckSuit, effectiveColor } from '../lib/theme'
+import { errorMessage } from '../lib/errors'
+import { DEFAULT_FONT, FONT_OPTIONS, type CardFont } from '../lib/fonts'
 import CsvImport from '../components/CsvImport'
+import DeckCustomize from '../components/DeckCustomize'
+import AttachmentPicker from '../components/AttachmentPicker'
+import FormatToolbar from '../components/FormatToolbar'
 
 export default function Deck() {
   const { id = '' } = useParams()
@@ -12,11 +17,16 @@ export default function Deck() {
   const [dueCount, setDueCount] = useState(0)
   const [front, setFront] = useState('')
   const [back, setBack] = useState('')
+  const [font, setFont] = useState<CardFont>(DEFAULT_FONT)
+  const [adding, setAdding] = useState(false)
+  const frontRef = useRef<HTMLTextAreaElement>(null)
+  const backRef = useRef<HTMLTextAreaElement>(null)
+  const [customizing, setCustomizing] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     const [d, c, due] = await Promise.all([
-      supabase.from('decks').select('id, name, created_at').eq('id', id).single(),
+      supabase.from('decks').select('*').eq('id', id).single(),
       supabase.from('cards').select('*').eq('deck_id', id).order('created_at', { ascending: false }).limit(500),
       supabase
         .from('cards')
@@ -38,13 +48,25 @@ export default function Deck() {
   async function add(e: FormEvent) {
     e.preventDefault()
     if (!front.trim() || !back.trim()) return
-    const { error } = await supabase
-      .from('cards')
-      .insert({ deck_id: id, front: front.trim(), back: back.trim(), source: 'manual' })
-    if (error) return setError(error.message)
-    setFront('')
-    setBack('')
-    load()
+    setAdding(true)
+    setError(null)
+    try {
+      const { error } = await supabase.from('cards').insert({
+        deck_id: id,
+        front: front.trim(),
+        back: back.trim(),
+        source: 'manual',
+        font,
+      })
+      if (error) throw error
+      setFront('')
+      setBack('')
+      load()
+    } catch (err) {
+      setError(errorMessage(err, 'Could not add card.'))
+    } finally {
+      setAdding(false)
+    }
   }
 
   async function remove(cardId: string) {
@@ -63,8 +85,8 @@ export default function Deck() {
       </p>
 
       <div className="hero">
-        <div className={`mini-card cardback c${deckColor(id)}`}>
-          <span>{deckSuit(id)}</span>
+        <div className={`mini-card cardback${deck.icon_url ? ' has-icon' : ''} c${effectiveColor(id, deck.color)}`}>
+          {deck.icon_url ? <img src={deck.icon_url} alt="" className="cardback-img" /> : <span>{deckSuit(id)}</span>}
         </div>
         <div className="hero-info">
           <h2>{deck.name}</h2>
@@ -79,14 +101,67 @@ export default function Deck() {
         ) : (
           <span className="hero-done">{cards.length > 0 ? 'All cleared' : 'Add some cards'}</span>
         )}
+        <button className="secondary" onClick={() => setCustomizing((c) => !c)}>
+          {customizing ? 'Done' : 'Customize'}
+        </button>
       </div>
+
+      {customizing && <DeckCustomize deckId={id} color={deck.color} iconUrl={deck.icon_url} onSaved={load} />}
 
       <section className="panel">
         <h3>Add a card</h3>
         <form onSubmit={add} className="stack">
-          <textarea placeholder="Front (the question)" value={front} onChange={(e) => setFront(e.target.value)} maxLength={5000} rows={2} />
-          <textarea placeholder="Back (the answer)" value={back} onChange={(e) => setBack(e.target.value)} maxLength={5000} rows={2} />
-          <button className="gold">Add card</button>
+          <div className="field-block">
+            <FormatToolbar targetRef={frontRef} value={front} setValue={setFront}>
+              <span className="fmt-sep" />
+              <AttachmentPicker targetRef={frontRef} value={front} setValue={setFront} />
+            </FormatToolbar>
+            <textarea
+              ref={frontRef}
+              placeholder="Front (the question)"
+              value={front}
+              onChange={(e) => setFront(e.target.value)}
+              maxLength={5000}
+              rows={2}
+            />
+          </div>
+
+          <div className="field-block">
+            <FormatToolbar targetRef={backRef} value={back} setValue={setBack}>
+              <span className="fmt-sep" />
+              <AttachmentPicker targetRef={backRef} value={back} setValue={setBack} />
+            </FormatToolbar>
+            <textarea
+              ref={backRef}
+              placeholder="Back (the answer)"
+              value={back}
+              onChange={(e) => setBack(e.target.value)}
+              maxLength={5000}
+              rows={2}
+            />
+          </div>
+
+          <details className="format-help-details">
+            <summary>Formatting</summary>
+            <p className="format-help-inline">
+              <code># heading</code> · <code>**bold**</code> · <code>*italic*</code> · <code>==highlight==</code> · <code>$inline math$</code> ·{' '}
+              <code>$$block math$$</code> or <code>\[block math\]</code> · the picture icon inserts <code>![](url)</code> wherever your
+              cursor is
+            </p>
+          </details>
+          <label className="file-field">
+            <span>Font</span>
+            <select value={font} onChange={(e) => setFont(e.target.value as CardFont)}>
+              {FONT_OPTIONS.map((f) => (
+                <option key={f.id} value={f.id}>
+                  {f.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button className="gold" disabled={adding}>
+            {adding ? 'Adding…' : 'Add card'}
+          </button>
         </form>
       </section>
 
@@ -96,14 +171,16 @@ export default function Deck() {
       {cards.length === 0 ? (
         <div className="empty">
           <div className="big-mark">♣</div>
-          <p>This deck is empty. Add a card or import a CSV above.</p>
+          <p>This deck is empty. Add a card or import a file above.</p>
         </div>
       ) : (
         <ul className="list">
           {cards.map((c) => (
             <li key={c.id} className="row between nowrap">
-              <span>
-                <strong>{c.front}</strong> <span className="muted">→ {c.back}</span>
+              <span className="row nowrap card-row-main">
+                <span>
+                  <strong>{c.front}</strong> <span className="muted">→ {c.back}</span>
+                </span>
               </span>
               <button className="link danger" onClick={() => remove(c.id)}>
                 Delete

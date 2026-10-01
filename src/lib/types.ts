@@ -1,7 +1,11 @@
+import type { CardFont } from './fonts'
+
 export type Deck = {
   id: string
   name: string
   created_at: string
+  color: number | null
+  icon_url: string | null
 }
 
 export type Card = {
@@ -13,8 +17,10 @@ export type Card = {
   ease: number
   interval_days: number
   repetitions: number
+  lapses: number
   due_at: string
   created_at: string
+  font: CardFont
 }
 
 /** 0 again, 1 hard, 2 good, 3 easy */
