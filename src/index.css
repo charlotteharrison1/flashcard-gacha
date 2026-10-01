@@ -616,6 +616,20 @@ button.danger { color: var(--red); }
 .face.combined { justify-content: flex-start; gap: 12px; padding-top: 46px; min-height: 320px; }
 .combined-divider { width: 70%; border: none; border-top: 2px dashed var(--panel-2); margin: 2px 0; }
 
+/* ---------- Preview: every card, question and answer, no flip or rating ---------- */
+
+.preview-list { list-style: none; padding: 0; margin: 16px auto 0; max-width: 720px; display: flex; flex-direction: column; gap: 14px; }
+.face.preview-card {
+  min-height: auto;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 18px 22px;
+  gap: 10px;
+  text-align: left;
+}
+.preview-card .face-text { text-align: left; font-size: 1.1rem; }
+.preview-card .combined-divider { width: 100%; }
+
 /* ---------- Card markup: headings, bold/italic/highlight, KaTeX math ---------- */
 
 .format-help-details { width: 100%; }

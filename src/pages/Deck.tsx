@@ -104,8 +104,20 @@ export default function Deck() {
           <Link className="button gold" to={`/decks/${id}/study`}>
             Study {dueCount}
           </Link>
+        ) : cards.length > 0 ? (
+          <span className="hero-done">All cleared</span>
         ) : (
-          <span className="hero-done">{cards.length > 0 ? 'All cleared' : 'Add some cards'}</span>
+          <span className="hero-done">Add some cards</span>
+        )}
+        {cards.length > 0 && (
+          <Link className="button secondary" to={`/decks/${id}/study?all=1`}>
+            Study anyway
+          </Link>
+        )}
+        {cards.length > 0 && (
+          <Link className="button secondary" to={`/decks/${id}/preview`}>
+            Preview cards
+          </Link>
         )}
         <button className="secondary" onClick={() => setCustomizing((c) => !c)}>
           {customizing ? 'Done' : 'Customize'}

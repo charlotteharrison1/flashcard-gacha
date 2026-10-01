@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { schedule } from '../lib/scheduler'
 import { deckSuit, isRedSuit } from '../lib/theme'
@@ -25,6 +25,8 @@ type DeckSettings = Pick<Deck, 'show_both' | 'float_anim'>
 
 export default function Study() {
   const { id = '' } = useParams()
+  const [searchParams] = useSearchParams()
+  const studyAll = searchParams.get('all') === '1'
   const { balance, setBalance } = useEarnings()
   const { session } = useAuth()
   const userId = session?.user.id ?? '' // Study is behind an authenticated route, so this is always set
@@ -44,23 +46,17 @@ export default function Study() {
   const suit = deckSuit(id)
 
   useEffect(() => {
-    Promise.all([
-      supabase.from('decks').select('show_both, float_anim').eq('id', id).single(),
-      supabase
-        .from('cards')
-        .select('*')
-        .eq('deck_id', id)
-        .lte('due_at', new Date().toISOString())
-        .order('due_at')
-        .limit(SESSION_LIMIT),
-    ]).then(([d, c]) => {
+    let cardsQuery = supabase.from('cards').select('*').eq('deck_id', id).order('due_at').limit(SESSION_LIMIT)
+    if (!studyAll) cardsQuery = cardsQuery.lte('due_at', new Date().toISOString())
+
+    Promise.all([supabase.from('decks').select('show_both, float_anim').eq('id', id).single(), cardsQuery]).then(([d, c]) => {
       if (d.error) return setError(d.error.message)
       if (c.error) return setError(c.error.message)
       setDeck(d.data)
       setQueue(c.data as Card[])
       setTotal(c.data.length)
     })
-  }, [id])
+  }, [id, studyAll])
 
   // Sends a little coin from the card to the earnings pile. Positions are measured fresh each
   // time (not cached), since the layout shifts as "N / M cleared" and the card itself change.
@@ -137,12 +133,17 @@ export default function Study() {
             <p className="muted">Spend them on the pull screen.</p>
           </>
         ) : (
-          <p className="muted">No cards are due in this deck right now.</p>
+          <p className="muted">{studyAll ? 'This deck has no cards yet.' : 'No cards are due in this deck right now.'}</p>
         )}
         <div className="row center-row">
           <Link className="button gold" to={`/decks/${id}`}>
             Back to deck
           </Link>
+          {done === 0 && !studyAll && (
+            <Link className="button gold" to={`/decks/${id}/study?all=1`}>
+              Study anyway
+            </Link>
+          )}
           <Link className="button green" to="/pull">
             Pull screen
           </Link>

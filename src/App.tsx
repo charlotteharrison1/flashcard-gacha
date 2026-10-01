@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Decks from './pages/Decks'
 import Deck from './pages/Deck'
 import Study from './pages/Study'
+import Preview from './pages/Preview'
 import Pull from './pages/Pull'
 import SchemeButton from './components/SchemeButton'
 
@@ -59,6 +60,7 @@ export default function App() {
             <Route index element={<Decks />} />
             <Route path="decks/:id" element={<Deck />} />
             <Route path="decks/:id/study" element={<Study />} />
+            <Route path="decks/:id/preview" element={<Preview />} />
             <Route path="pull" element={<Pull />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
