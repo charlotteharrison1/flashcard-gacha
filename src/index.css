@@ -613,7 +613,9 @@ button.danger { color: var(--red); }
 .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 600; }
 .font-retro { font-family: 'Pixelify Sans', monospace; }
 
-.face.combined { justify-content: flex-start; gap: 12px; padding-top: 46px; min-height: 320px; }
+/* Reserves room for a typical question+answer pair up front, so revealing doesn't visibly grow
+   the card for ordinary content — it still grows beyond this for genuinely long text/images. */
+.face.combined { justify-content: flex-start; gap: 12px; padding-top: 46px; min-height: 440px; }
 .combined-divider { width: 70%; border: none; border-top: 2px dashed var(--panel-2); margin: 2px 0; }
 
 /* ---------- Preview: every card, question and answer, no flip or rating ---------- */
@@ -675,6 +677,30 @@ button.danger { color: var(--red); }
   border: 2px solid var(--line);
   box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
 }
+
+/* Drag-to-resize image, shown only in the card editor's live preview (see CardText's onImageResize). */
+.md-img-resizable {
+  display: inline-block;
+  width: 180px;
+  max-width: 100%;
+  overflow: hidden;
+  resize: horizontal;
+  vertical-align: middle;
+  margin: 2px 0;
+  border-radius: 8px;
+  border: 2px solid var(--line);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
+}
+.md-img-resizable img { display: block; width: 100%; height: auto; }
+
+.field-preview {
+  padding: 8px 10px;
+  background: #0d151c;
+  border: 2px dashed var(--panel-2);
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+.field-preview .md-h { color: var(--gold); }
 .face-hint { font-size: 0.85rem; color: #6b6b80; }
 
 .corner {

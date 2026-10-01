@@ -4,14 +4,20 @@ import { supabase } from '../lib/supabase'
 import type { Card, Deck as DeckType } from '../lib/types'
 import { deckSuit, effectiveColor } from '../lib/theme'
 import { errorMessage } from '../lib/errors'
+import { useAuth } from '../lib/auth'
 import { DEFAULT_FONT, FONT_OPTIONS, type CardFont } from '../lib/fonts'
 import CsvImport from '../components/CsvImport'
 import DeckCustomize from '../components/DeckCustomize'
 import AttachmentPicker from '../components/AttachmentPicker'
 import FormatToolbar from '../components/FormatToolbar'
+import CardText, { setImageWidth } from '../lib/cardText'
+
+const HAS_IMAGE_RE = /!\[[^\]]*\]\(/
 
 export default function Deck() {
   const { id = '' } = useParams()
+  const { session } = useAuth()
+  const userId = session?.user.id ?? ''
   const [deck, setDeck] = useState<DeckType | null>(null)
   const [cards, setCards] = useState<Card[]>([])
   const [dueCount, setDueCount] = useState(0)
@@ -142,6 +148,11 @@ export default function Deck() {
               maxLength={5000}
               rows={2}
             />
+            {HAS_IMAGE_RE.test(front) && (
+              <div className="field-preview">
+                <CardText text={front} userId={userId} onImageResize={(i, w) => setFront((t) => setImageWidth(t, i, w))} />
+              </div>
+            )}
           </div>
 
           <div className="field-block">
@@ -157,6 +168,11 @@ export default function Deck() {
               maxLength={5000}
               rows={2}
             />
+            {HAS_IMAGE_RE.test(back) && (
+              <div className="field-preview">
+                <CardText text={back} userId={userId} onImageResize={(i, w) => setBack((t) => setImageWidth(t, i, w))} />
+              </div>
+            )}
           </div>
 
           <details className="format-help-details">
@@ -164,7 +180,7 @@ export default function Deck() {
             <p className="format-help-inline">
               <code># heading</code> · <code>**bold**</code> · <code>*italic*</code> · <code>==highlight==</code> · <code>$inline math$</code> ·{' '}
               <code>$$block math$$</code> or <code>\[block math\]</code> · the picture icon inserts <code>![](url)</code> wherever your
-              cursor is
+              cursor is, and once it shows up below you can drag its corner to resize it
             </p>
           </details>
           <label className="file-field">
