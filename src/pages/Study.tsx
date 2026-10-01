@@ -4,14 +4,13 @@ import { supabase } from '../lib/supabase'
 import { schedule } from '../lib/scheduler'
 import { deckSuit, isRedSuit } from '../lib/theme'
 import { useEarnings } from '../lib/earnings'
-import type { Card, Rating } from '../lib/types'
+import type { Card, Deck, Rating } from '../lib/types'
 import Confetti from '../components/Confetti'
 import Earnings from '../components/Earnings'
 import CardText from '../lib/cardText'
 
 const SESSION_LIMIT = 100
 const COIN_FLY_MS = 750
-const SHOW_BOTH_KEY = 'study-show-both'
 
 const RATINGS: { value: Rating; label: string; color: string }[] = [
   { value: 0, label: 'Again', color: 'red' },
@@ -21,22 +20,15 @@ const RATINGS: { value: Rating; label: string; color: string }[] = [
 ]
 
 type Flyer = { id: number; x: number; y: number; dx: number; dy: number; amount: number }
-
-function loadShowBoth() {
-  try {
-    return localStorage.getItem(SHOW_BOTH_KEY) === '1'
-  } catch {
-    return false
-  }
-}
+type DeckSettings = Pick<Deck, 'show_both' | 'float_anim'>
 
 export default function Study() {
   const { id = '' } = useParams()
   const { balance, setBalance } = useEarnings()
+  const [deck, setDeck] = useState<DeckSettings | null>(null)
   const [queue, setQueue] = useState<Card[] | null>(null)
   const [total, setTotal] = useState(0)
   const [revealed, setRevealed] = useState(false)
-  const [showBoth, setShowBoth] = useState(loadShowBoth)
   const [done, setDone] = useState(0)
   const [earned, setEarned] = useState(0)
   const [turn, setTurn] = useState(0)
@@ -49,33 +41,23 @@ export default function Study() {
   const suit = deckSuit(id)
 
   useEffect(() => {
-    supabase
-      .from('cards')
-      .select('*')
-      .eq('deck_id', id)
-      .lte('due_at', new Date().toISOString())
-      .order('due_at')
-      .limit(SESSION_LIMIT)
-      .then(({ data, error }) => {
-        if (error) setError(error.message)
-        else {
-          setQueue(data as Card[])
-          setTotal(data.length)
-        }
-      })
-  }, [id])
-
-  function toggleShowBoth() {
-    setShowBoth((v) => {
-      const next = !v
-      try {
-        localStorage.setItem(SHOW_BOTH_KEY, next ? '1' : '0')
-      } catch {
-        // storage blocked (private window etc.) — the toggle still works for this session
-      }
-      return next
+    Promise.all([
+      supabase.from('decks').select('show_both, float_anim').eq('id', id).single(),
+      supabase
+        .from('cards')
+        .select('*')
+        .eq('deck_id', id)
+        .lte('due_at', new Date().toISOString())
+        .order('due_at')
+        .limit(SESSION_LIMIT),
+    ]).then(([d, c]) => {
+      if (d.error) return setError(d.error.message)
+      if (c.error) return setError(c.error.message)
+      setDeck(d.data)
+      setQueue(c.data as Card[])
+      setTotal(c.data.length)
     })
-  }
+  }, [id])
 
   // Sends a little coin from the card to the earnings pile. Positions are measured fresh each
   // time (not cached), since the layout shifts as "N / M cleared" and the card itself change.
@@ -120,17 +102,16 @@ export default function Study() {
   }
 
   const card = queue?.[0]
-  const canRate = showBoth || revealed
 
-  // Keyboard: Space/Enter flips (flip mode only), 1-4 rates once the answer is visible.
+  // Keyboard: Space/Enter reveals the answer, 1-4 rates once it's visible.
   useEffect(() => {
     if (!card) return
     function onKey(e: KeyboardEvent) {
       if (e.metaKey || e.ctrlKey || e.altKey || !card) return
-      if (!showBoth && !revealed && (e.key === ' ' || e.key === 'Enter')) {
+      if (!revealed && (e.key === ' ' || e.key === 'Enter')) {
         e.preventDefault()
         setRevealed(true)
-      } else if (canRate && ['1', '2', '3', '4'].includes(e.key)) {
+      } else if (revealed && ['1', '2', '3', '4'].includes(e.key)) {
         rate(card, (Number(e.key) - 1) as Rating)
       }
     }
@@ -139,7 +120,7 @@ export default function Study() {
   })
 
   if (error) return <p className="error">{error}</p>
-  if (!queue) return <p className="muted">Shuffling…</p>
+  if (!queue || !deck) return <p className="muted">Shuffling…</p>
 
   if (!card) {
     return (
@@ -190,34 +171,42 @@ export default function Study() {
       <p className="muted center-text">
         {done} / {total} cleared
       </p>
-      <div className="study-toggle">
-        <button className="secondary sm" onClick={toggleShowBoth}>
-          {showBoth ? 'Switch to flip-to-reveal' : 'Show answer with question'}
-        </button>
-      </div>
 
       <div className="study" key={turn} ref={cardAreaRef}>
-        {showBoth ? (
-          <div className={`${faceClass} combined`}>
+        {deck.show_both ? (
+          // Question is always visible; the answer is what's hidden until revealed, and once
+          // revealed both stay on screen together — no flip, nothing disappears.
+          <div
+            className={`${faceClass} combined`}
+            onClick={() => !revealed && setRevealed(true)}
+            role="button"
+            tabIndex={0}
+            aria-label="Show answer"
+          >
             <span className="corner tl">
               <b>Q</b>
               {suit}
             </span>
             <span className="corner br">
-              <b>A</b>
+              <b>{revealed ? 'A' : 'Q'}</b>
               {suit}
             </span>
             <div className={`face-text ${fontClass}`}>
               <CardText text={card.front} />
             </div>
-            <hr className="combined-divider" />
-            <div className={`face-text ${fontClass}`}>
-              <CardText text={card.back} />
-            </div>
+            {!revealed && <span className="face-hint">Click or press space to reveal the answer</span>}
+            {revealed && (
+              <>
+                <hr className="combined-divider" />
+                <div className={`face-text ${fontClass}`}>
+                  <CardText text={card.back} />
+                </div>
+              </>
+            )}
           </div>
         ) : (
           <div
-            className={`flip ${revealed ? 'flipped' : ''}`}
+            className={`flip${deck.float_anim ? '' : ' no-float'} ${revealed ? 'flipped' : ''}`}
             onClick={() => setRevealed(true)}
             role="button"
             tabIndex={0}
@@ -255,7 +244,7 @@ export default function Study() {
           </div>
         )}
 
-        {canRate ? (
+        {revealed ? (
           <div className="ratings">
             {RATINGS.map((r) => (
               <button key={r.value} className={`rate ${r.color}`} onClick={() => rate(card, r.value)}>

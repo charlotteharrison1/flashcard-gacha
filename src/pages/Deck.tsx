@@ -69,6 +69,12 @@ export default function Deck() {
     }
   }
 
+  async function updateStudySetting(patch: Partial<Pick<DeckType, 'show_both' | 'float_anim'>>) {
+    const { error } = await supabase.from('decks').update(patch).eq('id', id)
+    if (error) return setError(errorMessage(error, 'Could not save setting.'))
+    load()
+  }
+
   async function remove(cardId: string) {
     const { error } = await supabase.from('cards').delete().eq('id', cardId)
     if (error) return setError(error.message)
@@ -107,6 +113,26 @@ export default function Deck() {
       </div>
 
       {customizing && <DeckCustomize deckId={id} color={deck.color} iconUrl={deck.icon_url} onSaved={load} />}
+
+      <section className="panel">
+        <h3>Study options</h3>
+        <label className="row nowrap">
+          <input
+            type="checkbox"
+            checked={deck.show_both}
+            onChange={(e) => updateStudySetting({ show_both: e.target.checked })}
+          />
+          Keep the answer on screen with the question (no flip)
+        </label>
+        <label className="row nowrap">
+          <input
+            type="checkbox"
+            checked={deck.float_anim}
+            onChange={(e) => updateStudySetting({ float_anim: e.target.checked })}
+          />
+          Floating animation on the study card
+        </label>
+      </section>
 
       <section className="panel">
         <h3>Add a card</h3>

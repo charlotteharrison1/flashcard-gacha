@@ -60,6 +60,24 @@ function PixelCoin({ delay }: { delay: number }) {
   )
 }
 
+// Scattered points across the pile's usual footprint — fixed, not per-coin, so they don't shift
+// around as the pile grows or shrinks.
+const SPARKLES = [
+  { x: 92, y: 58, delay: 0 },
+  { x: 168, y: 52, delay: 0.15 },
+  { x: 62, y: 92, delay: 0.3 },
+  { x: 198, y: 88, delay: 0.1 },
+  { x: 130, y: 38, delay: 0.25 },
+  { x: 118, y: 100, delay: 0.05 },
+]
+
+/** A tiny 4-point sparkle, hidden until the pile is hovered (see .coin-pile:hover .sparkle in CSS). */
+function Sparkle({ x, y, delay }: { x: number; y: number; delay: number }) {
+  const s = 6
+  const d = `M${x} ${y - s} L${x + s * 0.3} ${y - s * 0.3} L${x + s} ${y} L${x + s * 0.3} ${y + s * 0.3} L${x} ${y + s} L${x - s * 0.3} ${y + s * 0.3} L${x - s} ${y} L${x - s * 0.3} ${y - s * 0.3} Z`
+  return <path className="sparkle" style={{ animationDelay: `${delay}s` }} d={d} fill="#fff3b8" />
+}
+
 export default function CoinPile({ balance }: { balance: number | null }) {
   const coins = layout(coinCount(balance))
 
@@ -91,6 +109,8 @@ export default function CoinPile({ balance }: { balance: number | null }) {
           </g>
         ))
       )}
+      {coins.length > 0 &&
+        SPARKLES.map((s, i) => <Sparkle key={i} x={s.x} y={s.y} delay={s.delay} />)}
     </svg>
   )
 }
