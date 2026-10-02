@@ -339,49 +339,6 @@ button.danger { color: var(--red); }
 .earn-panel .earnings-box.compact .earn-label { font-size: 0.7rem; }
 .earnings-box.compact .earn-value { font-size: 2.2rem; }
 
-/* Sticker: static starburst with a slow light sweep; only the button in the middle bobs. */
-.sale {
-  position: relative;
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: clamp(160px, 16vw, 210px);
-  aspect-ratio: 1;
-  color: #fff;
-  text-decoration: none;
-  transform: rotate(-7deg);
-  transition: transform 0.15s ease-out;
-}
-.sale:hover { transform: rotate(-3deg) scale(1.04); }
-.sale-burst { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 6px 0 var(--line)); }
-.sale-shine { position: absolute; inset: 15%; border-radius: 50%; overflow: hidden; pointer-events: none; }
-.sale-shine::after {
-  content: '';
-  position: absolute;
-  top: -10%;
-  bottom: -10%;
-  left: 0;
-  width: 30%;
-  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-  transform: translateX(-150%) skewX(-20deg);
-  animation: sale-shine 3.2s ease-in-out infinite;
-}
-.sale-tag {
-  position: absolute;
-  top: 21%;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: clamp(0.85rem, 1.6vw, 1.15rem);
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  text-shadow: 0 3px 0 var(--line);
-}
-.sale .sale-btn { position: relative; animation: sale-bob 2s ease-in-out infinite; }
-.sale:hover .sale-btn { filter: brightness(1.1); }
-.sale-cost { position: absolute; bottom: 21%; left: 0; right: 0; text-align: center; font-size: 0.75rem; color: #ffe27a; text-shadow: 0 2px 0 var(--line); }
-
 /* ---------- Card backs: deck tiles + hero ---------- */
 
 .c0 { --a: #d8362b; }
@@ -466,11 +423,7 @@ body:has(.home-box) header { padding-bottom: 0; }
 
 /* Sizing for the centre block: big enough to match the other pages, three decks across */
 .home-box { --tile-w: clamp(108px, calc((100vh - 370px) / 2.8), 180px); width: fit-content; max-width: 100%; padding: 18px 38px 24px; } /* the frame hugs what's inside it */
-.home-box .coin-pile { width: clamp(150px, 26vh, 230px); }
-.home-box .sale { --sale-w: clamp(140px, 20vh, 220px); width: var(--sale-w); }
-.home-box .sale .sale-btn { font-size: max(0.8rem, calc(var(--sale-w) * 0.085)); padding: 4px 12px; letter-spacing: 0.08em; }
-.home-box .sale-tag { font-size: max(0.75rem, calc(var(--sale-w) * 0.07)); }
-.home-box .sale-cost { font-size: max(0.62rem, calc(var(--sale-w) * 0.052)); letter-spacing: 0; }
+.home-box .coin-pile { width: clamp(130px, 19vh, 190px); }
 .home-box .earn-value { font-size: 3rem; }
 .home-box .earn-label { font-size: 0.85rem; }
 .home-box .tiles { grid-template-columns: repeat(3, var(--tile-w)); justify-content: center; gap: 14px; max-width: none; margin: 12px auto; }
@@ -502,13 +455,14 @@ body:has(.home-box) header { padding-bottom: 0; }
 .tile.dragging { opacity: 0.45; }
 .tile.drop-target { transform: translateY(-8px) scale(1.04); outline: 4px dashed var(--gold); outline-offset: 4px; }
 
-/* Card-suit jewels on the four corners */
+/* Card-suit jewels on the four corners of the inner frame */
 .home-suit { position: absolute; z-index: 1; width: 33px; height: 33px; pointer-events: none; }
 .home-suit svg { display: block; width: 100%; height: 100%; }
-.home-suit.tl { top: -14px; left: -14px; }
-.home-suit.tr { top: -14px; right: -14px; }
-.home-suit.bl { bottom: -14px; left: -14px; }
-.home-suit.br { bottom: -14px; right: -14px; }
+/* sitting on the corners of the inner frame (the inner frame is inset 8px), not the outer one */
+.home-suit.tl { top: -6px; left: -6px; }
+.home-suit.tr { top: -6px; right: -6px; }
+.home-suit.bl { bottom: -6px; left: -6px; }
+.home-suit.br { bottom: -6px; right: -6px; }
 
 /* Pixel dashes separating the wallet from the decks */
 .home-divider {
@@ -1255,7 +1209,6 @@ body:has(.pull)::before { display: none; }
   box-shadow: inset 0 -5px 0 #4a4d55, 0 4px 0 var(--line);
 }
 .spend:disabled::after { display: none; }
-.sale .sale-btn { font-size: 1.05rem; padding: 7px 18px; }
 /* "Keep earning": a big, shiny, tacky pixel button back to the decks, with a bobbing arrow */
 .keep-earning {
   display: flex;
@@ -1282,8 +1235,6 @@ body:has(.pull)::before { display: none; }
 .spend.sm { font-size: 1.05rem; padding: 9px 20px; letter-spacing: 0.08em; }
 
 @keyframes shine { 0% { transform: translateX(-180%) skewX(-20deg); } 55%, 100% { transform: translateX(420%) skewX(-20deg); } }
-@keyframes sale-shine { 0% { transform: translateX(-150%) skewX(-20deg); } 55%, 100% { transform: translateX(450%) skewX(-20deg); } }
-@keyframes sale-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 @keyframes blink { 50% { opacity: 0.25; } }
 @keyframes beckon { 0% { transform: scale(0.8); opacity: 0.9; } 100% { transform: scale(1.4); opacity: 0; } }
 @keyframes hot { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
@@ -1430,16 +1381,15 @@ body:has(.pull)::before { display: none; }
 :root[data-lights='off'] .slot .bulb { animation: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
-  .logo, .flip, .celebrate .big-mark, .progress-fill, .study, .spend::after, .sale .sale-btn, .sale-shine::after, .slot.spinning, .slot.spinning .bulb, .lever.armed .lever-ball::after, .coin-panel.nudge, .coin-drop, .slot.tension .reel:nth-child(3)::before, .slot.win-gold .reel, .slot.win-silver .reel, .slot.win-gold .bulb, .slot.win-silver .bulb { animation: none; }
+  .logo, .flip, .celebrate .big-mark, .progress-fill, .study, .spend::after, .slot.spinning, .slot.spinning .bulb, .lever.armed .lever-ball::after, .coin-panel.nudge, .coin-drop, .slot.tension .reel:nth-child(3)::before, .slot.win-gold .reel, .slot.win-silver .reel, .slot.win-gold .bulb, .slot.win-silver .bulb { animation: none; }
   .coin-poof { display: none; }
   .home-glove { animation: none; }
-  .keep-arrow { animation: none; }
+  .keep-arrow, .spend-arrow { animation: none; }
   .bigspin, .bigspin-strip { animation: none !important; transition: none !important; }
   .bigspin { opacity: 1; transform: scale(1); }
   .coin-shine, .coin-new, .coin-pile-empty, .sparkle { animation: none !important; }
   .fly { display: none; }
   .earn-panel::before, .earn-panel::after, .winnings-panel::before, .winnings-panel::after { animation: none; }
-  .sale { transition: none; }
   .confetti { display: none; }
   .flip-inner, .tile, .progress-fill { transition: none; }
 }
@@ -1597,21 +1547,21 @@ body:has(.pull)::before { display: none; }
 .hero-info { flex: 1 1 200px; }
 .study-filter-row + h3 { margin-top: 14px; }
 
-/* Cartoon gloves around the home box, all aimed at the sale sticker: two on the left (one above and one below
+/* Cartoon gloves around the home box, all aimed at the Spend button: two on the left (one above and one below
    the sticker's middle, so each points at it) and one above it. They sit still and nudge toward it when you hover the sticker (or a glove).
    --sx / --sy (the sticker's centre in the box) are measured in Decks.tsx. Hidden on narrow screens. */
 .home-glove { position: absolute; z-index: 2; width: 45px; height: 45px; }
 .home-glove svg { display: block; width: 100%; height: 100%; }
-/* aimed at the sticker's upper-left, so the hands sit toward the box's top-left corner: 20px up/left of its middle */
-.glove-left { left: -42px; top: calc(var(--sy, 120px) - 22px - 20px - 26px); }
-.glove-left-low { top: calc(var(--sy, 120px) - 22px - 20px + 26px); }
+/* aimed at the button's upper-left, so the hands sit toward the box's top-left corner */
+.glove-left { left: -42px; top: calc(var(--sy, 120px) - 22px - 4px - 26px); }
+.glove-left-low { top: calc(var(--sy, 120px) - 22px - 4px + 26px); }
 .glove-top { top: -42px; left: calc(var(--sx, 25%) - 22px - 20px); }
 .glove-top svg { transform: rotate(90deg); }
-.home-box:has(.sale:hover) .glove-left, .glove-left:hover { animation: glove-nudge-right 0.9s steps(2) infinite; }
-.home-box:has(.sale:hover) .glove-top, .glove-top:hover { animation: glove-nudge-down 0.9s steps(2) infinite; }
+.home-box:has(.spend-cta:hover) .glove-left, .glove-left:hover { animation: glove-nudge-right 0.9s steps(2) infinite; }
+.home-box:has(.spend-cta:hover) .glove-top, .glove-top:hover { animation: glove-nudge-down 0.9s steps(2) infinite; }
 /* each glove runs on its own timer (different length and start point) so they don't move in lockstep */
-.home-box:has(.sale:hover) .glove-left-low, .glove-left-low:hover { animation-duration: 1.15s; animation-delay: -0.35s; }
-.home-box:has(.sale:hover) .glove-top, .glove-top:hover { animation-duration: 0.8s; animation-delay: -0.6s; }
+.home-box:has(.spend-cta:hover) .glove-left-low, .glove-left-low:hover { animation-duration: 1.15s; animation-delay: -0.35s; }
+.home-box:has(.spend-cta:hover) .glove-top, .glove-top:hover { animation-duration: 0.8s; animation-delay: -0.6s; }
 @keyframes glove-nudge-right { 50% { transform: translateX(6px); } }
 @keyframes glove-nudge-down { 50% { transform: translateY(6px); } }
 @media (max-width: 760px) { .home-glove { display: none; } }
@@ -1667,3 +1617,35 @@ main.page { padding-top: 6px; }
 .presets-panel .file-field { font-size: 0.8rem; gap: 6px; }
 .presets-panel button.sm { font-size: 0.7rem; padding: 3px 8px; }
 .presets-panel input[type='checkbox'] { width: auto; }
+
+/* The big gold Spend button with an arrow, and its two corner stickers */
+.spend-cta { --cta-w: clamp(210px, 28vh, 270px); position: relative; display: block; flex-shrink: 0; width: var(--cta-w); color: inherit; text-decoration: none; }
+.spend-big {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 18px;
+  font-size: calc(var(--cta-w) * 0.14);
+  letter-spacing: 0.14em;
+  /* the same notched pixel frame as the other boxes, over the shiny gold fill */
+  border: 9px solid transparent;
+  border-image: var(--frame) 3 / 9px stretch;
+  background-clip: padding-box;
+  box-shadow: none;
+  filter: drop-shadow(0 5px 0 rgba(0, 0, 0, 0.4));
+}
+.spend-cta:hover .spend-big { filter: drop-shadow(0 5px 0 rgba(0, 0, 0, 0.4)) brightness(1.08); }
+.spend-cta:active .spend-big { transform: translateY(3px); }
+.spend-arrow { display: block; flex: 0 0 auto; width: 44px; height: 44px; animation: arrow-nudge-right 0.8s steps(2) infinite; }
+.spend-arrow svg { display: block; width: 100%; height: 100%; transform: scaleX(-1); } /* the arrow sprite points left; flip it to point right */
+@keyframes arrow-nudge-right { 50% { transform: translateX(5px); } }
+
+.sticker { position: absolute; z-index: 2; pointer-events: none; font-weight: 700; text-transform: uppercase; text-align: center; color: #fff; text-shadow: 0 2px 0 var(--line); }
+.sticker-sale { top: -26px; right: -30px; display: grid; place-items: center; width: 72px; height: 72px; font-size: 0.85rem; letter-spacing: 0.06em; transform: rotate(14deg); }
+.sticker-sale svg { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 3px 0 var(--line)); }
+.sticker-sale span { position: relative; }
+.sticker-pull { left: -24px; bottom: -22px; padding: 4px 8px; font-size: 0.65rem; line-height: 1.05; letter-spacing: 0.06em; background: #ff5fb3; border: 3px solid var(--line); box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.4); transform: rotate(-9deg); }
+
+.home-box .wallet { gap: 38px; }
