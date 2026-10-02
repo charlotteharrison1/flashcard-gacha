@@ -15,8 +15,10 @@ import 'katex/dist/katex.min.css'
 import './index.css'
 import App from './App.tsx'
 import { applyScheme, loadScheme } from './lib/scheme'
+import { applyLights, loadLights } from './lib/lights'
 
 applyScheme(loadScheme())
+applyLights(loadLights())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -9,6 +9,7 @@ import Preview from './pages/Preview'
 import Pull from './pages/Pull'
 import Deckbox from './pages/Deckbox'
 import SchemeButton from './components/SchemeButton'
+import LightsButton from './components/LightsButton'
 
 function Layout() {
   const { session, loading } = useAuth()
@@ -21,6 +22,7 @@ function Layout() {
           Flashcard Gacha
         </Link>
         <span className="row">
+          <LightsButton />
           <SchemeButton />
           <span className="muted user-email" title={session.user.email}>
             {session.user.email}

@@ -307,10 +307,10 @@ button.danger { color: var(--red); }
   right: 4px;
   height: 6px;
   background: repeating-linear-gradient(90deg, #ffe27a 0 6px, transparent 6px 12px);
-  animation: marquee-chase 0.8s steps(1) infinite;
+  animation: marquee-chase 1.6s steps(1) infinite;
 }
 .earn-panel::before, .winnings-panel::before { top: 3px; }
-.earn-panel::after, .winnings-panel::after { bottom: 3px; animation-delay: 0.4s; }
+.earn-panel::after, .winnings-panel::after { bottom: 3px; animation-delay: 0.8s; }
 @keyframes marquee-chase { 0% { background-position: 0 0; } 50% { background-position: 6px 0; } }
 .earn-panel .earnings-box.compact { padding: 0; gap: 10px; flex-wrap: wrap; justify-content: center; }
 .earn-panel .earnings-box.compact .coin-pile { width: min(150px, 45vw); }
@@ -898,6 +898,7 @@ body:has(.home-box) header { padding-bottom: 0; }
 /* Header: keep the account controls small so they don't compete with the page */
 header .row { gap: 8px; }
 header .scheme-btn { padding: 3px 6px; }
+header .lights-btn { padding: 3px 8px; font-size: 0.7rem; }
 header .swatch { width: 12px; height: 12px; }
 header .user-email { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; }
 header button.link { font-size: 0.75rem; }
@@ -958,9 +959,9 @@ body:has(.pull)::before { display: none; }
 .slot-title svg { display: block; width: calc(var(--px) * 8); height: calc(var(--px) * 8); }
 .bulbs { display: flex; justify-content: center; gap: 8px; margin: 4px 0 8px; }
 .bulb { width: 8px; height: 8px; border-radius: 0; background: #ffe27a; box-shadow: 0 0 0 2px var(--line); }
-.slot.spinning .bulb { animation: blink 0.4s steps(2) infinite; }
-.slot.spinning .bulb:nth-child(3n + 2) { animation-delay: 0.13s; }
-.slot.spinning .bulb:nth-child(3n) { animation-delay: 0.26s; }
+.slot.spinning .bulb { animation: blink 0.8s steps(2) infinite; }
+.slot.spinning .bulb:nth-child(3n + 2) { animation-delay: 0.26s; }
+.slot.spinning .bulb:nth-child(3n) { animation-delay: 0.52s; }
 .slot.spinning { animation: shake 0.4s ease-in-out 1; }
 
 /* ---------- Machine: cabinet + big drag lever + coin slot ---------- */
@@ -1052,7 +1053,7 @@ body:has(.pull)::before { display: none; }
 /* Wins: the cabinet glows, bulbs flash, reels pop */
 .slot.win-gold { border-image-source: var(--slot-frame-win-gold); }
 .slot.win-silver { border-image-source: var(--slot-frame-win-silver); }
-.slot.win-gold .bulb, .slot.win-silver .bulb { animation: blink 0.3s steps(2) infinite; }
+.slot.win-gold .bulb, .slot.win-silver .bulb { animation: blink 0.7s steps(2) infinite; }
 .slot.win-gold .reel, .slot.win-silver .reel { animation: win-pop 0.6s ease-in-out infinite; }
 .slot.win-gold .reel:nth-child(2), .slot.win-silver .reel:nth-child(2) { animation-delay: 0.1s; }
 .slot.win-gold .reel:nth-child(3), .slot.win-silver .reel:nth-child(3) { animation-delay: 0.2s; }
@@ -1119,8 +1120,7 @@ body:has(.pull)::before { display: none; }
 /* Winnings: a pixel-framed box with marquee lights, a starred title, and LED-style count windows */
 .winnings-panel {
   position: relative;
-  width: min(100%, 326px);
-  margin: 16px auto;
+  margin: 16px 0;
   padding: 18px 10px;
   background:
     conic-gradient(rgba(255, 255, 255, 0.035) 25%, transparent 0 50%, rgba(255, 255, 255, 0.035) 0 75%, transparent 0) 0 0 / 8px 8px,
@@ -1132,7 +1132,7 @@ body:has(.pull)::before { display: none; }
   box-shadow: none;
   filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.3));
 }
-.pull .winnings-panel { margin: 16px auto; padding: 18px 10px; }
+.pull .winnings-panel { margin: 16px 0; padding: 18px 12px; }
 .winnings-panel > h3 {
   display: flex;
   align-items: center;
@@ -1373,6 +1373,11 @@ body:has(.pull)::before { display: none; }
   .machine { --px: 3px; }
   .ratings { gap: 6px; }
 }
+
+/* Header toggle: lights off = no blinking or chasing (the bulbs stay lit) */
+:root[data-lights='off'] :is(.earn-panel, .winnings-panel)::before,
+:root[data-lights='off'] :is(.earn-panel, .winnings-panel)::after,
+:root[data-lights='off'] .slot .bulb { animation: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
   .logo, .flip, .celebrate .big-mark, .progress-fill, .study, .spend::after, .sale .sale-btn, .sale-shine::after, .slot.spinning, .slot.spinning .bulb, .lever.armed .lever-ball::after, .coin-panel.nudge, .coin-drop, .slot.tension .reel:nth-child(3)::before, .slot.win-gold .reel, .slot.win-silver .reel, .slot.win-gold .bulb, .slot.win-silver .bulb { animation: none; }
