@@ -424,6 +424,10 @@ body:has(.home-box) header { padding-bottom: 0; }
 /* The "new deck" and "new deckbox" buttons share one tile, one above the other */
 .new-stack { display: flex; flex-direction: column; gap: 10px; }
 .new-half { flex: 1; min-height: 0; }
+/* Each half lifts on its own; the shared tile itself stays put (it would otherwise lift both at once) */
+.tile.new-stack:hover { transform: none; }
+.new-half { transition: transform 0.18s ease-out; will-change: transform; }
+.new-half:hover, .new-half:focus-within { transform: translateY(-5px); }
 .new-half .new-deck-form { inset: 6px; gap: 6px; }
 .new-half .new-deck-plus { font-size: 1.8rem; }
 
