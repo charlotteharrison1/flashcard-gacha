@@ -12,6 +12,7 @@ import AttachmentPicker from '../components/AttachmentPicker'
 import FormatToolbar from '../components/FormatToolbar'
 import CardText, { setImageWidth } from '../lib/cardText'
 import CardFilterBar from '../components/CardFilterBar'
+import { useSettings } from '../lib/settings'
 import StudyFilter from '../components/StudyFilter'
 import { StarButton, TagAdder, TagChips } from '../components/CardMeta'
 import { MAX_TAGS, matchesFilter, saveStar, saveTags, sortCards, tagCounts, type CardFilter, type CardSort } from '../lib/cardMeta'
@@ -32,6 +33,9 @@ export default function Deck() {
   const frontRef = useRef<HTMLTextAreaElement>(null)
   const backRef = useRef<HTMLTextAreaElement>(null)
   const [customizing, setCustomizing] = useState(false)
+  const { settings, ready: settingsReady } = useSettings()
+  const [bulkFont, setBulkFont] = useState<CardFont>(DEFAULT_FONT)
+  const [fontNote, setFontNote] = useState<string | null>(null)
   const [filter, setFilter] = useState<CardFilter>('all')
   const [sort, setSort] = useState<CardSort>('newest')
   const [taggingId, setTaggingId] = useState<string | null>(null) // the card whose tag field is open
@@ -57,6 +61,20 @@ export default function Deck() {
   useEffect(() => {
     load()
   }, [load])
+
+  // New cards start in the user's preset font (Settings on the home screen).
+  useEffect(() => {
+    if (settingsReady) setFont(settings.default_font)
+  }, [settingsReady, settings.default_font])
+
+  async function applyFontToAll() {
+    setError(null)
+    setFontNote(null)
+    const { error: e } = await supabase.from('cards').update({ font: bulkFont }).eq('deck_id', id)
+    if (e) return setError(e.message)
+    setFontNote(`Changed the font on all ${cards.length} cards.`)
+    load()
+  }
 
   function patchCard(cardId: string, patch: Partial<Card>) {
     setCards((cs) => cs.map((c) => (c.id === cardId ? { ...c, ...patch } : c)))
@@ -248,7 +266,24 @@ export default function Deck() {
         </label>
       </section>
 
-      <CsvImport deckId={id} onImported={load} />
+      <section className="panel">
+        <h3>Card font</h3>
+        <div className="row">
+          <select value={bulkFont} onChange={(e) => setBulkFont(e.target.value as CardFont)} aria-label="Font for every card in this deck">
+            {FONT_OPTIONS.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.label}
+              </option>
+            ))}
+          </select>
+          <button className="secondary" onClick={applyFontToAll} disabled={cards.length === 0}>
+            Apply to all {cards.length} cards
+          </button>
+        </div>
+        {fontNote && <p className="notice">{fontNote}</p>}
+      </section>
+
+      <CsvImport deckId={id} onImported={load} font={settings.default_font} />
 
       {cards.length > 0 && <StudyFilter basePath={`/decks/${id}/study`} cards={cards} />}
 

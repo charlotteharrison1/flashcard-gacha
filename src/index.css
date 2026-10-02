@@ -1472,3 +1472,11 @@ body:has(.pull)::before { display: none; }
 
 .study-back { margin: 6px 0; }
 .study-count { margin: 4px 0; }
+
+/* Settings button (third half of the stacked new-deck tile) and the presets panel */
+.new-deck-gear { display: block; width: 33px; height: 33px; }
+.new-deck-gear svg { display: block; width: 100%; height: 100%; }
+.home-box .new-deck-gear { width: 33px; height: 33px; }
+.settings-panel { margin: 0 0 16px; }
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 8px 0; border-top: 2px dashed var(--panel-2); }
+.setting-row .file-field { width: auto; flex-direction: row; align-items: center; gap: 10px; }

@@ -2,10 +2,11 @@ import { useState, type ChangeEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { mapRows, parseTabularFile } from '../lib/csv'
 import { errorMessage } from '../lib/errors'
+import type { CardFont } from '../lib/fonts'
 
 const CHUNK = 500
 
-export default function CsvImport({ deckId, onImported }: { deckId: string; onImported: () => void }) {
+export default function CsvImport({ deckId, onImported, font = 'clear' }: { deckId: string; onImported: () => void; font?: CardFont }) {
   const [rows, setRows] = useState<string[][] | null>(null)
   const [hasHeader, setHasHeader] = useState(true)
   const [frontCol, setFrontCol] = useState(0)
@@ -38,7 +39,7 @@ export default function CsvImport({ deckId, onImported }: { deckId: string; onIm
     setBusy(true)
     setError(null)
     for (let i = 0; i < cards.length; i += CHUNK) {
-      const chunk = cards.slice(i, i + CHUNK).map((c) => ({ ...c, deck_id: deckId, source: 'csv' as const }))
+      const chunk = cards.slice(i, i + CHUNK).map((c) => ({ ...c, deck_id: deckId, source: 'csv' as const, font }))
       const { error } = await supabase.from('cards').insert(chunk)
       if (error) {
         setError(`Imported ${i} of ${cards.length} cards, then failed: ${error.message}`)

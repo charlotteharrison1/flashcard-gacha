@@ -6,6 +6,8 @@ import Earnings from '../components/Earnings'
 import SaleSticker from '../components/SaleSticker'
 import { SlotSymbol } from '../components/SlotSymbol'
 import { useEarnings } from '../lib/earnings'
+import { useSettings } from '../lib/settings'
+import SettingsPanel from '../components/SettingsPanel'
 
 type DeckRow = {
   id: string
@@ -78,6 +80,8 @@ export default function Decks() {
   const [boxes, setBoxes] = useState<BoxRow[]>([])
   const { balance } = useEarnings()
   const [error, setError] = useState<string | null>(null)
+  const { settings, save: saveSettings, saveError } = useSettings()
+  const [showSettings, setShowSettings] = useState(false)
   const [dragId, setDragId] = useState<string | null>(null) // the deck being dragged
   const [overBox, setOverBox] = useState<string | null>(null) // the deckbox it's hovering over
 
@@ -102,7 +106,8 @@ export default function Decks() {
   }, [])
 
   async function createDeck(name: string) {
-    const { error } = await supabase.from('decks').insert({ name })
+    // A new deck starts with the user's presets (Settings button).
+    const { error } = await supabase.from('decks').insert({ name, show_both: settings.show_both, float_anim: settings.float_anim })
     if (error) {
       setError(error.message)
       return false
@@ -149,6 +154,16 @@ export default function Decks() {
 
       <div className="home-divider" aria-hidden="true" />
 
+      {showSettings && (
+        <SettingsPanel
+          settings={settings}
+          save={saveSettings}
+          saveError={saveError}
+          onClose={() => setShowSettings(false)}
+          onApplied={load}
+        />
+      )}
+
       <section className="collection">
         {error && <p className="error">{error}</p>}
 
@@ -160,6 +175,14 @@ export default function Decks() {
             <li className="tile new-stack">
               <NewTile label="New deck" placeholder="Deck name…" onCreate={createDeck} />
               <NewTile label="New deckbox" placeholder="Deckbox name…" onCreate={createBox} />
+              <div className="new-half new-deck-tile">
+                <button className="new-deck-btn" onClick={() => setShowSettings((s) => !s)} aria-expanded={showSettings}>
+                  <span className="new-deck-gear">
+                    <SlotSymbol id="gear" />
+                  </span>
+                  <span>Settings</span>
+                </button>
+              </div>
             </li>
 
             {boxes.map((b) => {

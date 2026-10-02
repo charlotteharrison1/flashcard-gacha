@@ -8,7 +8,7 @@ import type { SymbolId } from './slots'
 export type Sprite = { size: number; paths: { color: string; d: string }[] }
 
 /** Everything drawable: the slot symbols, the lever knob, the four card suits (home page frame corners) and a deckbox. */
-export type SpriteId = SymbolId | 'ball' | 'coin' | 'arrow' | 'goldBadge' | 'silverBadge' | 'spade' | 'heart' | 'club' | 'suitDiamond' | 'deckbox'
+export type SpriteId = SymbolId | 'ball' | 'coin' | 'arrow' | 'goldBadge' | 'silverBadge' | 'gear' | 'spade' | 'heart' | 'club' | 'suitDiamond' | 'deckbox'
 
 const OUTLINE = '#0a1218'
 
@@ -42,6 +42,7 @@ const SHADE: Record<SpriteId, Record<string, string>> = {
   coin: { D: '#b98410' },
   arrow: { D: '#b98410' },
   goldBadge: { D: '#b98410' },
+  gear: { D: '#b98410' },
   silverBadge: { Y: '#cfd8e3', D: '#7d8a9a', W: '#ffffff' },
 }
 
@@ -251,6 +252,20 @@ const FILLS: Record<SpriteId, string[]> = {
     '.YYDYYY.',
     '..YYYY..',
     '........',
+  ],
+  // A cog (11x11) for the Settings button
+  gear: [
+    '...........',
+    '....YYY....',
+    '.Y.YYYYY.Y.',
+    '..YYYYYYY..',
+    '.YYYY.YYYY.',
+    '.YYY...YYY.',
+    '.YYYY.YYYY.',
+    '..YYYYYYY..',
+    '.Y.YYYYY.Y.',
+    '....YYY....',
+    '...........',
   ],
   goldBadge: medalRows(),
   silverBadge: medalRows(),
