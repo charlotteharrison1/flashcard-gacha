@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { deckSuit, effectiveColor } from '../lib/theme'
@@ -82,6 +82,25 @@ export default function Decks() {
   const [error, setError] = useState<string | null>(null)
   const { settings, save: saveSettings, saveError } = useSettings()
   const [showSettings, setShowSettings] = useState(false)
+  const boxRef = useRef<HTMLDivElement>(null)
+
+  // The gloves around the box all point at the sale sticker, so tell the CSS where its centre is (relative to the box).
+  useLayoutEffect(() => {
+    const box = boxRef.current
+    if (!box) return
+    const place = () => {
+      const sticker = box.querySelector('.sale')
+      if (!sticker) return
+      const b = box.getBoundingClientRect()
+      const s = sticker.getBoundingClientRect()
+      box.style.setProperty('--sx', `${Math.round(s.left - b.left + s.width / 2)}px`)
+      box.style.setProperty('--sy', `${Math.round(s.top - b.top + s.height / 2)}px`)
+    }
+    place()
+    const observer = new ResizeObserver(place) // the box changes size as decks load
+    observer.observe(box)
+    return () => observer.disconnect()
+  }, [])
   const [dragId, setDragId] = useState<string | null>(null) // the deck being dragged
   const [overBox, setOverBox] = useState<string | null>(null) // the deckbox it's hovering over
 
@@ -146,7 +165,7 @@ export default function Decks() {
   }
 
   return (
-    <div className="home-box">
+    <div className="home-box" ref={boxRef}>
       <span className="home-suit tl"><SlotSymbol id="spade" /></span>
       <span className="home-suit tr"><SlotSymbol id="heart" /></span>
       <span className="home-suit bl"><SlotSymbol id="suitDiamond" /></span>

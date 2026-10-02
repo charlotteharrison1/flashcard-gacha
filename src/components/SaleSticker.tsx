@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { PULL_COST } from '../lib/earnings'
 
 // 22-point starburst, computed once.
 const SPIKES = 22
@@ -27,9 +26,7 @@ export default function SaleSticker() {
       <span className="sale-shine" aria-hidden="true" />
       <span className="sale-tag">On sale</span>
       <span className="button spend sale-btn">Spend</span>
-      <span className="sale-cost">
-        {PULL_COST} coin{PULL_COST === 1 ? '' : 's'} per pull
-      </span>
+      <span className="sale-cost">Pull! Pull! Pull!</span>
     </Link>
   )
 }
