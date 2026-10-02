@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { FONT_OPTIONS, type CardFont } from '../lib/fonts'
 import type { Settings } from '../lib/settings'
+import type { Orientation } from '../lib/types'
 
 /** Presets for all decks: what new decks and cards start with, plus buttons to apply a preset to everything that already exists. */
 export default function SettingsPanel({
@@ -30,7 +31,7 @@ export default function SettingsPanel({
     onApplied()
   }
 
-  async function applyDeckSetting(field: 'show_both' | 'float_anim', label: string) {
+  async function applyDeckSetting(field: 'show_both' | 'float_anim' | 'orientation', label: string) {
     setError(null)
     const { count, error: e } = await supabase.from('decks').update({ [field]: settings[field] }, { count: 'exact' }).not('id', 'is', null)
     if (e) return setError(e.message)
@@ -82,6 +83,19 @@ export default function SettingsPanel({
           Floating animation on the study card
         </label>
         <button className="secondary sm" onClick={() => applyDeckSetting('float_anim', 'Floating animation')}>
+          Apply to all decks
+        </button>
+      </div>
+
+      <div className="setting-row">
+        <label className="file-field">
+          <span>Card shape</span>
+          <select value={settings.orientation} onChange={(e) => save({ orientation: e.target.value as Orientation })}>
+            <option value="horizontal">Horizontal (wide)</option>
+            <option value="vertical">Vertical (tall)</option>
+          </select>
+        </label>
+        <button className="secondary sm" onClick={() => applyDeckSetting('orientation', 'Card shape')}>
           Apply to all decks
         </button>
       </div>

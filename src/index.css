@@ -1480,3 +1480,14 @@ body:has(.pull)::before { display: none; }
 .settings-panel { margin: 0 0 16px; }
 .setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 8px 0; border-top: 2px dashed var(--panel-2); }
 .setting-row .file-field { width: auto; flex-direction: row; align-items: center; gap: 10px; }
+
+/* Vertical cards: a narrower, taller card, centred */
+.study.portrait .flip { width: min(100%, 340px); }
+.study.portrait .face {
+  min-height: min(54vh, 480px);
+  max-height: min(54vh, 480px);
+  padding: 22px 24px;
+}
+.study.portrait .face.combined { width: min(100%, 340px); height: min(54vh, 480px); max-height: none; }
+.study.portrait .face-text { --base: 1.3rem; }
+.study.portrait .ratings { max-width: 520px; }

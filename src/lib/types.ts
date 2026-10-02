@@ -1,5 +1,7 @@
 import type { CardFont } from './fonts'
 
+export type Orientation = 'horizontal' | 'vertical'
+
 export type Deck = {
   id: string
   name: string
@@ -12,6 +14,8 @@ export type Deck = {
   show_both: boolean
   /** The study card's gentle floating animation. */
   float_anim: boolean
+  /** Wide cards (horizontal) or tall ones (vertical). */
+  orientation: Orientation
 }
 
 export type Deckbox = {

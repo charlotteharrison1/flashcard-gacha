@@ -122,7 +122,7 @@ export default function Deck() {
     }
   }
 
-  async function updateStudySetting(patch: Partial<Pick<DeckType, 'show_both' | 'float_anim'>>) {
+  async function updateStudySetting(patch: Partial<Pick<DeckType, 'show_both' | 'float_anim' | 'orientation'>>) {
     const { error } = await supabase.from('decks').update(patch).eq('id', id)
     if (error) return setError(errorMessage(error, 'Could not save setting.'))
     load()
@@ -263,6 +263,16 @@ export default function Deck() {
             onChange={(e) => updateStudySetting({ float_anim: e.target.checked })}
           />
           Floating animation on the study card
+        </label>
+        <label className="file-field">
+          <span>Card shape</span>
+          <select
+            value={deck.orientation ?? 'horizontal'}
+            onChange={(e) => updateStudySetting({ orientation: e.target.value as 'horizontal' | 'vertical' })}
+          >
+            <option value="horizontal">Horizontal (wide)</option>
+            <option value="vertical">Vertical (tall)</option>
+          </select>
         </label>
       </section>
 

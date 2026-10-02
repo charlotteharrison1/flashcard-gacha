@@ -26,7 +26,7 @@ const RATINGS: { value: Rating; label: string; color: string }[] = [
 ]
 
 type Poof = { id: number; x: number; y: number }
-type DeckSettings = Pick<Deck, 'show_both' | 'float_anim'>
+type DeckSettings = Pick<Deck, 'show_both' | 'float_anim' | 'orientation'>
 
 /** Fisher-Yates, so a deckbox round mixes its decks instead of running through them one after another. */
 function shuffle<T>(items: T[]): T[] {
@@ -38,7 +38,7 @@ function shuffle<T>(items: T[]): T[] {
   return a
 }
 
-const DEFAULT_SETTINGS: DeckSettings = { show_both: false, float_anim: true }
+const DEFAULT_SETTINGS: DeckSettings = { show_both: false, float_anim: true, orientation: 'horizontal' }
 
 /** `scope` "deck" studies the deck in the URL; "box" studies every deck in that deckbox, shuffled together. */
 export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
@@ -68,7 +68,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   useEffect(() => {
     let cancelled = false
     async function load() {
-      const decksQuery = supabase.from('decks').select('id, show_both, float_anim')
+      const decksQuery = supabase.from('decks').select('*') // all columns, so a missing newer one just falls back
       const d = await (scope === 'box' ? decksQuery.eq('deckbox_id', id) : decksQuery.eq('id', id))
       if (d.error) return setError(d.error.message)
       const ids = d.data.map((x) => x.id)
@@ -87,7 +87,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
       if (scope === 'box') cards = shuffle(cards)
 
       if (cancelled) return
-      setDecks(Object.fromEntries(d.data.map((x) => [x.id, { show_both: x.show_both, float_anim: x.float_anim }])))
+      setDecks(Object.fromEntries(d.data.map((x) => [x.id, { show_both: x.show_both, float_anim: x.float_anim, orientation: x.orientation ?? 'horizontal' }])))
       setQueue(cards)
       setTotal(cards.length)
     }
@@ -291,7 +291,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
         {done} / {total} cleared
       </p>
 
-      <div className="study" key={turn} ref={cardAreaRef}>
+      <div className={`study${deck.orientation === 'vertical' ? ' portrait' : ''}`} key={turn} ref={cardAreaRef}>
         {deck.show_both ? (
           // Question is always visible; the answer is what's hidden until revealed, and once
           // revealed both stay on screen together — no flip, nothing disappears.

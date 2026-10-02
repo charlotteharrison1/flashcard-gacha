@@ -107,7 +107,12 @@ export default function Decks() {
 
   async function createDeck(name: string) {
     // A new deck starts with the user's presets (Settings button).
-    const { error } = await supabase.from('decks').insert({ name, show_both: settings.show_both, float_anim: settings.float_anim })
+    const { error } = await supabase.from('decks').insert({
+      name,
+      show_both: settings.show_both,
+      float_anim: settings.float_anim,
+      ...(settings.orientation !== 'horizontal' ? { orientation: settings.orientation } : {}),
+    })
     if (error) {
       setError(error.message)
       return false
