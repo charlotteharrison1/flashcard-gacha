@@ -16,8 +16,9 @@ function Layout() {
   if (loading) return <p className="narrow">Loading…</p>
   if (!session) return <Navigate to="/login" replace />
   return (
-    <main>
-      <header className="row between">
+    <>
+      {/* The top bar spans the whole window: the logo at the left edge, the account controls at the right edge. */}
+      <header className="app-header row between">
         <Link to="/" className="brand">
           Flashcard Gacha
         </Link>
@@ -32,8 +33,10 @@ function Layout() {
           </button>
         </span>
       </header>
-      <Outlet />
-    </main>
+      <main className="page">
+        <Outlet />
+      </main>
+    </>
   )
 }
 

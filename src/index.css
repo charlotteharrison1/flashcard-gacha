@@ -1622,3 +1622,7 @@ body:has(.pull)::before { display: none; }
   border: 6px solid transparent;
   border-image: var(--frame) 3 / 6px stretch;
 }
+
+/* Top bar across the whole window; the page content below stays in the centred column */
+.app-header { width: 100%; padding: 8px var(--gutter) 0; }
+main.page { padding-top: 6px; }
