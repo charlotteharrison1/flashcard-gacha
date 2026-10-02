@@ -5,11 +5,11 @@ const STEP = 0.02 // how finely to search between half and full size
 
 /**
  * Sets --fit (a multiplier, 1 = full size) to the largest value at which the content fits inside `el`.
- * `comfortable` also asks for the card to stay under about half the screen height, so a big card gets
+ * `comfortable` also asks for the card to stay under about a third of the screen height, so a big card gets
  * smaller type well before it hits its hard height cap (which is where it would start to scroll).
  */
 function fit(el: HTMLElement, comfortable: boolean) {
-  const comfort = Math.max(260, window.innerHeight * 0.55)
+  const comfort = Math.max(200, window.innerHeight * 0.38)
   const fits = (f: number) => {
     el.style.setProperty('--fit', String(f))
     return el.scrollHeight <= (comfortable ? Math.min(el.clientHeight + 1, comfort) : el.clientHeight + 1)

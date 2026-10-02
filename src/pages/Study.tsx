@@ -280,14 +280,14 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
 
   return (
     <>
-      <p>
+      <p className="study-back">
         <Link to={studyPath}>← Back to {scope === 'box' ? 'deckbox' : 'deck'}</Link>
       </p>
 
       <div className="progress" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
         <div className="progress-fill" style={{ width: `${pct}%` }} />
       </div>
-      <p className="muted center-text">
+      <p className="muted center-text study-count">
         {done} / {total} cleared
       </p>
 
