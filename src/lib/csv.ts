@@ -43,4 +43,6 @@ export function mapRows(
       back: (r[backCol] ?? '').trim().slice(0, 5000),
     }))
     .filter((c) => c.front && c.back)
+    // Anki's "Cards in Plain Text" export begins with the note type's own template as a placeholder card.
+    .filter((c) => !(c.front === 'Front' && c.back === 'Back'))
 }
