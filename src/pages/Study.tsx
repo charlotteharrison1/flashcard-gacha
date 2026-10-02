@@ -9,6 +9,7 @@ import Confetti from '../components/Confetti'
 import CardText from '../lib/cardText'
 import { SlotSymbol } from '../components/SlotSymbol'
 import { faceTextClass } from '../lib/cardDensity'
+import FitScroll from '../components/FitScroll'
 
 const SESSION_LIMIT = 100
 const COIN_POOF_MS = 800
@@ -211,7 +212,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   const suit = deckSuit(card.deck_id)
   const pct = total ? Math.round((done / total) * 100) : 0
   const faceClass = isRedSuit(suit) ? 'face red' : 'face'
-  const bothText = card.front + card.back // one size for both halves when they share a card
+  const fitKey = `${card.id}:${card.font}` // when this changes, the text is re-measured
 
   return (
     <>
@@ -245,20 +246,20 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
               <b>{revealed ? 'A' : 'Q'}</b>
               {suit}
             </span>
-            <div className="face-scroll">
-              <div className={faceTextClass(card.front, card.font, bothText)}>
+            <FitScroll watch={`${fitKey}:${revealed}`}>
+              <div className={faceTextClass(card.front, card.font)}>
                 <CardText text={card.front} userId={userId} />
               </div>
               {!revealed && <span className="face-hint">Click or press space to reveal the answer</span>}
               {revealed && (
                 <>
                   <hr className="combined-divider" />
-                  <div className={faceTextClass(card.back, card.font, bothText)}>
+                  <div className={faceTextClass(card.back, card.font)}>
                     <CardText text={card.back} userId={userId} />
                   </div>
                 </>
               )}
-            </div>
+            </FitScroll>
           </div>
         ) : (
           <div
@@ -278,11 +279,11 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
                   <b>Q</b>
                   {suit}
                 </span>
-                <div className="face-scroll">
+                <FitScroll watch={`${fitKey}:front`} comfortable>
                   <div className={faceTextClass(card.front, card.font)}>
                     <CardText text={card.front} userId={userId} />
                   </div>
-                </div>
+                </FitScroll>
                 {!revealed && <span className="face-hint">Click or press space to flip</span>}
               </div>
               <div className={`${faceClass} back`}>
@@ -294,11 +295,11 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
                   <b>A</b>
                   {suit}
                 </span>
-                <div className="face-scroll">
+                <FitScroll watch={`${fitKey}:back`} comfortable>
                   <div className={faceTextClass(card.back, card.font)}>
                     <CardText text={card.back} userId={userId} />
                   </div>
-                </div>
+                </FitScroll>
               </div>
             </div>
           </div>

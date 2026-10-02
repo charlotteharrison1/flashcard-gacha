@@ -769,9 +769,11 @@ body:has(.home-box) header { padding-bottom: 0; }
 }
 .face.back { transform: rotateY(180deg); }
 .face-text {
-  font-size: 1.7rem;
+  /* --base is the full size; FitScroll sets --fit (1 down to 0.5) on the scroll area to shrink long text to fit the card */
+  --base: 1.7rem;
+  font-size: calc(var(--base) * var(--fit, 1));
   font-weight: 700;
-  line-height: 1.25;
+  line-height: calc(1 + 0.25 * var(--fit, 1));
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   font-family: 'Atkinson Hyperlegible', system-ui, sans-serif;
@@ -806,10 +808,6 @@ body:has(.home-box) header { padding-bottom: 0; }
 .face-scroll::-webkit-scrollbar-thumb { background: var(--gold-d); border: 2px solid var(--card); }
 .face-scroll > .face-text { width: 100%; }
 
-/* Smaller type and tighter lines as a card gets longer (see lib/cardDensity.ts) */
-.face-text.dens-2 { font-size: 1.4rem; line-height: 1.22; }
-.face-text.dens-3 { font-size: 1.15rem; line-height: 1.15; }
-.face-text.dens-4 { font-size: 0.98rem; line-height: 1.1; }
 .face-text.has-list { text-align: left; }
 
 /* Bullet and numbered lines: a small square pixel bullet with a hanging indent */
@@ -1413,10 +1411,7 @@ body:has(.pull)::before { display: none; }
 
 @media (max-width: 520px) {
   .face { padding: 44px 40px; }
-  .face-text { font-size: 1.35rem; }
-  .face-text.dens-2 { font-size: 1.2rem; }
-  .face-text.dens-3 { font-size: 1.05rem; }
-  .face-text.dens-4 { font-size: 0.92rem; }
+  .face-text { --base: 1.35rem; }
   .logo { font-size: 2.6rem; }
   .earn-value { font-size: 2.4rem; }
   .slot { padding: 8px 10px 12px; }
