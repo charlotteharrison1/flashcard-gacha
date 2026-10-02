@@ -1597,20 +1597,17 @@ body:has(.pull)::before { display: none; }
 .hero-info { flex: 1 1 200px; }
 .study-filter-row + h3 { margin-top: 14px; }
 
-/* Cartoon gloves around the home box, all aimed at the sale sticker: one each side at the sticker's height
-   and one above it. They sit still and nudge toward it when you hover the sticker (or a glove).
+/* Cartoon gloves around the home box, all aimed at the sale sticker: two on the left (one above and one below
+   the sticker's middle, so each points at it) and one above it. They sit still and nudge toward it when you hover the sticker (or a glove).
    --sx / --sy (the sticker's centre in the box) are measured in Decks.tsx. Hidden on narrow screens. */
 .home-glove { position: absolute; z-index: 2; width: 45px; height: 45px; }
 .home-glove svg { display: block; width: 100%; height: 100%; }
-.glove-left { left: -42px; top: calc(var(--sy, 120px) - 22px); }
-.glove-right { right: -42px; top: calc(var(--sy, 120px) - 22px); }
-.glove-right svg { transform: scaleX(-1); }
+.glove-left { left: -42px; top: calc(var(--sy, 120px) - 22px - 36px); }
+.glove-left-low { top: calc(var(--sy, 120px) - 22px + 36px); }
 .glove-top { top: -42px; left: calc(var(--sx, 25%) - 22px); }
 .glove-top svg { transform: rotate(90deg); }
 .home-box:has(.sale:hover) .glove-left, .glove-left:hover { animation: glove-nudge-right 0.9s steps(2) infinite; }
-.home-box:has(.sale:hover) .glove-right, .glove-right:hover { animation: glove-nudge-left 0.9s steps(2) infinite; }
 .home-box:has(.sale:hover) .glove-top, .glove-top:hover { animation: glove-nudge-down 0.9s steps(2) infinite; }
 @keyframes glove-nudge-right { 50% { transform: translateX(6px); } }
-@keyframes glove-nudge-left { 50% { transform: translateX(-6px); } }
 @keyframes glove-nudge-down { 50% { transform: translateY(6px); } }
 @media (max-width: 760px) { .home-glove { display: none; } }
