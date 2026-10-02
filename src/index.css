@@ -751,6 +751,7 @@ body:has(.home-box) header { padding-bottom: 0; }
   grid-area: 1 / 1;
   position: relative;
   min-height: 260px;
+  max-height: min(72vh, 560px); /* big cards stop growing and scroll inside instead */
   padding: 40px 52px;
   display: flex;
   flex-direction: column;
@@ -785,7 +786,37 @@ body:has(.home-box) header { padding-bottom: 0; }
 /* Reserves room for a typical question+answer pair up front, so revealing doesn't visibly grow
    the card for ordinary content — it still grows beyond this for genuinely long text/images. */
 /* width: 100% so the card keeps its full width instead of shrinking to fit the text when the answer is revealed */
-.face.combined { width: 100%; justify-content: flex-start; gap: 12px; padding-top: 46px; min-height: 440px; }
+.face.combined { width: 100%; justify-content: flex-start; gap: 12px; padding-top: 46px; height: clamp(400px, 72vh, 540px); max-height: none; }
+.face.combined .face-scroll { flex: 1 1 auto; }
+
+/* The text area inside a card: it scrolls when the content is longer than the card allows. */
+.face-scroll {
+  width: 100%;
+  min-height: 0;
+  flex: 0 1 auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-d) transparent;
+}
+.face-scroll::-webkit-scrollbar { width: 8px; }
+.face-scroll::-webkit-scrollbar-thumb { background: var(--gold-d); border: 2px solid var(--card); }
+.face-scroll > .face-text { width: 100%; }
+
+/* Smaller type and tighter lines as a card gets longer (see lib/cardDensity.ts) */
+.face-text.dens-2 { font-size: 1.4rem; line-height: 1.22; }
+.face-text.dens-3 { font-size: 1.15rem; line-height: 1.15; }
+.face-text.dens-4 { font-size: 0.98rem; line-height: 1.1; }
+.face-text.has-list { text-align: left; }
+
+/* Bullet and numbered lines: a small square pixel bullet with a hanging indent */
+.md-li { display: flex; align-items: flex-start; gap: 0.5em; text-align: left; margin-left: calc(var(--lvl, 0) * 1.1em); }
+.md-bullet { flex: 0 0 auto; width: 0.38em; height: 0.38em; margin-top: 0.5em; background: currentColor; }
+.md-num { flex: 0 0 auto; min-width: 1.3em; font-variant-numeric: tabular-nums; }
+.md-li-text { min-width: 0; }
 .combined-divider { width: 70%; border: none; border-top: 2px dashed var(--panel-2); margin: 2px 0; }
 
 /* ---------- Preview: every card, question and answer, no flip or rating ---------- */
@@ -1383,6 +1414,9 @@ body:has(.pull)::before { display: none; }
 @media (max-width: 520px) {
   .face { padding: 44px 40px; }
   .face-text { font-size: 1.35rem; }
+  .face-text.dens-2 { font-size: 1.2rem; }
+  .face-text.dens-3 { font-size: 1.05rem; }
+  .face-text.dens-4 { font-size: 0.92rem; }
   .logo { font-size: 2.6rem; }
   .earn-value { font-size: 2.4rem; }
   .slot { padding: 8px 10px 12px; }

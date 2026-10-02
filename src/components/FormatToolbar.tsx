@@ -33,6 +33,14 @@ export default function FormatToolbar({ targetRef, value, setValue, children }: 
       >
         #
       </button>
+      <button
+        type="button"
+        className="fmt-btn"
+        title="Bullet list"
+        onClick={() => prefixLine(targetRef.current, value, setValue, '- ')}
+      >
+        •
+      </button>
       <button type="button" className="fmt-btn" title="Math" onClick={wrap('$', '$', 'x^2')}>
         ∑
       </button>

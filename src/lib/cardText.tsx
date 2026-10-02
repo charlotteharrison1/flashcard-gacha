@@ -7,11 +7,12 @@ import { resolveImagePath } from './storage'
  *   # / ## / ### heading     **bold**     *italic*     ==highlight==
  *   $inline math$            $$block math$$ or \[block math\]
  *   ![alt](url) inline picture, optionally sized with ![alt](url =300) (width in px)
+ *   - bullet / * bullet / • bullet, and 1. numbered lines (indent two spaces per level, up to three levels)
  * `url` is usually a short relative path like "cards/<id>.png" (see uploadImage/resolveImagePath),
  * resolved here against the viewing user's own id, rather than a full URL sitting in the editable
  * text. Older cards with a full URL still render fine.
  * It's a line-based mini-parser, not a full Markdown engine — flashcards are short, and that
- * keeps the syntax predictable (no nested lists, links, etc. to worry about).
+ * keeps the syntax predictable (lists are just indented lines, no links, etc. to worry about).
  */
 type Props = {
   text: string
@@ -35,12 +36,26 @@ export default function CardText({ text, userId, onImageResize }: Props) {
             </div>
           )
         }
+        const item = LIST_RE.exec(line)
+        if (item) {
+          const level = Math.min(3, Math.floor(item[1].replace(/\t/g, '  ').length / 2))
+          const numbered = /^\d/.test(item[2])
+          return (
+            <div key={i} className="md-li" style={{ '--lvl': level } as React.CSSProperties}>
+              {numbered ? <span className="md-num">{item[2]}</span> : <span className="md-bullet" aria-hidden="true" />}
+              <span className="md-li-text">{renderLine(item[3], userId, nextImgIndex, onImageResize)}</span>
+            </div>
+          )
+        }
         if (line.trim() === '') return <br key={i} />
         return <div key={i}>{renderLine(line, userId, nextImgIndex, onImageResize)}</div>
       })}
     </>
   )
 }
+
+// A bullet (-, * or •) or numbered (1. or 1)) line: indent, marker, then the text.
+const LIST_RE = /^([ \t]*)([-*•]|\d+[.)])[ \t]+(.*)$/
 
 // Tried in order at each position: an image (with an optional "=width" size), display math
 // ($$ or \[ \]), then inline math ($...$). The image target is either a full http(s)/data URL

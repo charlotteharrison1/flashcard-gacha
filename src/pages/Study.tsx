@@ -8,6 +8,7 @@ import type { Card, Deck, Rating, ReviewResult } from '../lib/types'
 import Confetti from '../components/Confetti'
 import CardText from '../lib/cardText'
 import { SlotSymbol } from '../components/SlotSymbol'
+import { faceTextClass } from '../lib/cardDensity'
 
 const SESSION_LIMIT = 100
 const COIN_POOF_MS = 800
@@ -210,7 +211,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   const suit = deckSuit(card.deck_id)
   const pct = total ? Math.round((done / total) * 100) : 0
   const faceClass = isRedSuit(suit) ? 'face red' : 'face'
-  const fontClass = `font-${card.font}`
+  const bothText = card.front + card.back // one size for both halves when they share a card
 
   return (
     <>
@@ -244,18 +245,20 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
               <b>{revealed ? 'A' : 'Q'}</b>
               {suit}
             </span>
-            <div className={`face-text ${fontClass}`}>
-              <CardText text={card.front} userId={userId} />
+            <div className="face-scroll">
+              <div className={faceTextClass(card.front, card.font, bothText)}>
+                <CardText text={card.front} userId={userId} />
+              </div>
+              {!revealed && <span className="face-hint">Click or press space to reveal the answer</span>}
+              {revealed && (
+                <>
+                  <hr className="combined-divider" />
+                  <div className={faceTextClass(card.back, card.font, bothText)}>
+                    <CardText text={card.back} userId={userId} />
+                  </div>
+                </>
+              )}
             </div>
-            {!revealed && <span className="face-hint">Click or press space to reveal the answer</span>}
-            {revealed && (
-              <>
-                <hr className="combined-divider" />
-                <div className={`face-text ${fontClass}`}>
-                  <CardText text={card.back} userId={userId} />
-                </div>
-              </>
-            )}
           </div>
         ) : (
           <div
@@ -275,8 +278,10 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
                   <b>Q</b>
                   {suit}
                 </span>
-                <div className={`face-text ${fontClass}`}>
-                  <CardText text={card.front} userId={userId} />
+                <div className="face-scroll">
+                  <div className={faceTextClass(card.front, card.font)}>
+                    <CardText text={card.front} userId={userId} />
+                  </div>
                 </div>
                 {!revealed && <span className="face-hint">Click or press space to flip</span>}
               </div>
@@ -289,8 +294,10 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
                   <b>A</b>
                   {suit}
                 </span>
-                <div className={`face-text ${fontClass}`}>
-                  <CardText text={card.back} userId={userId} />
+                <div className="face-scroll">
+                  <div className={faceTextClass(card.back, card.font)}>
+                    <CardText text={card.back} userId={userId} />
+                  </div>
                 </div>
               </div>
             </div>
