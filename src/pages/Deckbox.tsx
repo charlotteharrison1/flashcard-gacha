@@ -201,7 +201,7 @@ export default function Deckbox() {
         </ul>
       )}
 
-      {cards.length > 0 && <StudyFilter basePath={`/boxes/${id}/study`} cards={cards} />}
+      {cards.some((c) => c.starred || c.tags.length > 0) && <StudyFilter compact basePath={`/boxes/${id}/study`} cards={cards} />}
 
       {cards.length > 0 && (
         <section className="panel">
@@ -259,8 +259,8 @@ export default function Deckbox() {
         </section>
       )}
 
-      <section className="panel">
-        <h3>Add a deck to this box</h3>
+      <details className="panel more-options">
+        <summary>Add a deck to this box</summary>
         {loose.length === 0 ? (
           <p className="muted">Every deck is already in a box. Make a new deck on the home screen first.</p>
         ) : (
@@ -278,7 +278,7 @@ export default function Deckbox() {
             </button>
           </div>
         )}
-      </section>
+      </details>
     </>
   )
 }

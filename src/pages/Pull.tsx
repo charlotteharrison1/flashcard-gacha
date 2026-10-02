@@ -30,13 +30,14 @@ export default function Pull() {
   const spinCount = useRef(0)
   const stageRef = useRef<HTMLDivElement>(null)
 
-  // The page background is a burst of lines pointing at the machine; tell the CSS how far down the page the machine is.
+  // The page background is a burst of lines pointing at the machine; tell the CSS where on the page the machine is.
   useLayoutEffect(() => {
     const stage = stageRef.current
     if (!stage) return
     const place = () => {
       const r = stage.getBoundingClientRect()
       document.body.style.setProperty('--burst-y', `${Math.round(r.top + window.scrollY + r.height / 2)}px`)
+      document.body.style.setProperty('--burst-x', `${Math.round(r.left + window.scrollX + r.width / 2)}px`)
     }
     place()
     window.addEventListener('resize', place)
@@ -46,6 +47,7 @@ export default function Pull() {
       window.removeEventListener('resize', place)
       resizeObserver.disconnect()
       document.body.style.removeProperty('--burst-y')
+      document.body.style.removeProperty('--burst-x')
     }
   }, [])
 
@@ -137,7 +139,8 @@ export default function Pull() {
   const broke = balance !== null && balance < PULL_COST
 
   return (
-    <div className="pull">
+    <div className="pull pull-grid">
+      <div className="pull-main">
       <Link to="/" className="button spend keep-earning">
         <span className="keep-arrow">
           <SlotSymbol id="arrow" />
@@ -204,6 +207,9 @@ export default function Pull() {
         {armed && <span className="gold-text">{plural(remaining, 'pull')} loaded. Drag the lever down!</span>}
       </div>
 
+      </div>
+
+      <div className="pull-side">
       <section className="panel winnings-panel">
         <h3>
           <SlotSymbol id="star" />
@@ -230,6 +236,7 @@ export default function Pull() {
           </div>
         </div>
       </section>
+      </div>
     </div>
   )
 }

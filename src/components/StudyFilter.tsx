@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { filterParam, matchesFilter, tagCounts, type CardFilter, type Taggable } from '../lib/cardMeta'
 
 /** A panel to study just the starred cards, the tagged ones, or one tag, optionally including cards that aren't due. */
-export default function StudyFilter({ basePath, cards }: { basePath: string; cards: Taggable[] }) {
+export default function StudyFilter({ basePath, cards, compact = false }: { basePath: string; cards: Taggable[]; compact?: boolean }) {
   const [filter, setFilter] = useState<CardFilter>('starred')
   const [includeNotDue, setIncludeNotDue] = useState(true)
   const tags = tagCounts(cards)
@@ -16,9 +16,7 @@ export default function StudyFilter({ basePath, cards }: { basePath: string; car
   if (includeNotDue) params.set('all', '1')
   const query = params.toString()
 
-  return (
-    <section className="panel">
-      <h3>Study starred or tagged cards</h3>
+  const controls = (
       <div className="row">
         <label>
           Cards{' '}
@@ -44,6 +42,17 @@ export default function StudyFilter({ basePath, cards }: { basePath: string; car
           <span className="muted">No matching cards</span>
         )}
       </div>
+  )
+
+  return compact ? (
+    <div className="study-filter-row">
+      <strong>Study</strong>
+      {controls}
+    </div>
+  ) : (
+    <section className="panel">
+      <h3>Study starred or tagged cards</h3>
+      {controls}
     </section>
   )
 }

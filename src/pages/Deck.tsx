@@ -189,8 +189,8 @@ export default function Deck() {
 
       {customizing && <DeckCustomize deckId={id} color={deck.color} iconUrl={deck.icon_url} onSaved={load} />}
 
-      <section className="panel">
-        <h3>Add a card</h3>
+      <details className="panel more-options add-card" open={cards.length === 0 ? true : undefined}>
+        <summary>+ Add a card</summary>
         <form onSubmit={add} className="stack">
           <div className="field-block">
             <FormatToolbar targetRef={frontRef} value={front} setValue={setFront}>
@@ -240,72 +240,25 @@ export default function Deck() {
               cursor is, and once it shows up below you can drag its corner to resize it
             </p>
           </details>
-          <label className="file-field">
-            <span>Font</span>
-            <select value={font} onChange={(e) => setFont(e.target.value as CardFont)}>
-              {FONT_OPTIONS.map((f) => (
-                <option key={f.id} value={f.id}>
-                  {f.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button className="gold" disabled={adding}>
-            {adding ? 'Adding…' : 'Add card'}
-          </button>
+          <div className="row add-row">
+            <label className="file-field">
+              <span>Font</span>
+              <select value={font} onChange={(e) => setFont(e.target.value as CardFont)}>
+                {FONT_OPTIONS.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button className="gold" disabled={adding}>
+              {adding ? 'Adding…' : 'Add card'}
+            </button>
+          </div>
         </form>
-      </section>
+      </details>
 
-      <section className="panel">
-        <h3>Study options</h3>
-        <label className="row nowrap">
-          <input
-            type="checkbox"
-            checked={deck.show_both}
-            onChange={(e) => updateStudySetting({ show_both: e.target.checked })}
-          />
-          Keep the answer on screen with the question (no flip)
-        </label>
-        <label className="row nowrap">
-          <input
-            type="checkbox"
-            checked={deck.float_anim}
-            onChange={(e) => updateStudySetting({ float_anim: e.target.checked })}
-          />
-          Floating animation on the study card
-        </label>
-        <label className="file-field">
-          <span>Card shape</span>
-          <select
-            value={deck.orientation ?? 'horizontal'}
-            onChange={(e) => updateStudySetting({ orientation: e.target.value as 'horizontal' | 'vertical' })}
-          >
-            <option value="horizontal">Horizontal (wide)</option>
-            <option value="vertical">Vertical (tall)</option>
-          </select>
-        </label>
-      </section>
-
-      <section className="panel">
-        <h3>Card font</h3>
-        <div className="row">
-          <select value={bulkFont} onChange={(e) => setBulkFont(e.target.value as CardFont)} aria-label="Font for every card in this deck">
-            {FONT_OPTIONS.map((f) => (
-              <option key={f.id} value={f.id}>
-                {f.label}
-              </option>
-            ))}
-          </select>
-          <button className="secondary" onClick={applyFontToAll} disabled={cards.length === 0}>
-            Apply to all {cards.length} cards
-          </button>
-        </div>
-        {fontNote && <p className="notice">{fontNote}</p>}
-      </section>
-
-      <CsvImport deckId={id} onImported={load} font={settings.default_font} />
-
-      {cards.length > 0 && <StudyFilter basePath={`/decks/${id}/study`} cards={cards} />}
+      {cards.some((c) => c.starred || c.tags.length > 0) && <StudyFilter compact basePath={`/decks/${id}/study`} cards={cards} />}
 
       <h3>Cards ({cards.length})</h3>
       {cards.length === 0 ? (
@@ -381,6 +334,59 @@ export default function Deck() {
           })()}
         </>
       )}
+
+      <details className="panel more-options">
+        <summary>Deck options: study settings, card font, import</summary>
+        <section className="panel">
+          <h3>Study options</h3>
+          <label className="row nowrap">
+            <input
+              type="checkbox"
+              checked={deck.show_both}
+              onChange={(e) => updateStudySetting({ show_both: e.target.checked })}
+            />
+            Keep the answer on screen with the question (no flip)
+          </label>
+          <label className="row nowrap">
+            <input
+              type="checkbox"
+              checked={deck.float_anim}
+              onChange={(e) => updateStudySetting({ float_anim: e.target.checked })}
+            />
+            Floating animation on the study card
+          </label>
+          <label className="file-field">
+            <span>Card shape</span>
+            <select
+              value={deck.orientation ?? 'horizontal'}
+              onChange={(e) => updateStudySetting({ orientation: e.target.value as 'horizontal' | 'vertical' })}
+            >
+              <option value="horizontal">Horizontal (wide)</option>
+              <option value="vertical">Vertical (tall)</option>
+            </select>
+          </label>
+        </section>
+
+        <section className="panel">
+          <h3>Card font</h3>
+          <div className="row">
+            <select value={bulkFont} onChange={(e) => setBulkFont(e.target.value as CardFont)} aria-label="Font for every card in this deck">
+              {FONT_OPTIONS.map((f) => (
+                <option key={f.id} value={f.id}>
+                  {f.label}
+                </option>
+              ))}
+            </select>
+            <button className="secondary" onClick={applyFontToAll} disabled={cards.length === 0}>
+              Apply to all {cards.length} cards
+            </button>
+          </div>
+          {fontNote && <p className="notice">{fontNote}</p>}
+        </section>
+
+        <CsvImport deckId={id} onImported={load} font={settings.default_font} />
+
+      </details>
     </>
   )
 }
