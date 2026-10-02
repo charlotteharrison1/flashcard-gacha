@@ -53,6 +53,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   const [decks, setDecks] = useState<Record<string, DeckSettings> | null>(null) // per-deck display settings
   const [queue, setQueue] = useState<Card[] | null>(null)
   const [total, setTotal] = useState(0)
+  const [cardCount, setCardCount] = useState<number | null>(null) // every card in the deck or box, due or not
   const [revealed, setRevealed] = useState(false)
   const [done, setDone] = useState(0)
   const [earned, setEarned] = useState(0)
@@ -75,7 +76,10 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
       const ids = d.data.map((x) => x.id)
 
       let cards: Card[] = []
+      let cardTotal = 0
       if (ids.length > 0) {
+        const counted = await supabase.from('cards').select('id', { count: 'exact', head: true }).in('deck_id', ids)
+        cardTotal = counted.count ?? 0
         let cardsQuery = supabase.from('cards').select('*').in('deck_id', ids).order('due_at').limit(SESSION_LIMIT)
         if (!studyAll) cardsQuery = cardsQuery.lte('due_at', new Date().toISOString())
         if (filter === 'starred') cardsQuery = cardsQuery.eq('starred', true)
@@ -91,6 +95,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
       setDecks(Object.fromEntries(d.data.map((x) => [x.id, { show_both: x.show_both, float_anim: x.float_anim, orientation: x.orientation ?? 'horizontal' }])))
       setQueue(cards)
       setTotal(cards.length)
+      setCardCount(cardTotal)
     }
     load()
     return () => {
@@ -246,9 +251,9 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
           <p className="muted">
             {filter !== 'all'
               ? `No ${filterLabel(filter)} ${studyAll ? 'found' : 'are due'} in this ${scope === 'box' ? 'deckbox' : 'deck'}.`
-              : studyAll
-                ? `This ${scope === 'box' ? 'deckbox' : 'deck'} has no cards yet.`
-                : `No cards are due in this ${scope === 'box' ? 'deckbox' : 'deck'} right now.`}
+              : cardCount === 0
+                ? `This ${scope === 'box' ? 'deckbox' : 'deck'} has no cards!`
+                : "You're done for the day!"}
           </p>
         )}
         <div className="row center-row">
