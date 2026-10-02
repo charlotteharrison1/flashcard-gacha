@@ -123,7 +123,7 @@ export default function Lever({ armed, onPull }: Props) {
   const exact = useRef(LEVER_REST)
   const frame = useRef(0)
   const pivotRef = useRef<HTMLDivElement>(null)
-  const drag = useRef({ active: false, pulled: false })
+  const drag = useRef({ active: false, pulled: false, past: false }) // `past`: dragged far enough that letting go fires the pull
   const timers = useRef<number[]>([])
 
   useEffect(() => {
@@ -172,24 +172,33 @@ export default function Lever({ armed, onPull }: Props) {
   function onDown(e: PointerEvent<HTMLDivElement>) {
     if (!armed) return denied()
     e.currentTarget.setPointerCapture(e.pointerId)
-    drag.current = { active: true, pulled: false }
+    drag.current = { active: true, pulled: false, past: false }
   }
 
   function onMove(e: PointerEvent<HTMLDivElement>) {
-    if (!drag.current.active || drag.current.pulled || !pivotRef.current) return
+    if (!drag.current.active || !pivotRef.current) return
     const p = pivotRef.current.getBoundingClientRect()
     const angle = (Math.atan2(e.clientY - (p.top + p.height / 2), e.clientX - (p.left + p.width / 2)) * 180) / Math.PI
     // Pointer wandered back over the cabinet: treat the lever as let go.
     const clamped = Math.abs(angle) > 100 ? LEVER_REST : Math.max(LEVER_REST, Math.min(LEVER_END, angle))
     move(clamped)
-    if (clamped >= LEVER_PULL_AT) pull()
+    // The pull only fires when the lever is let go; drag back up before letting go to cancel it.
+    drag.current.past = clamped >= LEVER_PULL_AT
   }
 
   function onUp() {
     if (!drag.current.active) return
-    const pulled = drag.current.pulled
+    const fire = drag.current.past
     drag.current.active = false
-    if (!pulled) snapBack()
+    if (fire) pull()
+    else snapBack()
+  }
+
+  /** The pointer was interrupted (not released): never fire. */
+  function onCancel() {
+    if (!drag.current.active) return
+    drag.current.active = false
+    snapBack()
   }
 
   function onKey(e: KeyboardEvent<HTMLDivElement>) {
@@ -219,7 +228,7 @@ export default function Lever({ armed, onPull }: Props) {
         onPointerDown={onDown}
         onPointerMove={onMove}
         onPointerUp={onUp}
-        onPointerCancel={onUp}
+        onPointerCancel={onCancel}
         onKeyDown={onKey}
       >
         <SlotSymbol id="ball" />
