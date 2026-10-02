@@ -963,12 +963,9 @@ body:has(.pull) {
 body:has(.pull)::before { display: none; }
 
 .pull { overflow-x: clip; }
-/* Two columns on a wide screen: the machine and its controls, and the winnings beside them */
-.pull-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px); gap: 24px; align-items: start; }
+/* One centred column: the machine stays in the middle, with the compact winnings box under it */
 .pull-main { display: flex; flex-direction: column; align-items: center; min-width: 0; }
-.pull-main > .machine { align-self: center; }
-.pull-side { min-width: 0; padding-top: 4px; }
-@media (max-width: 899px) { .pull-grid { grid-template-columns: minmax(0, 1fr); } }
+.pull-side { max-width: 560px; margin: 4px auto 0; min-width: 0; }
 .pull h2 { font-size: 1.25rem; margin: 4px 0 8px; }
 .pull .panel { margin: 16px 0; padding: 12px; }
 .pull .panel > h3 { font-size: 1rem; margin-bottom: 8px; }
@@ -1544,17 +1541,36 @@ body:has(.pull)::before { display: none; }
 .list li.edit-li { padding: 0; background: none; border: none; box-shadow: none; }
 .edit-li .card-editor { margin: 0; max-width: none; }
 
-/* Winnings in the side column: one row per tile */
-.pull-side .winnings-panel { margin: 0; }
-.pull-side .winnings { flex-direction: column; }
-.pull-side .win { flex-direction: row; justify-content: flex-start; gap: 14px; padding: 6px 14px; }
-.pull-side .win .badge, .pull-side .win .win-icon { flex: 0 0 auto; width: 45px; height: 45px; }
-.pull-side .win-label { order: 2; flex: 1; text-align: left; font-size: 0.75rem; }
-.pull-side .win-count { order: 3; }
+/* Winnings: compact so the whole Pull page fits on screen */
+.pull-side .winnings-panel { margin: 0; padding: 14px 10px 12px; }
+.pull-side .winnings-panel > h3 { margin-bottom: 6px; }
+.pull-side .win { padding: 4px 4px 4px; gap: 2px; }
+.pull-side .win .badge { width: 30px; height: 30px; }
+.pull-side .win .win-icon { width: 32px; height: 32px; }
+.pull-side .win-count { font-size: 1.15rem; }
 
 /* Short windows (a laptop with a toolbar or two): drop to a smaller pixel size on the machine so everything still fits */
 @media (max-height: 759px) {
-  .machine { --px: 3px; }
+  .machine { --px: 3px; margin-top: 6px; }
+  /* tighten the rest of the Pull page so it fits a laptop window */
+  .keep-earning { margin: 2px auto 6px; font-size: 0.95rem; }
+  .earn-panel { margin: 4px auto 8px; padding-top: 10px; padding-bottom: 10px; }
+  .earn-panel .earnings-box.compact .coin-pile { width: min(130px, 45vw); }
+  .earn-panel .earnings-box.compact .earn-value { font-size: 1.5rem; }
+  .pull-actions { margin-top: 4px; }
+  .pull-actions .spend.sm { padding: 5px 14px; font-size: 0.85rem; }
+  .slot-result { min-height: 22px; margin-top: 4px; font-size: 0.85rem; }
+  .pull-side { margin-top: 0; }
+  .pull-side .winnings-panel { padding: 12px 8px 8px; }
+  .pull-side .winnings-panel > h3 { margin-bottom: 4px; font-size: 0.85rem; }
+  .pull-side .win { padding: 2px 4px; }
+  /* a shorter study card, so the rating buttons stay on screen */
+  .face { max-height: min(44vh, 360px); min-height: 170px; }
+  .face.combined { height: clamp(240px, 42vh, 340px); }
+  .study { gap: 10px; }
+}
+@media (max-height: 690px) {
+  .pull-side .win .badge, .pull-side .win .win-icon { display: none; }
 }
 
 /* Deck page: the less-used options are tucked into a collapsed section so the card list stays in view */

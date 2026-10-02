@@ -139,7 +139,7 @@ export default function Pull() {
   const broke = balance !== null && balance < PULL_COST
 
   return (
-    <div className="pull pull-grid">
+    <div className="pull">
       <div className="pull-main">
       <Link to="/" className="button spend keep-earning">
         <span className="keep-arrow">
