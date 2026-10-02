@@ -79,7 +79,7 @@ export default function CsvImport({ deckId, onImported }: { deckId: string; onIm
           <li>
             Anki plain-text exports (Export → Notes in Plain Text, or Cards in Plain Text) work directly: <code>#</code> metadata
             lines are ignored, and <code>#html:true</code> fields are converted to this app's formatting instead of showing raw tags.
-            Pictures are not included in a text export, so cards whose side is only a picture are skipped.
+            Pictures are not included in a text export, so a picture is imported as its file name.
           </li>
         </ul>
         <pre>{`front,back\nbonjour,hello\n"Capital of France, city",Paris`}</pre>
@@ -118,9 +118,7 @@ export default function CsvImport({ deckId, onImported }: { deckId: string; onIm
           </p>
           {rows.length - (hasHeader ? 1 : 0) - cards.length > 0 && (
             <p className="muted">
-              {rows.length - (hasHeader ? 1 : 0) - cards.length} rows will be skipped because the front or back is blank. In an Anki
-              export that is usually an answer that is only a picture: a text file only holds the picture's file name, so it can't be
-              imported.
+              {rows.length - (hasHeader ? 1 : 0) - cards.length} rows will be skipped because the front or back is blank.
             </p>
           )}
           <ul className="list">

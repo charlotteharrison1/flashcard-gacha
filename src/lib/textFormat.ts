@@ -9,6 +9,8 @@ export function htmlToText(s: string): string {
     .replace(/<(script|style)[\s\S]*?<\/\1>/gi, '')
     .replace(/<link[^>]*>/gi, '')
     .replace(/<span[^>]*class=["']?label["']?[^>]*>[\s\S]*?<\/span>/gi, '')
+    // A text export holds only a picture's file name, not the picture, so keep the name as text.
+    .replace(/<img\b[^>]*?\bsrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))[^>]*>/gi, (_m, a, b, c) => a ?? b ?? c ?? '')
     .replace(/<li[^>]*>/gi, '- ')
     .replace(/<\/(li|ul|ol)>/gi, '\n')
     .replace(/<br\s*\/?>/gi, '\n')
@@ -18,7 +20,7 @@ export function htmlToText(s: string): string {
     .replace(/<\/(b|strong)>/gi, '**')
     .replace(/<(i|em)>/gi, '*')
     .replace(/<\/(i|em)>/gi, '*')
-    .replace(/<[^>]+>/g, '') // strip anything else (spans, images we can't resolve here, etc.)
+    .replace(/<[^>]+>/g, '') // strip anything else (spans, etc.)
     .replace(/&nbsp;/gi, ' ')
     .replace(/&amp;/gi, '&')
     .replace(/&lt;/gi, '<')
