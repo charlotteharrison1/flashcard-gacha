@@ -22,9 +22,11 @@ const VIEW_TOP = 36
 const VIEW_H = 92
 const BASE_Y = 118 // top of each stack's bottom outline row
 
+/** One coin per earning at first (1 earning = 1 coin), then the pile grows more slowly so it stops around 95 earnings. */
 function coinCount(balance: number | null) {
   if (!balance || balance <= 0) return 0
-  return Math.min(CAP, 1 + Math.floor(Math.sqrt(balance) * 1.4))
+  if (balance <= 6) return balance
+  return Math.min(CAP, 6 + Math.floor(Math.sqrt(balance - 6) * 1.6))
 }
 
 const stackX = (s: number) => START_X + s * (COIN_W + STACK_GAP)

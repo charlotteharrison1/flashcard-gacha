@@ -21,7 +21,6 @@ export default function Pull() {
   const [outcome, setOutcome] = useState<Result | null>(null)
   const [remaining, setRemaining] = useState(0) // loaded pulls the lever hasn't played yet
   const [inserting, setInserting] = useState(1)
-  const [nudge, setNudge] = useState(0)
   const [bigSpin, setBigSpin] = useState<BigSpinItem[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const queue = useRef<Pending[]>([]) // pulls paid for and rolled, waiting for the lever
@@ -118,7 +117,6 @@ export default function Pull() {
   }
 
   // Lever tried without a coin: wiggle the coin slot.
-  const blocked = useCallback(() => setNudge((n) => n + 1), [])
 
   // Winnings and the result banner update only once the reels have actually stopped.
   const handleLanded = useCallback((id: number) => {
@@ -135,7 +133,6 @@ export default function Pull() {
     setPhase('done')
   }, [])
 
-  const noCoinHint = nudge > 0 && idleish && remaining === 0
   const broke = balance !== null && balance < PULL_COST
 
   return (
@@ -164,13 +161,24 @@ export default function Pull() {
           armed={armed}
           remaining={remaining}
           inserting={inserting}
-          nudge={nudge}
           canInsert={canLoad(1)}
           onLanded={handleLanded}
           onCoin={() => loadCoins(1)}
           onPull={pullLever}
-          onBlocked={blocked}
         />
+      </div>
+
+      <div className="pull-actions">
+        <div className="buttons">
+          <button className="spend sm" onClick={() => loadCoins(1)} disabled={!canLoad(1)}>
+            Insert 1 coin
+          </button>
+          <button className="spend sm" onClick={() => loadCoins(BULK_PULLS)} disabled={!canLoad(BULK_PULLS)}>
+            Insert {BULK_PULLS} coins
+          </button>
+        </div>
+        {broke && <p className="muted">Out of coins. Earn more by studying.</p>}
+        {error && <p className="error">{error}</p>}
       </div>
 
       <div className="slot-result" aria-live="polite">
@@ -190,20 +198,6 @@ export default function Pull() {
         )}
         {phase === 'done' && outcome === 'nothing' && <span className="muted">Nothing this time.</span>}
         {armed && <span className="gold-text">{plural(remaining, 'pull')} loaded. Drag the lever down!</span>}
-        {noCoinHint && <span className="muted">Insert a coin first.</span>}
-      </div>
-
-      <div className="pull-actions">
-        <div className="buttons">
-          <button className="spend sm" onClick={() => loadCoins(1)} disabled={!canLoad(1)}>
-            Insert 1 coin
-          </button>
-          <button className="spend sm" onClick={() => loadCoins(BULK_PULLS)} disabled={!canLoad(BULK_PULLS)}>
-            Insert {BULK_PULLS} coins
-          </button>
-        </div>
-        {broke && <p className="muted">Out of coins. Earn more by studying.</p>}
-        {error && <p className="error">{error}</p>}
       </div>
 
       <section className="panel">

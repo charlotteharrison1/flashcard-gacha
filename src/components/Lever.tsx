@@ -23,8 +23,6 @@ const GOLD = '#ffc233'
 const GOLD_D = '#b98410'
 const GOLD_L = '#fff3b8'
 const STEEL = '#b9c4d0'
-const STEEL_L = '#f2f6fa'
-const STEEL_D = '#7f8b9a'
 
 type Raster = { paths: { color: string; d: string }[]; ex: number; ey: number }
 
@@ -88,11 +86,9 @@ function raster(angle: number): Raster {
   const brush = (r: number, color: string, ox = 0, oy = 0) => {
     for (const [px, py] of pts) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) put(px + dx + ox, py + dy + oy, color)
   }
-  brush(2, SHADOW, 2, 2)
-  brush(2, OUTLINE)
-  brush(1, STEEL)
-  for (const [px, py] of pts) put(px - 1, py - 1, STEEL_L)
-  for (const [px, py] of pts) put(px + 1, py + 1, STEEL_D)
+  brush(1, SHADOW, 2, 2)
+  brush(1, OUTLINE)
+  brush(0, STEEL)
 
   // Hub cap over the pivot: a small pixel disc.
   for (let dy = -3; dy <= 3; dy++) {
@@ -115,15 +111,13 @@ function raster(angle: number): Raster {
 
 type Props = {
   armed: boolean
-  phase: SlotPhase
+  phase?: SlotPhase
   /** The pull fires. */
   onPull: () => void
-  /** The lever was tried without a coin loaded. */
-  onBlocked: () => void
 }
 
 /** The pull lever: drag the knob down around the pivot (or press Enter/Space/Down) to fire a loaded pull. */
-export default function Lever({ armed, phase, onPull, onBlocked }: Props) {
+export default function Lever({ armed, onPull }: Props) {
   const [shown, setShown] = useState(LEVER_REST) // the angle currently drawn, in whole STEPs
   const exact = useRef(LEVER_REST)
   const frame = useRef(0)
@@ -169,8 +163,8 @@ export default function Lever({ armed, phase, onPull, onBlocked }: Props) {
   }
 
   function denied() {
-    if (phase === 'idle' || phase === 'done') onBlocked() // no wiggle while reels are running
-    move(LEVER_REST + 14, 90, ease.out) // a dead "clunk": the lever won't go down without a coin
+    // The lever won't go down without a coin; that resistance is the only feedback.
+    move(LEVER_REST + 14, 90, ease.out) // a dead "clunk"
     later(snapBack, 140)
   }
 

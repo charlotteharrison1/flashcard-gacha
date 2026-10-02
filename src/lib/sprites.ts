@@ -8,7 +8,7 @@ import type { SymbolId } from './slots'
 export type Sprite = { size: number; paths: { color: string; d: string }[] }
 
 /** Everything drawable: the slot symbols, the lever knob, the four card suits (home page frame corners) and a deckbox. */
-export type SpriteId = SymbolId | 'ball' | 'spade' | 'heart' | 'club' | 'suitDiamond' | 'deckbox'
+export type SpriteId = SymbolId | 'ball' | 'coin' | 'spade' | 'heart' | 'club' | 'suitDiamond' | 'deckbox'
 
 const OUTLINE = '#0a1218'
 
@@ -39,6 +39,7 @@ const SHADE: Record<SpriteId, Record<string, string>> = {
   club: {},
   suitDiamond: { D: '#b3231a' },
   deckbox: { D: '#b85c0a' },
+  coin: { D: '#b98410' },
 }
 
 // Built from glyphs so the letters stay lined up.
@@ -206,6 +207,17 @@ const FILLS: Record<SpriteId, string[]> = {
     '....RRD....',
     '.....D.....',
     '...........',
+  ],
+  // A gold coin seen face-on (8x8): the same coin as the slot machine's
+  coin: [
+    '........',
+    '..YYYY..',
+    '.YWWYYY.',
+    '.YWWYYY.',
+    '.YYYYYY.',
+    '.YYDYYY.',
+    '..YYYY..',
+    '........',
   ],
   // A card deckbox (13x13): orange lid, blue body, gold clasp
   deckbox: [

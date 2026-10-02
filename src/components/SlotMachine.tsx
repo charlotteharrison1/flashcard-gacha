@@ -75,13 +75,10 @@ type Props = {
   remaining: number
   /** How many coins are being inserted right now (drives the coin-drop animation). */
   inserting: number
-  /** Bumps each time the player tries the lever without a coin, to wiggle the coin slot. */
-  nudge: number
   canInsert: boolean
   onLanded: (id: number) => void
   onCoin: () => void
   onPull: () => void
-  onBlocked: () => void
 }
 
 export default function SlotMachine({
@@ -91,12 +88,10 @@ export default function SlotMachine({
   armed,
   remaining,
   inserting,
-  nudge,
   canInsert,
   onLanded,
   onCoin,
   onPull,
-  onBlocked,
 }: Props) {
   const stripRefs = useRef<(HTMLDivElement | null)[]>([])
   const tension = !!spin && !spin.fast && spin.final[0] === spin.final[1]
@@ -185,7 +180,7 @@ export default function SlotMachine({
           ))}
         </div>
 
-        <div className={`coin-panel${nudge ? ' nudge' : ''}`} key={nudge}>
+        <div className="coin-panel">
           <button
             className={`coin-slot${armed ? ' ready' : ''}${phase === 'loading' || phase === 'spinning' ? ' busy' : ''}`}
             onClick={onCoin}
@@ -193,22 +188,23 @@ export default function SlotMachine({
             aria-label="Insert 1 coin to load a pull"
           >
             <span className="coin-lamp" aria-hidden="true" />
-            <span className="coin-slit" aria-hidden="true" />
+            <span className="coin-slit" aria-hidden="true">
+              {/* Coins fall from above and are clipped at the slot's top edge, so they drop into it */}
+              <span className="coin-chute">
+                {phase === 'loading' &&
+                  Array.from({ length: drops }, (_, i) => (
+                    <span key={i} className="coin-drop" style={{ animationDelay: `${i * 90}ms` }}>
+                      <SlotSymbol id="coin" />
+                    </span>
+                  ))}
+              </span>
+            </span>
             <span className="coin-label">{coinLabel}</span>
-            {phase === 'loading' &&
-              Array.from({ length: drops }, (_, i) => (
-                <span
-                  key={i}
-                  className="coin-drop"
-                  aria-hidden="true"
-                  style={{ left: `calc(50% + ${(i - (drops - 1) / 2) * 16}px)`, animationDelay: `${i * 90}ms` }}
-                />
-              ))}
           </button>
         </div>
       </div>
 
-      <Lever armed={armed} phase={phase} onPull={onPull} onBlocked={onBlocked} />
+      <Lever armed={armed} phase={phase} onPull={onPull} />
     </div>
   )
 }

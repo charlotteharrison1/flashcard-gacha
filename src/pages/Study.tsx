@@ -7,6 +7,7 @@ import { useAuth } from '../lib/auth'
 import type { Card, Deck, Rating, ReviewResult } from '../lib/types'
 import Confetti from '../components/Confetti'
 import CardText from '../lib/cardText'
+import { SlotSymbol } from '../components/SlotSymbol'
 
 const SESSION_LIMIT = 100
 const COIN_POOF_MS = 800
@@ -328,7 +329,9 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
 
       {poofs.map((f) => (
         <div key={f.id} className="coin-poof" style={{ left: f.x, top: f.y }} aria-hidden="true">
-          <span className="poof-coin" />
+          <span className="poof-coin">
+            <SlotSymbol id="coin" />
+          </span>
           {SPARK_ANGLES.map((a) => (
             <i key={a} className="poof-spark" style={{ '--a': `${a}deg` } as CSSProperties} />
           ))}

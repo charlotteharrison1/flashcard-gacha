@@ -292,10 +292,11 @@ button.danger { color: var(--red); }
   border-image: var(--frame) 3 / 9px stretch;
   filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.3));
 }
-.earn-panel { max-width: 100%; }
-.earn-panel .earnings-box.compact { padding: 0; gap: 14px; flex-wrap: wrap; justify-content: center; }
-.earn-panel .earnings-box.compact .coin-pile { width: min(210px, 55vw); }
-.earn-panel .earnings-box.compact .earn-value { font-size: 2.1rem; }
+.earn-panel { width: min(100%, 326px); max-width: 100%; }
+.earn-panel .earnings-box.compact { padding: 0; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.earn-panel .earnings-box.compact .coin-pile { width: min(150px, 45vw); }
+.earn-panel .earn-empty { max-width: 110px; font-size: 0.75rem; }
+.earn-panel .earnings-box.compact .earn-value { font-size: 1.8rem; }
 .earn-panel .earnings-box.compact .earn-label { font-size: 0.7rem; }
 .earnings-box.compact .earn-value { font-size: 2.2rem; }
 
@@ -980,16 +981,15 @@ body:has(.pull)::before { display: none; }
 }
 
 /* Coin slot: click to pay for a pull and load it */
-.coin-panel { display: flex; justify-content: center; margin-top: 12px; }
-.coin-panel.nudge { animation: wiggle 0.4s ease-in-out 2; }
+.coin-panel { display: flex; justify-content: center; margin-top: 8px; }
 .coin-slot {
   all: unset;
   box-sizing: border-box;
   position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 7px 16px;
+  gap: 8px;
+  padding: 4px 12px;
   cursor: pointer;
   background: var(--panel-2);
   border: 4px solid var(--line);
@@ -1001,24 +1001,20 @@ body:has(.pull)::before { display: none; }
 .coin-slot:active:not(:disabled) { transform: translateY(2px); }
 .coin-slot:disabled { cursor: default; opacity: 0.55; }
 .coin-slot.ready, .coin-slot.busy { opacity: 1; }
-.coin-lamp { width: 10px; height: 10px; background: #3a2a10; box-shadow: 0 0 0 2px var(--line); }
+.coin-lamp { width: 8px; height: 8px; background: #3a2a10; box-shadow: 0 0 0 2px var(--line); }
 .coin-slot.ready .coin-lamp { background: var(--green); box-shadow: 0 0 0 2px var(--line), 0 0 0 4px var(--green-d); }
-.coin-slit { width: 10px; height: 34px; background: #050a0e; border: 2px solid var(--line); }
-.coin-label { min-width: 88px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); }
-.coin-drop {
-  position: absolute;
-  left: 50%;
-  top: -46px;
-  width: 30px;
-  height: 30px;
-  margin-left: -15px;
-  background: var(--gold);
-  /* octagon = the smallest pixel-art circle */
-  clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%);
-  box-shadow: inset 5px 5px 0 #fff3b8, inset -5px -5px 0 var(--gold-d);
-  pointer-events: none;
-  animation: coin-drop 0.6s ease-in both;
+.coin-slit { position: relative; width: 8px; height: 24px; background: #050a0e; border: 2px solid var(--line); }
+/* Coins drop in from above and are clipped at the slot's top edge, so they vanish into it */
+.coin-chute { position: absolute; left: 50%; bottom: 100%; width: 32px; height: 36px; margin: 0 0 2px -16px; overflow: hidden; pointer-events: none; }
+.coin-drop { position: absolute; left: 50%; top: 0; width: 24px; height: 24px; margin-left: -12px; opacity: 0; animation: coin-drop 0.55s ease-in both; }
+.coin-drop svg { display: block; width: 100%; height: 100%; }
+@keyframes coin-drop {
+  0% { transform: translateY(0) scaleX(1); opacity: 0; }
+  15% { opacity: 1; }
+  55% { transform: translateY(12px) scaleX(1); opacity: 1; }
+  100% { transform: translateY(36px) scaleX(0.25); opacity: 1; } /* turns edge-on as it slips into the slot */
 }
+.coin-label { min-width: 70px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); }
 
 /* Anticipation: when the first two reels match, the last one glows until it lands */
 .slot.tension .reel:nth-child(3)::before {
@@ -1116,7 +1112,7 @@ body:has(.pull)::before { display: none; }
 .win-count { font-size: 1.25rem; font-weight: 700; line-height: 1; }
 .win-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
 
-.pull-actions { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 12px; text-align: center; }
+.pull-actions { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 6px; text-align: center; }
 .pull-actions p { margin: 0; font-size: 0.8rem; }
 .pull-actions .spend.sm { font-size: 0.9rem; padding: 7px 16px; }
 .pull-actions .buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
@@ -1164,8 +1160,6 @@ body:has(.pull)::before { display: none; }
 @keyframes sale-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 @keyframes blink { 50% { opacity: 0.25; } }
 @keyframes beckon { 0% { transform: scale(0.8); opacity: 0.9; } 100% { transform: scale(1.4); opacity: 0; } }
-@keyframes wiggle { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
-@keyframes coin-drop { 0% { transform: translateY(0) scaleY(1); opacity: 1; } 75% { transform: translateY(46px) scaleY(1); opacity: 1; } 100% { transform: translateY(60px) scaleY(0.15); opacity: 0; } }
 @keyframes hot { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
 @keyframes win-pop { 50% { transform: scale(1.08); } }
 @keyframes shake {
@@ -1191,11 +1185,9 @@ body:has(.pull)::before { display: none; }
   top: -16px;
   width: 32px;
   height: 32px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff3b8, var(--gold) 55%, var(--gold-d));
-  border: 2px solid var(--line);
   animation: poof-coin 0.8s ease-out forwards;
 }
+.poof-coin svg { display: block; width: 100%; height: 100%; }
 /* Pop in and hover for a beat, then vanish at the moment the sparks fly out */
 @keyframes poof-coin {
   0% { transform: scale(0.2) translateY(8px); opacity: 0; }
