@@ -82,7 +82,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
         else if (filter.startsWith('tag:')) cardsQuery = cardsQuery.contains('tags', [filter.slice(4)])
         const c = await cardsQuery
         if (c.error) return setError(c.error.message)
-        cards = c.data as Card[]
+        cards = (c.data as Card[]).map((x) => ({ ...x, starred: x.starred ?? false, tags: x.tags ?? [] })) // tolerate a database without 0017 yet
       }
       if (scope === 'box') cards = shuffle(cards)
 

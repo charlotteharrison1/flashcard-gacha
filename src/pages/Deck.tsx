@@ -50,7 +50,7 @@ export default function Deck() {
     if (d.error) return setError(d.error.message)
     if (c.error) return setError(c.error.message)
     setDeck(d.data)
-    setCards(c.data as Card[])
+    setCards((c.data as Card[]).map((x) => ({ ...x, starred: x.starred ?? false, tags: x.tags ?? [] })))
     setDueCount(due.count ?? 0)
   }, [id])
 
