@@ -5,6 +5,7 @@ import { BULK_PULLS, PULL_COST, useEarnings } from '../lib/earnings'
 import { INITIAL_REELS, isSpendResult, reelsFor, type Result, type SymbolId, type Winnings } from '../lib/slots'
 import Earnings from '../components/Earnings'
 import Badge from '../components/Badge'
+import { SlotSymbol } from '../components/SlotSymbol'
 import SlotMachine, { type SlotPhase, type Spin } from '../components/SlotMachine'
 import BigSpinOverlay, { type BigSpinItem } from '../components/BigSpinOverlay'
 
@@ -137,9 +138,12 @@ export default function Pull() {
 
   return (
     <div className="pull">
-      <p>
-        <Link to="/">← Decks</Link>
-      </p>
+      <Link to="/" className="button spend keep-earning">
+        <span className="keep-arrow">
+          <SlotSymbol id="arrow" />
+        </span>
+        <span>Keep earning</span>
+      </Link>
       <div className="wallet earn-panel">
         <Earnings compact balance={balance} />
       </div>
