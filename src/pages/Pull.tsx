@@ -210,7 +210,6 @@ export default function Pull() {
               ? 'Out of coins. Earn more by studying.'
               : `${plural(PULL_COST, 'coin')} per pull. ${BULK_PULLS} coins loads ${BULK_PULLS} fast pulls.`}
         </p>
-        <p className="muted odds">Odds per pull: gold 1% · silver 9% · nothing 90%</p>
         {error && <p className="error">{error}</p>}
       </div>
 

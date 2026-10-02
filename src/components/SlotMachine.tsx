@@ -156,7 +156,11 @@ export default function SlotMachine({
   return (
     <div className="machine">
       <div className={cls} style={{ '--tension-delay': `${STOPS[1]}ms` } as CSSProperties}>
-        <div className="slot-title">Lucky Pull</div>
+        <div className="slot-title">
+          <SlotSymbol id="star" />
+          <span>Lucky Pull</span>
+          <SlotSymbol id="star" />
+        </div>
         <div className="bulbs" aria-hidden="true">
           {Array.from({ length: 9 }, (_, i) => (
             <span key={i} className="bulb" />

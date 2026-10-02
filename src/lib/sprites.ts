@@ -223,18 +223,16 @@ const FILLS: Record<SpriteId, string[]> = {
     '.DDDDDDDDDDD.',
     '.............',
   ],
-  // The lever knob (10x10)
+  // The lever knob (8x8)
   ball: [
-    '..........',
-    '...RRRR...',
-    '..RWWRRR..',
-    '.RWWRRRRD.',
-    '.RWRRRRRD.',
-    '.RRRRRRRD.',
-    '.RRRRRRDD.',
-    '..RRRRDD..',
-    '...DDDD...',
-    '..........',
+    '........',
+    '..RRRR..',
+    '.RWRRRD.',
+    '.RWRRRD.',
+    '.RRRRRD.',
+    '.RRRRDD.',
+    '..DDDD..',
+    '........',
   ],
 }
 

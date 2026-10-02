@@ -11,11 +11,11 @@ const STEP = 5 // the arm only redraws every STEP degrees, so it moves in chunky
 
 // The whole lever is one grid of pixels, W x H units (a unit is --px on screen). The pivot sits on the
 // gold bracket; the arm is rasterised as a pixel line, so it never anti-aliases or rotates smoothly.
-const W = 36
-const H = 60
-const PIVOT = { x: 5, y: 30 }
-const ARM = 25 // length of the arm, in units
-const BALL = 10 // the knob sprite is 10x10 units
+const W = 28
+const H = 44
+const PIVOT = { x: 4, y: 22 }
+const ARM = 17 // length of the arm, in units
+const BALL = 8 // the knob sprite is 8x8 units
 
 const OUTLINE = '#0a1218'
 const SHADOW = '#00000040'
@@ -71,14 +71,14 @@ function raster(angle: number): Raster {
   }
 
   // Bracket: a gold plate bolted to the cabinet, with two rivets.
-  for (let y = 19; y <= 41; y++) {
-    for (let x = 2; x <= 8; x++) {
-      const edge = x === 2 || x === 8 || y === 19 || y === 41
-      put(x, y, edge ? OUTLINE : x >= 6 ? GOLD_D : GOLD)
+  for (let y = 15; y <= 29; y++) {
+    for (let x = 1; x <= 7; x++) {
+      const edge = x === 1 || x === 7 || y === 15 || y === 29
+      put(x, y, edge ? OUTLINE : x >= 5 ? GOLD_D : GOLD)
     }
   }
-  put(5, 22, OUTLINE)
-  put(5, 38, OUTLINE)
+  put(4, 17, OUTLINE)
+  put(4, 27, OUTLINE)
 
   // Arm: a pixel line, drawn as shadow, outline, body, then a highlight edge and a shade edge.
   const rad = (angle * Math.PI) / 180
@@ -95,11 +95,11 @@ function raster(angle: number): Raster {
   for (const [px, py] of pts) put(px + 1, py + 1, STEEL_D)
 
   // Hub cap over the pivot: a small pixel disc.
-  for (let dy = -4; dy <= 4; dy++) {
-    for (let dx = -4; dx <= 4; dx++) {
+  for (let dy = -3; dy <= 3; dy++) {
+    for (let dx = -3; dx <= 3; dx++) {
       const d2 = dx * dx + dy * dy
-      if (d2 <= 9) put(PIVOT.x + dx, PIVOT.y + dy, dx === -1 && dy === -1 ? GOLD_L : dx + dy >= 2 ? GOLD_D : GOLD)
-      else if (d2 <= 14) put(PIVOT.x + dx, PIVOT.y + dy, OUTLINE)
+      if (d2 <= 5) put(PIVOT.x + dx, PIVOT.y + dy, dx === -1 && dy === -1 ? GOLD_L : dx + dy >= 2 ? GOLD_D : GOLD)
+      else if (d2 <= 10) put(PIVOT.x + dx, PIVOT.y + dy, OUTLINE)
     }
   }
 
