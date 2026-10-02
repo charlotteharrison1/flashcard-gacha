@@ -12,6 +12,7 @@ import AttachmentPicker from '../components/AttachmentPicker'
 import FormatToolbar from '../components/FormatToolbar'
 import CardText, { setImageWidth } from '../lib/cardText'
 import CardFilterBar from '../components/CardFilterBar'
+import { SlotSymbol } from '../components/SlotSymbol'
 import CardEditor, { type CardValues } from '../components/CardEditor'
 import { useSettings } from '../lib/settings'
 import StudyFilter from '../components/StudyFilter'
@@ -263,7 +264,9 @@ export default function Deck() {
       <h3>Cards ({cards.length})</h3>
       {cards.length === 0 ? (
         <div className="empty">
-          <div className="big-mark">♣</div>
+          <div className="big-mark big-mark-pixel" aria-hidden="true">
+            <SlotSymbol id="club" />
+          </div>
           <p>This deck is empty. Add a card or import a file above.</p>
         </div>
       ) : (

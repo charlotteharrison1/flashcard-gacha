@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth'
 import type { Card } from '../lib/types'
 import CardText from '../lib/cardText'
+import { SlotSymbol } from '../components/SlotSymbol'
 
 /** Every card in the deck, question and answer both shown, with no flipping or rating — just a read. */
 export default function Preview() {
@@ -37,7 +38,9 @@ export default function Preview() {
 
       {cards.length === 0 ? (
         <div className="empty">
-          <div className="big-mark">♦</div>
+          <div className="big-mark big-mark-pixel" aria-hidden="true">
+            <SlotSymbol id="suitDiamond" />
+          </div>
           <p>This deck has no cards yet.</p>
         </div>
       ) : (
