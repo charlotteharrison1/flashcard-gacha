@@ -465,12 +465,12 @@ body:has(.home-box) header { padding-bottom: 0; }
 .home-box .collection { margin: 0 auto; }
 
 /* Sizing for the centre block: big enough to match the other pages, three decks across */
-.home-box { --tile-w: clamp(108px, calc((100vh - 360px) / 2.8), 180px); width: fit-content; max-width: 100%; padding: 18px 26px 24px; } /* the frame hugs what's inside it */
+.home-box { --tile-w: clamp(108px, calc((100vh - 370px) / 2.8), 180px); width: fit-content; max-width: 100%; padding: 18px 38px 24px; } /* the frame hugs what's inside it */
 .home-box .coin-pile { width: clamp(150px, 26vh, 230px); }
-.home-box .sale { width: clamp(112px, 17vh, 190px); }
-.home-box .sale .sale-btn { font-size: 0.95rem; padding: 5px 14px; letter-spacing: 0.1em; }
-.home-box .sale-tag { font-size: 0.9rem; }
-.home-box .sale-cost { font-size: 0.68rem; }
+.home-box .sale { --sale-w: clamp(140px, 20vh, 220px); width: var(--sale-w); }
+.home-box .sale .sale-btn { font-size: max(0.8rem, calc(var(--sale-w) * 0.085)); padding: 4px 12px; letter-spacing: 0.08em; }
+.home-box .sale-tag { font-size: max(0.75rem, calc(var(--sale-w) * 0.07)); }
+.home-box .sale-cost { font-size: max(0.62rem, calc(var(--sale-w) * 0.052)); letter-spacing: 0; }
 .home-box .earn-value { font-size: 3rem; }
 .home-box .earn-label { font-size: 0.85rem; }
 .home-box .tiles { grid-template-columns: repeat(3, var(--tile-w)); justify-content: center; gap: 14px; max-width: none; margin: 12px auto; }
@@ -1432,6 +1432,7 @@ body:has(.pull)::before { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .logo, .flip, .celebrate .big-mark, .progress-fill, .study, .spend::after, .sale .sale-btn, .sale-shine::after, .slot.spinning, .slot.spinning .bulb, .lever.armed .lever-ball::after, .coin-panel.nudge, .coin-drop, .slot.tension .reel:nth-child(3)::before, .slot.win-gold .reel, .slot.win-silver .reel, .slot.win-gold .bulb, .slot.win-silver .bulb { animation: none; }
   .coin-poof { display: none; }
+  .home-glove { animation: none; }
   .keep-arrow { animation: none; }
   .bigspin, .bigspin-strip { animation: none !important; transition: none !important; }
   .bigspin { opacity: 1; transform: scale(1); }
@@ -1595,3 +1596,16 @@ body:has(.pull)::before { display: none; }
 .hero h2 { font-size: 1.35rem; }
 .hero-info { flex: 1 1 200px; }
 .study-filter-row + h3 { margin-top: 14px; }
+
+/* Cartoon gloves pointing at the home box (hidden on narrow screens, where there's no room beside it) */
+.home-glove { position: absolute; z-index: 2; width: 60px; height: 60px; pointer-events: none; }
+.home-glove svg { display: block; width: 100%; height: 100%; }
+.glove-left { left: -56px; top: 36%; animation: glove-nudge-right 1.1s steps(2) infinite; }
+.glove-right { right: -56px; top: 36%; animation: glove-nudge-left 1.1s steps(2) infinite; }
+.glove-right svg { transform: scaleX(-1); }
+.glove-top { left: calc(50% - 30px); top: -56px; animation: glove-nudge-down 1.1s steps(2) infinite; }
+.glove-top svg { transform: rotate(90deg); }
+@keyframes glove-nudge-right { 50% { transform: translateX(6px); } }
+@keyframes glove-nudge-left { 50% { transform: translateX(-6px); } }
+@keyframes glove-nudge-down { 50% { transform: translateY(6px); } }
+@media (max-width: 760px) { .home-glove { display: none; } }

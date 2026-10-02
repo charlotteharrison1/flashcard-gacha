@@ -8,7 +8,7 @@ import type { SymbolId } from './slots'
 export type Sprite = { size: number; paths: { color: string; d: string }[] }
 
 /** Everything drawable: the slot symbols, the lever knob, the four card suits (home page frame corners) and a deckbox. */
-export type SpriteId = SymbolId | 'ball' | 'coin' | 'arrow' | 'goldBadge' | 'silverBadge' | 'gear' | 'spade' | 'heart' | 'club' | 'suitDiamond' | 'deckbox'
+export type SpriteId = SymbolId | 'ball' | 'coin' | 'arrow' | 'goldBadge' | 'silverBadge' | 'gear' | 'glove' | 'spade' | 'heart' | 'club' | 'suitDiamond' | 'deckbox'
 
 const OUTLINE = '#0a1218'
 
@@ -22,6 +22,8 @@ const PALETTE: Record<string, string> = {
   B: '#1e9bff', // blue
   C: '#4dd8ff', // cyan
   O: '#ff9430', // orange
+  L: '#ffffff', // glove white
+  H: '#b8c2d4', // glove shade
   N: '#3d4455', // slate (black suits)
   M: '#8a95ab', // slate highlight
 }
@@ -43,6 +45,7 @@ const SHADE: Record<SpriteId, Record<string, string>> = {
   arrow: { D: '#b98410' },
   goldBadge: { D: '#b98410' },
   gear: { D: '#b98410' },
+  glove: { D: '#b3231a' },
   silverBadge: { Y: '#cfd8e3', D: '#7d8a9a', W: '#ffffff' },
 }
 
@@ -252,6 +255,24 @@ const FILLS: Record<SpriteId, string[]> = {
     '.YYDYYY.',
     '..YYYY..',
     '........',
+  ],
+  // A cartoon glove pointing right (15x15): red cuff, white glove, a pointing finger. Rotated and flipped in CSS.
+  glove: [
+    '...............',
+    '...............',
+    '...............',
+    '.....LLL.......',
+    'RRR..LLLL......',
+    'RRR.LLLLLLLLLL.',
+    'RRR.LLLLLLLLLL.',
+    'RRR.LLLLLLL....',
+    'RRR.LLLHLLHL...',
+    'RRR.LLLHLLHL...',
+    'RRR.LLLLLLLL...',
+    'DDD..HHHHHH....',
+    '...............',
+    '...............',
+    '...............',
   ],
   // A cog (11x11) for the Settings button
   gear: [

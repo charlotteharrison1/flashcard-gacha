@@ -152,6 +152,17 @@ export default function Decks() {
       <span className="home-suit bl"><SlotSymbol id="suitDiamond" /></span>
       <span className="home-suit br"><SlotSymbol id="club" /></span>
 
+      {/* Three gloves pointing in at the box: one on each side and one on top */}
+      <span className="home-glove glove-left" aria-hidden="true">
+        <SlotSymbol id="glove" />
+      </span>
+      <span className="home-glove glove-right" aria-hidden="true">
+        <SlotSymbol id="glove" />
+      </span>
+      <span className="home-glove glove-top" aria-hidden="true">
+        <SlotSymbol id="glove" />
+      </span>
+
       <section className="wallet">
         <SaleSticker />
         <Earnings balance={balance} />
