@@ -10,6 +10,7 @@ import CardText from '../lib/cardText'
 import { SlotSymbol } from '../components/SlotSymbol'
 import { faceTextClass } from '../lib/cardDensity'
 import FitScroll from '../components/FitScroll'
+import CardAnimToggle from '../components/CardAnimToggle'
 import CardEditor, { type CardValues } from '../components/CardEditor'
 import { StarButton, TagAdder, TagChips } from '../components/CardMeta'
 import { MAX_TAGS, filterLabel, readFilter, saveStar, saveTags, tagCounts } from '../lib/cardMeta'
@@ -421,6 +422,10 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
           <button className="secondary sm" onClick={() => suspend(card)} title="Hide this card until tomorrow.">
             Suspend until tomorrow
           </button>
+        </div>
+
+        <div className="study-anim muted">
+          <CardAnimToggle />
         </div>
 
         {(card.tags.length > 0 || tagging) && (

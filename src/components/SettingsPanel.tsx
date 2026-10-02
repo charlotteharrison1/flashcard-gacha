@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 import { FONT_OPTIONS, type CardFont } from '../lib/fonts'
 import type { Settings } from '../lib/settings'
 import type { Orientation } from '../lib/types'
+import CardAnimToggle from './CardAnimToggle'
 
 /** Presets for all decks: what new decks and cards start with, plus buttons to apply a preset to everything that already exists. */
 export default function SettingsPanel({
@@ -98,6 +99,10 @@ export default function SettingsPanel({
         <button className="secondary sm" onClick={() => applyDeckSetting('orientation', 'Card shape')}>
           Apply to all decks
         </button>
+      </div>
+
+      <div className="setting-row">
+        <CardAnimToggle />
       </div>
 
       {note && <p className="notice">{note}</p>}

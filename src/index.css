@@ -1491,3 +1491,37 @@ body:has(.pull)::before { display: none; }
 .study.portrait .face.combined { width: min(100%, 340px); height: min(54vh, 480px); max-height: none; }
 .study.portrait .face-text { --base: 1.3rem; }
 .study.portrait .ratings { max-width: 520px; }
+
+/* Code in cards: `inline`, and ``` fenced blocks. Shown exactly as typed, in a monospace font. */
+.md-code {
+  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.85em;
+  font-weight: 400;
+  padding: 0 5px;
+  color: var(--ink);
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  white-space: pre-wrap;
+}
+.md-code-block {
+  margin: 6px 0;
+  padding: 8px 12px;
+  text-align: left;
+  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.8em;
+  font-weight: 400;
+  line-height: 1.35;
+  color: #e8e6d8;
+  background: #1b1f2a;
+  border: 2px solid var(--line);
+  white-space: pre; /* keep the indentation; long lines scroll sideways */
+  overflow-wrap: normal;
+  overflow-x: auto;
+}
+.md-code-block code { font: inherit; color: inherit; background: none; padding: 0; border-radius: 0; }
+
+/* Card animations off (Settings, or the checkbox under the study card): no fade-in, no float, instant flip */
+:root[data-card-anim='off'] .study { animation: none; }
+:root[data-card-anim='off'] .flip { animation: none; }
+:root[data-card-anim='off'] .flip-inner { transition: none; }
+.study-anim { font-size: 0.8rem; }

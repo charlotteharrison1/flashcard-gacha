@@ -11,6 +11,8 @@ export function htmlToText(s: string): string {
     .replace(/<span[^>]*class=["']?label["']?[^>]*>[\s\S]*?<\/span>/gi, '')
     // A text export holds only a picture's file name, not the picture, so keep the name as text.
     .replace(/<img\b[^>]*?\bsrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))[^>]*>/gi, (_m, a, b, c) => a ?? b ?? c ?? '')
+    .replace(/<pre[^>]*>([\s\S]*?)<\/pre>/gi, (_m, code: string) => '\n```\n' + code.replace(/<[^>]+>/g, '') + '\n```\n')
+    .replace(/<code[^>]*>([\s\S]*?)<\/code>/gi, (_m, code: string) => '`' + code.replace(/<[^>]+>/g, '') + '`')
     .replace(/<li[^>]*>/gi, '- ')
     .replace(/<\/(li|ul|ol)>/gi, '\n')
     .replace(/<br\s*\/?>/gi, '\n')

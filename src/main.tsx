@@ -16,9 +16,11 @@ import './index.css'
 import App from './App.tsx'
 import { applyScheme, loadScheme } from './lib/scheme'
 import { applyLights, loadLights } from './lib/lights'
+import { applyCardAnim, loadCardAnim } from './lib/cardAnim'
 
 applyScheme(loadScheme())
 applyLights(loadLights())
+applyCardAnim(loadCardAnim())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { Fragment, useEffect, useRef, type ReactNode } from 'react'
 import katex from 'katex'
 import { resolveImagePath } from './storage'
 
@@ -8,6 +8,8 @@ import { resolveImagePath } from './storage'
  *   $inline math$            $$block math$$ or \[block math\]
  *   ![alt](url) inline picture, optionally sized with ![alt](url =300) (width in px)
  *   - bullet / * bullet / • bullet, and 1. numbered lines (indent two spaces per level, up to three levels)
+ *   `inline code` (also ``double`` and ```triple``` on one line), and a fenced block: a line with ```, the code, a line with ```
+ *   Code is shown exactly as typed: nothing inside it is treated as maths, bold, pictures, etc.
  * `url` is usually a short relative path like "cards/<id>.png" (see uploadImage/resolveImagePath),
  * resolved here against the viewing user's own id, rather than a full URL sitting in the editable
  * text. Older cards with a full URL still render fine.
@@ -24,34 +26,74 @@ type Props = {
 export default function CardText({ text, userId, onImageResize }: Props) {
   let imgIndex = 0
   const nextImgIndex = () => imgIndex++
-  return (
-    <>
-      {text.split('\n').map((line, i) => {
-        const heading = /^(#{1,3})\s+(.*)/.exec(line)
-        if (heading) {
-          const level = heading[1].length
-          return (
-            <div key={i} className={`md-h md-h${level}`}>
-              {renderLine(heading[2], userId, nextImgIndex, onImageResize)}
-            </div>
-          )
-        }
-        const item = LIST_RE.exec(line)
-        if (item) {
-          const level = Math.min(3, Math.floor(item[1].replace(/\t/g, '  ').length / 2))
-          const numbered = /^\d/.test(item[2])
-          return (
-            <div key={i} className="md-li" style={{ '--lvl': level } as React.CSSProperties}>
-              {numbered ? <span className="md-num">{item[2]}</span> : <span className="md-bullet" aria-hidden="true" />}
-              <span className="md-li-text">{renderLine(item[3], userId, nextImgIndex, onImageResize)}</span>
-            </div>
-          )
-        }
-        if (line.trim() === '') return <br key={i} />
-        return <div key={i}>{renderLine(line, userId, nextImgIndex, onImageResize)}</div>
-      })}
-    </>
-  )
+  const lines = text.split('\n')
+  const out: ReactNode[] = []
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+
+    // A fenced block: everything up to the closing ``` line is code, shown exactly as typed.
+    if (/^\s*```\s*[\w+-]*\s*$/.test(line)) {
+      const body: string[] = []
+      let j = i + 1
+      while (j < lines.length && !/^\s*```\s*$/.test(lines[j])) body.push(lines[j++])
+      out.push(
+        <pre key={i} className="md-code-block">
+          <code>{body.join('\n')}</code>
+        </pre>,
+      )
+      i = j // skip the closing fence (or the end, if it was never closed)
+      continue
+    }
+
+    const heading = /^(#{1,3})\s+(.*)/.exec(line)
+    if (heading) {
+      const level = heading[1].length
+      out.push(
+        <div key={i} className={`md-h md-h${level}`}>
+          {renderRich(heading[2], userId, nextImgIndex, onImageResize)}
+        </div>,
+      )
+      continue
+    }
+    const item = LIST_RE.exec(line)
+    if (item) {
+      const level = Math.min(3, Math.floor(item[1].replace(/\t/g, '  ').length / 2))
+      const numbered = /^\d/.test(item[2])
+      out.push(
+        <div key={i} className="md-li" style={{ '--lvl': level } as React.CSSProperties}>
+          {numbered ? <span className="md-num">{item[2]}</span> : <span className="md-bullet" aria-hidden="true" />}
+          <span className="md-li-text">{renderRich(item[3], userId, nextImgIndex, onImageResize)}</span>
+        </div>,
+      )
+      continue
+    }
+    if (line.trim() === '') out.push(<br key={i} />)
+    else out.push(<div key={i}>{renderRich(line, userId, nextImgIndex, onImageResize)}</div>)
+  }
+  return <>{out}</>
+}
+
+// `code`, ``code``, or ```code``` on one line. Tried before everything else so what's inside stays literal.
+const CODE_RE = /```([^`\n]+?)```|``([^\n]+?)``|`([^`\n]+?)`/g
+
+/** Splits a line into code spans (shown as typed) and everything else (pictures, maths, bold, ...). */
+function renderRich(line: string, userId: string, nextImgIndex: () => number, onImageResize?: (index: number, width: number) => void): ReactNode[] {
+  const matches = [...line.matchAll(CODE_RE)]
+  if (matches.length === 0) return renderLine(line, userId, nextImgIndex, onImageResize)
+  const nodes: ReactNode[] = []
+  let last = 0
+  let k = 0
+  for (const m of matches) {
+    if (m.index! > last) nodes.push(<Fragment key={k++}>{renderLine(line.slice(last, m.index), userId, nextImgIndex, onImageResize)}</Fragment>)
+    nodes.push(
+      <code key={k++} className="md-code">
+        {(m[1] ?? m[2] ?? m[3]).trim()}
+      </code>,
+    )
+    last = m.index! + m[0].length
+  }
+  if (last < line.length) nodes.push(<Fragment key={k++}>{renderLine(line.slice(last), userId, nextImgIndex, onImageResize)}</Fragment>)
+  return nodes
 }
 
 // A bullet (-, * or •) or numbered (1. or 1)) line: indent, marker, then the text.

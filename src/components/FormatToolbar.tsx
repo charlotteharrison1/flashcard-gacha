@@ -41,6 +41,12 @@ export default function FormatToolbar({ targetRef, value, setValue, children }: 
       >
         •
       </button>
+      <button type="button" className="fmt-btn" title="Inline code" onClick={wrap('`', '`', 'code')}>
+        {'</>'}
+      </button>
+      <button type="button" className="fmt-btn" title="Code block" onClick={wrap('```\n', '\n```', 'code')}>
+        {'{ }'}
+      </button>
       <button type="button" className="fmt-btn" title="Math" onClick={wrap('$', '$', 'x^2')}>
         ∑
       </button>
