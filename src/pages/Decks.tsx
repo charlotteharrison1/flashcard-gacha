@@ -7,7 +7,7 @@ import SaleSticker from '../components/SaleSticker'
 import { SlotSymbol } from '../components/SlotSymbol'
 import { useEarnings } from '../lib/earnings'
 import { useSettings } from '../lib/settings'
-import SettingsPanel from '../components/SettingsPanel'
+import DeckPresetsPanel from '../components/DeckPresetsPanel'
 
 type DeckRow = {
   id: string
@@ -190,7 +190,7 @@ export default function Decks() {
       <div className="home-divider" aria-hidden="true" />
 
       {showSettings && (
-        <SettingsPanel
+        <DeckPresetsPanel
           settings={settings}
           save={saveSettings}
           saveError={saveError}
@@ -215,7 +215,7 @@ export default function Decks() {
                   <span className="new-deck-gear">
                     <SlotSymbol id="gear" />
                   </span>
-                  <span>Settings</span>
+                  <span>Deck presets</span>
                 </button>
               </div>
             </li>

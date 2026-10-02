@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import { SlotSymbol } from './SlotSymbol'
+import { motionReduced } from '../lib/anim'
 import type { SlotPhase } from './SlotMachine'
 
 // --- Lever (degrees; 0 = pointing right, positive = swinging down) -----------
@@ -141,7 +142,7 @@ export default function Lever({ armed, onPull }: Props) {
   /** Move to `target`, optionally tweening over `ms`. */
   function move(target: number, ms = 0, curve: (t: number) => number = (t) => t) {
     cancelAnimationFrame(frame.current)
-    if (!ms) return show(target)
+    if (!ms || motionReduced()) return show(target)
     const from = exact.current
     const start = performance.now()
     const tick = (now: number) => {

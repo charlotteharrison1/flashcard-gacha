@@ -2,6 +2,7 @@ import { useLayoutEffect, useMemo, useRef, type CSSProperties } from 'react'
 import { INITIAL_REELS, randomFill, type Result, type SymbolId } from '../lib/slots'
 import { SlotSymbol } from './SlotSymbol'
 import Lever from './Lever'
+import { motionReduced } from '../lib/anim'
 
 /** `fast` spins (from a 10-coin batch) play at a fraction of the time and skip the slow-crawl tension. */
 export type Spin = { id: number; from: SymbolId[]; final: SymbolId[]; fast?: boolean }
@@ -112,7 +113,7 @@ export default function SlotMachine({
   useLayoutEffect(() => {
     if (!spin || !reels) return
     let cancelled = false
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reduceMotion = motionReduced()
 
     const finished = stripRefs.current.map((el, i) => {
       if (!el || !reels[i]) return Promise.resolve()

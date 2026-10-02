@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { randomFill, type Result, type SymbolId } from '../lib/slots'
 import { SlotSymbol } from './SlotSymbol'
 import Badge from './Badge'
+import { motionReduced } from '../lib/anim'
 
 export type BigSpinItem = { id: number; final: SymbolId[]; result: Result }
 
@@ -28,7 +29,7 @@ const pct = (cells: number, of: number) => `translateY(${(cells / of) * 100}%)`
  * landing strip is invisible.
  */
 export default function BigSpinOverlay({ items, onDone }: { items: BigSpinItem[]; onDone: () => void }) {
-  const reduceMotion = useMemo(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches, [])
+  const reduceMotion = useMemo(() => motionReduced(), [])
   const [landed, setLanded] = useState(reduceMotion ? items.length : 0) // machines that have finished, in order
   const cruiseRefs = useRef<(HTMLDivElement | null)[]>([])
   const landRefs = useRef<(HTMLDivElement | null)[]>([])

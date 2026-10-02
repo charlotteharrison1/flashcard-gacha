@@ -3,11 +3,9 @@ import { supabase } from '../lib/supabase'
 import { FONT_OPTIONS, type CardFont } from '../lib/fonts'
 import type { Settings } from '../lib/settings'
 import type { Orientation } from '../lib/types'
-import CardAnimToggle from './CardAnimToggle'
-import { UI_FONTS, applyUiFont, loadUiFont, type UiFontId } from '../lib/uiFont'
 
 /** Presets for all decks: what new decks and cards start with, plus buttons to apply a preset to everything that already exists. */
-export default function SettingsPanel({
+export default function DeckPresetsPanel({
   settings,
   save,
   saveError,
@@ -22,7 +20,6 @@ export default function SettingsPanel({
 }) {
   const [note, setNote] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [uiFont, setUiFont] = useState<UiFontId>(loadUiFont)
 
   async function applyFont() {
     if (!confirm(`Change the font of EVERY card in ALL your decks to "${FONT_OPTIONS.find((f) => f.id === settings.default_font)?.label}"?`)) return
@@ -43,16 +40,14 @@ export default function SettingsPanel({
   }
 
   return (
-    <section className="panel settings-panel">
+    <section className="panel presets-panel">
       <div className="row between">
-        <h3>Presets for all decks</h3>
+        <h3>Deck presets</h3>
         <button className="link" onClick={onClose}>
           Close
         </button>
       </div>
-      <p className="muted">
-        These are what a new deck or card starts with. Each "Apply to all" button also changes everything you already have.
-      </p>
+      <p className="muted presets-note">What new decks and cards start with. "Apply to all" also changes the ones you have.</p>
 
       <div className="setting-row">
         <label className="file-field">
@@ -66,27 +61,27 @@ export default function SettingsPanel({
           </select>
         </label>
         <button className="secondary sm" onClick={applyFont}>
-          Apply to all cards
+          Apply to all
         </button>
       </div>
 
       <div className="setting-row">
         <label className="row nowrap">
           <input type="checkbox" checked={settings.show_both} onChange={(e) => save({ show_both: e.target.checked })} />
-          Keep the answer on screen with the question (no flip)
+          No flip (answer shows under the question)
         </label>
         <button className="secondary sm" onClick={() => applyDeckSetting('show_both', 'No-flip')}>
-          Apply to all decks
+          Apply to all
         </button>
       </div>
 
       <div className="setting-row">
         <label className="row nowrap">
           <input type="checkbox" checked={settings.float_anim} onChange={(e) => save({ float_anim: e.target.checked })} />
-          Floating animation on the study card
+          Floating study card
         </label>
         <button className="secondary sm" onClick={() => applyDeckSetting('float_anim', 'Floating animation')}>
-          Apply to all decks
+          Apply to all
         </button>
       </div>
 
@@ -99,33 +94,8 @@ export default function SettingsPanel({
           </select>
         </label>
         <button className="secondary sm" onClick={() => applyDeckSetting('orientation', 'Card shape')}>
-          Apply to all decks
+          Apply to all
         </button>
-      </div>
-
-      <div className="setting-row">
-        <label className="file-field">
-          <span>App font</span>
-          <select
-            value={uiFont}
-            onChange={(e) => {
-              const id = e.target.value as UiFontId
-              applyUiFont(id)
-              setUiFont(id)
-            }}
-          >
-            {UI_FONTS.map((f) => (
-              <option key={f.id} value={f.id}>
-                {f.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <span className="muted">The buttons, labels and headings. Saved on this device.</span>
-      </div>
-
-      <div className="setting-row">
-        <CardAnimToggle />
       </div>
 
       {note && <p className="notice">{note}</p>}
