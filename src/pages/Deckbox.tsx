@@ -4,6 +4,10 @@ import { supabase } from '../lib/supabase'
 import { deckSuit, effectiveColor } from '../lib/theme'
 import { SlotSymbol } from '../components/SlotSymbol'
 import DeckCustomize from '../components/DeckCustomize'
+import CardFilterBar from '../components/CardFilterBar'
+import StudyFilter from '../components/StudyFilter'
+import { StarButton, TagAdder, TagChips } from '../components/CardMeta'
+import { MAX_TAGS, matchesFilter, saveStar, saveTags, sortCards, tagCounts, type CardFilter, type CardSort } from '../lib/cardMeta'
 
 type DeckRow = {
   id: string
@@ -13,6 +17,8 @@ type DeckRow = {
   cards: { count: number }[]
 }
 type LooseDeck = { id: string; name: string }
+type BoxCard = { id: string; deck_id: string; front: string; starred: boolean; tags: string[]; due_at: string }
+const SHOWN_LIMIT = 100 // rows drawn at once; the filter and the study link still cover every card
 
 /** A deckbox is a folder: open it to see its decks, study one at a time, or shuffle them all together. */
 export default function Deckbox() {
@@ -26,6 +32,10 @@ export default function Deckbox() {
   const [loose, setLoose] = useState<LooseDeck[]>([]) // decks not in any box, offered for adding
   const [dueCount, setDueCount] = useState(0)
   const [pick, setPick] = useState('')
+  const [cards, setCards] = useState<BoxCard[]>([])
+  const [filter, setFilter] = useState<CardFilter>('all')
+  const [sort, setSort] = useState<CardSort>('newest')
+  const [taggingId, setTaggingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
@@ -48,7 +58,18 @@ export default function Deckbox() {
     setLoose(l.data)
 
     const ids = d.data.map((x) => x.id)
-    if (ids.length === 0) return setDueCount(0)
+    if (ids.length === 0) {
+      setCards([])
+      return setDueCount(0)
+    }
+    const cs = await supabase
+      .from('cards')
+      .select('id, deck_id, front, starred, tags, due_at')
+      .in('deck_id', ids)
+      .order('created_at', { ascending: false })
+      .limit(1000)
+    if (cs.error) return setError(cs.error.message)
+    setCards(cs.data as BoxCard[])
     const due = await supabase
       .from('cards')
       .select('id', { count: 'exact', head: true })
@@ -67,6 +88,28 @@ export default function Deckbox() {
     if (error) return setError(error.message)
     setPick('')
     load()
+  }
+
+  function patchCard(cardId: string, patch: Partial<BoxCard>) {
+    setCards((cs) => cs.map((c) => (c.id === cardId ? { ...c, ...patch } : c)))
+  }
+
+  async function toggleStar(c: BoxCard) {
+    patchCard(c.id, { starred: !c.starred })
+    const err = await saveStar(c.id, !c.starred)
+    if (err) {
+      patchCard(c.id, { starred: c.starred })
+      setError(err)
+    }
+  }
+
+  async function changeTags(c: BoxCard, tags: string[]) {
+    patchCard(c.id, { tags })
+    const err = await saveTags(c.id, tags)
+    if (err) {
+      patchCard(c.id, { tags: c.tags })
+      setError(err)
+    }
   }
 
   async function removeBox() {
@@ -156,6 +199,64 @@ export default function Deckbox() {
             )
           })}
         </ul>
+      )}
+
+      {cards.length > 0 && <StudyFilter basePath={`/boxes/${id}/study`} cards={cards} />}
+
+      {cards.length > 0 && (
+        <section className="panel">
+          <h3>Cards in this box ({cards.length})</h3>
+          <CardFilterBar cards={cards} filter={filter} setFilter={setFilter} sort={sort} setSort={setSort} />
+          {(() => {
+            const matching = sortCards(
+              cards.filter((c) => matchesFilter(c, filter)),
+              sort,
+            )
+            const known = tagCounts(cards).map(([t]) => t)
+            const deckName = new Map(decks.map((d) => [d.id, d.name]))
+            return matching.length === 0 ? (
+              <p className="muted">No cards match.</p>
+            ) : (
+              <>
+                <ul className="list">
+                  {matching.slice(0, SHOWN_LIMIT).map((c) => (
+                    <li key={c.id} className="row nowrap card-row-main">
+                      <StarButton starred={c.starred} onToggle={() => toggleStar(c)} />
+                      <span>
+                        <strong>{c.front.replace(/\s+/g, ' ').slice(0, 110)}</strong>{' '}
+                        <span className="muted">· {deckName.get(c.deck_id)}</span>
+                        <span className="card-row-tags">
+                          <TagChips
+                            tags={c.tags}
+                            onPick={(t) => setFilter(`tag:${t}`)}
+                            onRemove={(t) => changeTags(c, c.tags.filter((x) => x !== t))}
+                          />
+                          {taggingId === c.id ? (
+                            <TagAdder
+                              existing={c.tags}
+                              suggestions={known}
+                              onAdd={(t) => c.tags.length < MAX_TAGS && changeTags(c, [...c.tags, t])}
+                              onClose={() => setTaggingId(null)}
+                            />
+                          ) : (
+                            <button className="link" onClick={() => setTaggingId(c.id)}>
+                              + tag
+                            </button>
+                          )}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                {matching.length > SHOWN_LIMIT && (
+                  <p className="muted">
+                    Showing the first {SHOWN_LIMIT} of {matching.length}. Use the filter to narrow it down.
+                  </p>
+                )}
+              </>
+            )
+          })()}
+        </section>
       )}
 
       <section className="panel">

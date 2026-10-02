@@ -33,6 +33,8 @@ export type Card = {
   due_at: string
   created_at: string
   font: CardFont
+  starred: boolean
+  tags: string[]
 }
 
 /** 0 again, 1 hard, 2 good, 3 easy */

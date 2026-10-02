@@ -11,6 +11,10 @@ import DeckCustomize from '../components/DeckCustomize'
 import AttachmentPicker from '../components/AttachmentPicker'
 import FormatToolbar from '../components/FormatToolbar'
 import CardText, { setImageWidth } from '../lib/cardText'
+import CardFilterBar from '../components/CardFilterBar'
+import StudyFilter from '../components/StudyFilter'
+import { StarButton, TagAdder, TagChips } from '../components/CardMeta'
+import { MAX_TAGS, matchesFilter, saveStar, saveTags, sortCards, tagCounts, type CardFilter, type CardSort } from '../lib/cardMeta'
 
 const HAS_IMAGE_RE = /!\[[^\]]*\]\(/
 
@@ -28,6 +32,9 @@ export default function Deck() {
   const frontRef = useRef<HTMLTextAreaElement>(null)
   const backRef = useRef<HTMLTextAreaElement>(null)
   const [customizing, setCustomizing] = useState(false)
+  const [filter, setFilter] = useState<CardFilter>('all')
+  const [sort, setSort] = useState<CardSort>('newest')
+  const [taggingId, setTaggingId] = useState<string | null>(null) // the card whose tag field is open
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
@@ -50,6 +57,28 @@ export default function Deck() {
   useEffect(() => {
     load()
   }, [load])
+
+  function patchCard(cardId: string, patch: Partial<Card>) {
+    setCards((cs) => cs.map((c) => (c.id === cardId ? { ...c, ...patch } : c)))
+  }
+
+  async function toggleStar(c: Card) {
+    patchCard(c.id, { starred: !c.starred })
+    const err = await saveStar(c.id, !c.starred)
+    if (err) {
+      patchCard(c.id, { starred: c.starred })
+      setError(err)
+    }
+  }
+
+  async function changeTags(c: Card, tags: string[]) {
+    patchCard(c.id, { tags })
+    const err = await saveTags(c.id, tags)
+    if (err) {
+      patchCard(c.id, { tags: c.tags })
+      setError(err)
+    }
+  }
 
   async function add(e: FormEvent) {
     e.preventDefault()
@@ -221,6 +250,8 @@ export default function Deck() {
 
       <CsvImport deckId={id} onImported={load} />
 
+      {cards.length > 0 && <StudyFilter basePath={`/decks/${id}/study`} cards={cards} />}
+
       <h3>Cards ({cards.length})</h3>
       {cards.length === 0 ? (
         <div className="empty">
@@ -228,20 +259,54 @@ export default function Deck() {
           <p>This deck is empty. Add a card or import a file above.</p>
         </div>
       ) : (
-        <ul className="list">
-          {cards.map((c) => (
-            <li key={c.id} className="row between nowrap">
-              <span className="row nowrap card-row-main">
-                <span>
-                  <strong>{c.front}</strong> <span className="muted">→ {c.back}</span>
-                </span>
-              </span>
-              <button className="link danger" onClick={() => remove(c.id)}>
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
+        <>
+          <CardFilterBar cards={cards} filter={filter} setFilter={setFilter} sort={sort} setSort={setSort} />
+          {(() => {
+            const shown = sortCards(
+              cards.filter((c) => matchesFilter(c, filter)),
+              sort,
+            )
+            const known = tagCounts(cards).map(([t]) => t)
+            return shown.length === 0 ? (
+              <p className="muted">No cards match.</p>
+            ) : (
+              <ul className="list">
+                {shown.map((c) => (
+                  <li key={c.id} className="row between nowrap">
+                    <span className="row nowrap card-row-main">
+                      <StarButton starred={c.starred} onToggle={() => toggleStar(c)} />
+                      <span>
+                        <strong>{c.front}</strong> <span className="muted">→ {c.back}</span>
+                        <span className="card-row-tags">
+                          <TagChips
+                            tags={c.tags}
+                            onPick={(t) => setFilter(`tag:${t}`)}
+                            onRemove={(t) => changeTags(c, c.tags.filter((x) => x !== t))}
+                          />
+                          {taggingId === c.id ? (
+                            <TagAdder
+                              existing={c.tags}
+                              suggestions={known}
+                              onAdd={(t) => c.tags.length < MAX_TAGS && changeTags(c, [...c.tags, t])}
+                              onClose={() => setTaggingId(null)}
+                            />
+                          ) : (
+                            <button className="link" onClick={() => setTaggingId(c.id)}>
+                              + tag
+                            </button>
+                          )}
+                        </span>
+                      </span>
+                    </span>
+                    <button className="link danger" onClick={() => remove(c.id)}>
+                      Delete
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )
+          })()}
+        </>
       )}
     </>
   )

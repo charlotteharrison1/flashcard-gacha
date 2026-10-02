@@ -10,6 +10,9 @@ import CardText from '../lib/cardText'
 import { SlotSymbol } from '../components/SlotSymbol'
 import { faceTextClass } from '../lib/cardDensity'
 import FitScroll from '../components/FitScroll'
+import CardEditor, { type CardValues } from '../components/CardEditor'
+import { StarButton, TagAdder, TagChips } from '../components/CardMeta'
+import { MAX_TAGS, filterLabel, readFilter, saveStar, saveTags, tagCounts } from '../lib/cardMeta'
 
 const SESSION_LIMIT = 100
 const COIN_POOF_MS = 800
@@ -42,6 +45,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   const { id = '' } = useParams()
   const [searchParams] = useSearchParams()
   const studyAll = searchParams.get('all') === '1'
+  const filter = readFilter(searchParams.get('f')) // all, starred, tagged, or tag:<name>
   const { setBalance } = useEarnings()
   const { session } = useAuth()
   const userId = session?.user.id ?? '' // Study is behind an authenticated route, so this is always set
@@ -54,6 +58,8 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   const [turn, setTurn] = useState(0)
   const [poofs, setPoofs] = useState<Poof[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [tagging, setTagging] = useState(false) // the tag field is open
+  const [editing, setEditing] = useState<'edit' | 'new' | null>(null) // the card editor is open
   const saving = useRef(false)
   const flyId = useRef(0)
   const cardAreaRef = useRef<HTMLDivElement>(null)
@@ -71,6 +77,9 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
       if (ids.length > 0) {
         let cardsQuery = supabase.from('cards').select('*').in('deck_id', ids).order('due_at').limit(SESSION_LIMIT)
         if (!studyAll) cardsQuery = cardsQuery.lte('due_at', new Date().toISOString())
+        if (filter === 'starred') cardsQuery = cardsQuery.eq('starred', true)
+        else if (filter === 'tagged') cardsQuery = cardsQuery.neq('tags', '{}')
+        else if (filter.startsWith('tag:')) cardsQuery = cardsQuery.contains('tags', [filter.slice(4)])
         const c = await cardsQuery
         if (c.error) return setError(c.error.message)
         cards = c.data as Card[]
@@ -86,7 +95,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
     return () => {
       cancelled = true
     }
-  }, [id, studyAll, scope])
+  }, [id, studyAll, scope, filter])
 
   // A coin pops up over the card, then poofs into sparks. The position is measured fresh each time,
   // since the layout shifts as "N / M cleared" and the card itself change.
@@ -148,14 +157,66 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
     setTurn((t) => t + 1)
   }
 
+  /** Changes one card in the queue (and any copy of it) without touching the order. */
+  function patchCard(cardId: string, patch: Partial<Card>) {
+    setQueue((q) => (q ?? []).map((c) => (c.id === cardId ? { ...c, ...patch } : c)))
+  }
+
+  async function toggleStar(card: Card) {
+    const starred = !card.starred
+    patchCard(card.id, { starred })
+    const err = await saveStar(card.id, starred)
+    if (err) {
+      patchCard(card.id, { starred: !starred })
+      setError(err)
+    }
+  }
+
+  async function changeTags(card: Card, tags: string[]) {
+    const before = card.tags
+    patchCard(card.id, { tags })
+    const err = await saveTags(card.id, tags)
+    if (err) {
+      patchCard(card.id, { tags: before })
+      setError(err)
+    }
+  }
+
+  async function saveEdit(card: Card, values: CardValues) {
+    const { error: e } = await supabase.from('cards').update(values).eq('id', card.id)
+    if (e) return setError(e.message)
+    patchCard(card.id, values)
+    setEditing(null)
+  }
+
+  // A new card goes into the same deck as the one on screen and joins the end of this round.
+  async function addCard(card: Card, values: CardValues) {
+    const { data, error: e } = await supabase
+      .from('cards')
+      .insert({ deck_id: card.deck_id, source: 'manual', ...values })
+      .select('*')
+      .single()
+    if (e) return setError(e.message)
+    setQueue((q) => [...(q ?? []), data as Card])
+    setTotal((t) => t + 1)
+    setEditing(null)
+  }
+
   const card = queue?.[0]
 
-  // Keyboard: Space/Enter reveals the answer, 1-4 rates once it's visible.
+  // Keyboard: Space/Enter reveals the answer, 1-4 rates once it's visible, 8 stars the card, T adds a tag.
   useEffect(() => {
     if (!card) return
     function onKey(e: KeyboardEvent) {
       if (e.metaKey || e.ctrlKey || e.altKey || !card) return
-      if (!revealed && (e.key === ' ' || e.key === 'Enter')) {
+      const target = e.target
+      if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) return // typing
+      if (e.key === '8') {
+        toggleStar(card)
+      } else if (e.key === 't' || e.key === 'T') {
+        e.preventDefault()
+        setTagging(true)
+      } else if (!revealed && (e.key === ' ' || e.key === 'Enter')) {
         e.preventDefault()
         setRevealed(true)
       } else if (revealed && ['1', '2', '3', '4'].includes(e.key)) {
@@ -182,9 +243,11 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
           </>
         ) : (
           <p className="muted">
-            {studyAll
-              ? `This ${scope === 'box' ? 'deckbox' : 'deck'} has no cards yet.`
-              : `No cards are due in this ${scope === 'box' ? 'deckbox' : 'deck'} right now.`}
+            {filter !== 'all'
+              ? `No ${filterLabel(filter)} ${studyAll ? 'found' : 'are due'} in this ${scope === 'box' ? 'deckbox' : 'deck'}.`
+              : studyAll
+                ? `This ${scope === 'box' ? 'deckbox' : 'deck'} has no cards yet.`
+                : `No cards are due in this ${scope === 'box' ? 'deckbox' : 'deck'} right now.`}
           </p>
         )}
         <div className="row center-row">
@@ -192,7 +255,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
             {scope === 'box' ? 'Back to deckbox' : 'Back to deck'}
           </Link>
           {done === 0 && !studyAll && (
-            <Link className="button gold" to={`${studyPath}/study?all=1`}>
+            <Link className="button gold" to={`${studyPath}/study?all=1${filter !== 'all' ? `&f=${encodeURIComponent(filter)}` : ''}`}>
               Study anyway
             </Link>
           )}
@@ -212,7 +275,8 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   const suit = deckSuit(card.deck_id)
   const pct = total ? Math.round((done / total) * 100) : 0
   const faceClass = isRedSuit(suit) ? 'face red' : 'face'
-  const fitKey = `${card.id}:${card.font}` // when this changes, the text is re-measured
+  const fitKey = `${card.id}:${card.font}:${card.front.length}:${card.back.length}` // when this changes, the text is re-measured
+  const knownTags = tagCounts(queue).map(([t]) => t)
 
   return (
     <>
@@ -246,6 +310,11 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
               <b>{revealed ? 'A' : 'Q'}</b>
               {suit}
             </span>
+            {card.starred && (
+              <span className="star-mark" aria-hidden="true">
+                <SlotSymbol id="star" />
+              </span>
+            )}
             <FitScroll watch={`${fitKey}:${revealed}`}>
               <div className={faceTextClass(card.front, card.font)}>
                 <CardText text={card.front} userId={userId} />
@@ -279,6 +348,11 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
                   <b>Q</b>
                   {suit}
                 </span>
+                {card.starred && (
+                  <span className="star-mark" aria-hidden="true">
+                    <SlotSymbol id="star" />
+                  </span>
+                )}
                 <FitScroll watch={`${fitKey}:front`} comfortable>
                   <div className={faceTextClass(card.front, card.font)}>
                     <CardText text={card.front} userId={userId} />
@@ -295,6 +369,11 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
                   <b>A</b>
                   {suit}
                 </span>
+                {card.starred && (
+                  <span className="star-mark" aria-hidden="true">
+                    <SlotSymbol id="star" />
+                  </span>
+                )}
                 <FitScroll watch={`${fitKey}:back`} comfortable>
                   <div className={faceTextClass(card.back, card.font)}>
                     <CardText text={card.back} userId={userId} />
@@ -321,6 +400,16 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
         )}
 
         <div className="row center-row">
+          <StarButton starred={card.starred} onToggle={() => toggleStar(card)} hint="8" />
+          <button className="secondary sm" onClick={() => setTagging((t) => !t)} title="Add a tag (T)">
+            # Tag
+          </button>
+          <button className="secondary sm" onClick={() => setEditing((m) => (m === 'edit' ? null : 'edit'))} title="Edit this card">
+            Edit card
+          </button>
+          <button className="secondary sm" onClick={() => setEditing((m) => (m === 'new' ? null : 'new'))} title="Add a new card to this deck">
+            Add card
+          </button>
           <button
             className="secondary sm"
             onClick={() => skip(card)}
@@ -333,6 +422,33 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
             Suspend until tomorrow
           </button>
         </div>
+
+        {(card.tags.length > 0 || tagging) && (
+          <div className="row center-row study-tags">
+            <TagChips tags={card.tags} onRemove={(t) => changeTags(card, card.tags.filter((x) => x !== t))} />
+            {tagging && (
+              <TagAdder
+                key={card.id}
+                existing={card.tags}
+                suggestions={knownTags}
+                onAdd={(t) => card.tags.length < MAX_TAGS && changeTags(card, [...card.tags, t])}
+                onClose={() => setTagging(false)}
+              />
+            )}
+          </div>
+        )}
+
+        {editing && (
+          <CardEditor
+            key={`${editing}:${card.id}`}
+            title={editing === 'edit' ? 'Edit this card' : 'Add a card to this deck'}
+            submitLabel={editing === 'edit' ? 'Save changes' : 'Add card'}
+            initial={editing === 'edit' ? { front: card.front, back: card.back, font: card.font } : { front: '', back: '', font: card.font }}
+            userId={userId}
+            onSave={(values) => (editing === 'edit' ? saveEdit(card, values) : addCard(card, values))}
+            onCancel={() => setEditing(null)}
+          />
+        )}
       </div>
 
       {poofs.map((f) => (
