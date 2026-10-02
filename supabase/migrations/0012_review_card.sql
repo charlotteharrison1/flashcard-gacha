@@ -36,14 +36,6 @@ begin
     raise exception 'invalid rating';
   end if;
 
-  -- Brake for scripts: nobody rates more than about one card a second.
-  if (
-    select count(*) from public.reviews
-    where user_id = auth.uid() and reviewed_at > now() - interval '1 minute'
-  ) >= 60 then
-    raise exception 'slow down';
-  end if;
-
   select * into c from public.cards where id = p_card_id and user_id = auth.uid() for update;
   if not found then
     raise exception 'card not found';

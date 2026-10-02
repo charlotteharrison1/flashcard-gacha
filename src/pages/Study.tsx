@@ -96,6 +96,32 @@ export default function Study() {
     setTurn((t) => t + 1)
   }
 
+  // Skip: put the card back somewhere later in this round. Nothing is saved, so no coin and no reschedule.
+  function skip(card: Card) {
+    if (saving.current) return
+    setQueue((q) => {
+      const rest = (q ?? []).slice(1)
+      if (rest.length === 0) return q // nothing to skip to
+      rest.splice(1 + Math.floor(Math.random() * rest.length), 0, card) // never first, so a different card is next
+      return rest
+    })
+    setRevealed(false)
+    setTurn((t) => t + 1)
+  }
+
+  // Suspend: hide the card until tomorrow (the database moves its due date; see 0014_suspend_card.sql).
+  async function suspend(card: Card) {
+    if (saving.current) return
+    saving.current = true
+    const { error: rpcError } = await supabase.rpc('suspend_card', { p_card_id: card.id })
+    saving.current = false
+    if (rpcError) return setError(rpcError.message)
+    setQueue((q) => (q ?? []).slice(1))
+    setTotal((t) => t - 1) // it's no longer part of this round, so the progress bar still reaches 100%
+    setRevealed(false)
+    setTurn((t) => t + 1)
+  }
+
   const card = queue?.[0]
 
   // Keyboard: Space/Enter reveals the answer, 1-4 rates once it's visible.
@@ -259,6 +285,20 @@ export default function Study() {
             Show answer
           </button>
         )}
+
+        <div className="row center-row">
+          <button
+            className="secondary sm"
+            onClick={() => skip(card)}
+            disabled={queue.length < 2}
+            title="Move this card to later in the round. No coin, and its schedule doesn't change."
+          >
+            Skip
+          </button>
+          <button className="secondary sm" onClick={() => suspend(card)} title="Hide this card until tomorrow.">
+            Suspend until tomorrow
+          </button>
+        </div>
       </div>
 
       {flyers.map((f) => (
