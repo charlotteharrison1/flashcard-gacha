@@ -240,7 +240,9 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
     return (
       <div className="center celebrate">
         {done > 0 && <Confetti />}
-        <div className="big-mark">{done > 0 ? '♥' : '♠'}</div>
+        <div className="big-mark big-mark-pixel" aria-hidden="true">
+          <SlotSymbol id={done > 0 ? 'heart' : 'spade'} />
+        </div>
         <h2>{done > 0 ? 'Round cleared' : 'Nothing to play'}</h2>
         {done > 0 ? (
           <>
