@@ -143,7 +143,6 @@ export default function Pull() {
       <p>
         <Link to="/">← Decks</Link>
       </p>
-      <h2>Pull</h2>
       <div className="wallet earn-panel">
         <Earnings compact balance={balance} />
       </div>

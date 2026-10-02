@@ -7,9 +7,10 @@ const PX = 5 // one sprite pixel, in SVG units
 const COIN_W = 8 * PX // 40
 const COIN_H = 3 * PX // 15
 
-// A row of stacks of different heights, tallest in the middle, like coins stacked by hand.
-// Each stack's max height is its share of the pile; 4+6+7+5+3 = 25 coins max.
-const STACK_CAPS = [4, 6, 7, 5, 3]
+// A row of stacks of different heights, like coins stacked by hand. A small pile is one tall stack:
+// coins fill the middle stack first, then the one to its right, then left, and so on outward.
+const STACK_CAPS = [4, 5, 5, 4, 3] // max height of each stack, left to right
+const FILL_ORDER = [2, 3, 1, 4, 0]
 const STACKS = STACK_CAPS.length
 const CAP = STACK_CAPS.reduce((a, b) => a + b, 0)
 const STACK_GAP = 3 // stacks nearly touch
@@ -30,43 +31,26 @@ const stackX = (s: number) => START_X + s * (COIN_W + STACK_GAP)
 
 type Placed = { key: string; x: number; y: number; top: boolean; isNew: boolean }
 
-/**
- * Hands out coins one at a time to whichever stack is furthest below its fair share, so every
- * stack grows together but keeps its own height. Adding a coin never moves an existing one, so the
- * newest coin is always the one that just landed on top.
- */
+/** Coins in the order they were "added": each stack filled bottom to top before the next one starts. */
 function layout(count: number): Placed[] {
-  const heights = STACK_CAPS.map(() => 0)
-  let newest = -1
-  for (let n = 1; n <= count; n++) {
-    let best = -1
-    let bestGap = -Infinity
-    STACK_CAPS.forEach((cap, s) => {
-      if (heights[s] >= cap) return
-      const gap = (n * cap) / CAP - heights[s]
-      if (gap > bestGap) {
-        bestGap = gap
-        best = s
-      }
-    })
-    heights[best]++
-    newest = best
-  }
-
   const coins: Placed[] = []
-  heights.forEach((h, s) => {
-    for (let k = 0; k < h; k++) {
+  let left = count
+  for (const s of FILL_ORDER) {
+    const n = Math.min(left, STACK_CAPS[s])
+    left -= n
+    for (let k = 0; k < n; k++) {
       const t = (s + k) % 7
       const wobble = t === 2 ? PX : t === 5 ? -PX : 0 // an occasional one-pixel nudge
       coins.push({
         key: `${s}-${k}`,
         x: stackX(s) + (k === 0 ? 0 : wobble),
         y: BASE_Y - (k + 1) * COIN_H,
-        top: k === h - 1,
-        isNew: s === newest && k === h - 1,
+        top: k === n - 1,
+        isNew: false,
       })
     }
-  })
+  }
+  if (coins.length > 0) coins[coins.length - 1].isNew = true // the coin that just landed
   return coins
 }
 
