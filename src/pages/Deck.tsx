@@ -12,6 +12,7 @@ import AttachmentPicker from '../components/AttachmentPicker'
 import FormatToolbar from '../components/FormatToolbar'
 import CardText, { setImageWidth } from '../lib/cardText'
 import CardFilterBar from '../components/CardFilterBar'
+import CardEditor, { type CardValues } from '../components/CardEditor'
 import { useSettings } from '../lib/settings'
 import StudyFilter from '../components/StudyFilter'
 import { StarButton, TagAdder, TagChips } from '../components/CardMeta'
@@ -39,6 +40,7 @@ export default function Deck() {
   const [filter, setFilter] = useState<CardFilter>('all')
   const [sort, setSort] = useState<CardSort>('newest')
   const [taggingId, setTaggingId] = useState<string | null>(null) // the card whose tag field is open
+  const [editingId, setEditingId] = useState<string | null>(null) // the card being edited in the list
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
@@ -66,6 +68,14 @@ export default function Deck() {
   useEffect(() => {
     if (settingsReady) setFont(settings.default_font)
   }, [settingsReady, settings.default_font])
+
+  async function saveEdit(c: Card, values: CardValues) {
+    setError(null)
+    const { error: e } = await supabase.from('cards').update(values).eq('id', c.id)
+    if (e) return setError(e.message)
+    patchCard(c.id, values)
+    setEditingId(null)
+  }
 
   async function applyFontToAll() {
     setError(null)
@@ -316,7 +326,19 @@ export default function Deck() {
               <p className="muted">No cards match.</p>
             ) : (
               <ul className="list">
-                {shown.map((c) => (
+                {shown.map((c) =>
+                  editingId === c.id ? (
+                    <li key={c.id} className="edit-li">
+                      <CardEditor
+                        title="Edit card"
+                        submitLabel="Save changes"
+                        initial={{ front: c.front, back: c.back, font: c.font }}
+                        userId={userId}
+                        onSave={(values) => saveEdit(c, values)}
+                        onCancel={() => setEditingId(null)}
+                      />
+                    </li>
+                  ) : (
                   <li key={c.id} className="row between nowrap">
                     <span className="row nowrap card-row-main">
                       <StarButton starred={c.starred} onToggle={() => toggleStar(c)} />
@@ -343,11 +365,17 @@ export default function Deck() {
                         </span>
                       </span>
                     </span>
-                    <button className="link danger" onClick={() => remove(c.id)}>
-                      Delete
-                    </button>
+                    <span className="row nowrap">
+                      <button className="link" onClick={() => setEditingId(c.id)}>
+                        Edit
+                      </button>
+                      <button className="link danger" onClick={() => remove(c.id)}>
+                        Delete
+                      </button>
+                    </span>
                   </li>
-                ))}
+                  ),
+                )}
               </ul>
             )
           })()}

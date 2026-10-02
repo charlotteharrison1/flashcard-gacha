@@ -1532,3 +1532,6 @@ body:has(.pull)::before { display: none; }
 :root[data-ui-font='serif'] { --ui-font: 'Lora', Georgia, serif; --ui-size: 17px; }
 :root[data-ui-font='mono'] { --ui-font: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; --ui-size: 15px; }
 :root[data-ui-font='system'] { --ui-font: system-ui, -apple-system, 'Segoe UI', sans-serif; --ui-size: 16px; }
+
+.list li.edit-li { padding: 0; background: none; border: none; box-shadow: none; }
+.edit-li .card-editor { margin: 0; max-width: none; }
