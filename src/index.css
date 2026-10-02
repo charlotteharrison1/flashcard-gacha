@@ -256,22 +256,20 @@ button.danger { color: var(--red); }
 
 /* Sparkles: hidden until the pile is hovered, so they're a reward for noticing, not constant motion. */
 .fly { opacity: 0; pointer-events: none; }
-.coin-pile:hover .fly { animation: fly-around 5s steps(6) infinite; }
+.coin-pile:hover .fly { animation: fly-away 2.6s steps(5) 1 forwards; }
 .wing { opacity: 0; }
-.coin-pile:hover .wing-up { animation: wing-flap 0.18s steps(1) infinite; }
-.coin-pile:hover .wing-down { animation: wing-flap 0.18s steps(1) infinite reverse; }
+.coin-pile:hover .wing-up { animation: wing-flap 0.18s steps(1) 15; }
+.coin-pile:hover .wing-down { animation: wing-flap 0.18s steps(1) 15 reverse; }
 @keyframes wing-flap { 0% { opacity: 1; } 50% { opacity: 0; } }
-/* out of the pile, a lazy loop around it, and back in */
-@keyframes fly-around {
+/* out of the pile, a wobbly climb, and away; it plays once per hover */
+@keyframes fly-away {
   0% { transform: translate(0, 0); opacity: 0; }
-  6% { opacity: 1; }
-  20% { transform: translate(34px, -30px); }
-  36% { transform: translate(78px, -10px); }
-  50% { transform: translate(46px, -46px); }
-  66% { transform: translate(-30px, -38px); }
-  82% { transform: translate(-70px, -8px); }
-  96% { opacity: 1; }
-  100% { transform: translate(0, 0); opacity: 0; }
+  8% { transform: translate(4px, -6px); opacity: 1; }
+  25% { transform: translate(24px, -24px); }
+  42% { transform: translate(30px, -50px); }
+  60% { transform: translate(64px, -62px); }
+  80% { transform: translate(112px, -94px); }
+  100% { transform: translate(170px, -130px); opacity: 0; }
 }
 .sparkle { opacity: 0; pointer-events: none; animation: pixel-twinkle 1.6s steps(1) infinite; }
 @keyframes pixel-twinkle { 0% { opacity: 0; } 20% { opacity: 1; } 40% { opacity: 0; } 60% { opacity: 1; } 70%, 100% { opacity: 0; } }
