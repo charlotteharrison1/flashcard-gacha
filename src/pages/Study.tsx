@@ -6,11 +6,11 @@ import { useEarnings } from '../lib/earnings'
 import { useAuth } from '../lib/auth'
 import type { Card, Deck, Rating, ReviewResult } from '../lib/types'
 import Confetti from '../components/Confetti'
-import Earnings from '../components/Earnings'
 import CardText from '../lib/cardText'
 
 const SESSION_LIMIT = 100
-const COIN_FLY_MS = 750
+const COIN_POOF_MS = 800
+const SPARK_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315]
 
 const RATINGS: { value: Rating; label: string; color: string }[] = [
   { value: 0, label: 'Again', color: 'red' },
@@ -19,57 +19,80 @@ const RATINGS: { value: Rating; label: string; color: string }[] = [
   { value: 3, label: 'Easy', color: 'green' },
 ]
 
-type Flyer = { id: number; x: number; y: number; dx: number; dy: number; amount: number }
+type Poof = { id: number; x: number; y: number }
 type DeckSettings = Pick<Deck, 'show_both' | 'float_anim'>
 
-export default function Study() {
+/** Fisher-Yates, so a deckbox round mixes its decks instead of running through them one after another. */
+function shuffle<T>(items: T[]): T[] {
+  const a = [...items]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
+const DEFAULT_SETTINGS: DeckSettings = { show_both: false, float_anim: true }
+
+/** `scope` "deck" studies the deck in the URL; "box" studies every deck in that deckbox, shuffled together. */
+export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   const { id = '' } = useParams()
   const [searchParams] = useSearchParams()
   const studyAll = searchParams.get('all') === '1'
-  const { balance, setBalance } = useEarnings()
+  const { setBalance } = useEarnings()
   const { session } = useAuth()
   const userId = session?.user.id ?? '' // Study is behind an authenticated route, so this is always set
-  const [deck, setDeck] = useState<DeckSettings | null>(null)
+  const [decks, setDecks] = useState<Record<string, DeckSettings> | null>(null) // per-deck display settings
   const [queue, setQueue] = useState<Card[] | null>(null)
   const [total, setTotal] = useState(0)
   const [revealed, setRevealed] = useState(false)
   const [done, setDone] = useState(0)
   const [earned, setEarned] = useState(0)
   const [turn, setTurn] = useState(0)
-  const [flyers, setFlyers] = useState<Flyer[]>([])
+  const [poofs, setPoofs] = useState<Poof[]>([])
   const [error, setError] = useState<string | null>(null)
   const saving = useRef(false)
   const flyId = useRef(0)
-  const earningsRef = useRef<HTMLDivElement>(null)
   const cardAreaRef = useRef<HTMLDivElement>(null)
-  const suit = deckSuit(id)
+  const studyPath = scope === 'box' ? `/boxes/${id}` : `/decks/${id}`
 
   useEffect(() => {
-    let cardsQuery = supabase.from('cards').select('*').eq('deck_id', id).order('due_at').limit(SESSION_LIMIT)
-    if (!studyAll) cardsQuery = cardsQuery.lte('due_at', new Date().toISOString())
-
-    Promise.all([supabase.from('decks').select('show_both, float_anim').eq('id', id).single(), cardsQuery]).then(([d, c]) => {
+    let cancelled = false
+    async function load() {
+      const decksQuery = supabase.from('decks').select('id, show_both, float_anim')
+      const d = await (scope === 'box' ? decksQuery.eq('deckbox_id', id) : decksQuery.eq('id', id))
       if (d.error) return setError(d.error.message)
-      if (c.error) return setError(c.error.message)
-      setDeck(d.data)
-      setQueue(c.data as Card[])
-      setTotal(c.data.length)
-    })
-  }, [id, studyAll])
+      const ids = d.data.map((x) => x.id)
 
-  // Sends a little coin from the card to the earnings pile. Positions are measured fresh each
-  // time (not cached), since the layout shifts as "N / M cleared" and the card itself change.
-  function flyCoin(amount: number) {
+      let cards: Card[] = []
+      if (ids.length > 0) {
+        let cardsQuery = supabase.from('cards').select('*').in('deck_id', ids).order('due_at').limit(SESSION_LIMIT)
+        if (!studyAll) cardsQuery = cardsQuery.lte('due_at', new Date().toISOString())
+        const c = await cardsQuery
+        if (c.error) return setError(c.error.message)
+        cards = c.data as Card[]
+      }
+      if (scope === 'box') cards = shuffle(cards)
+
+      if (cancelled) return
+      setDecks(Object.fromEntries(d.data.map((x) => [x.id, { show_both: x.show_both, float_anim: x.float_anim }])))
+      setQueue(cards)
+      setTotal(cards.length)
+    }
+    load()
+    return () => {
+      cancelled = true
+    }
+  }, [id, studyAll, scope])
+
+  // A coin pops up over the card, then poofs into sparks. The position is measured fresh each time,
+  // since the layout shifts as "N / M cleared" and the card itself change.
+  function poofCoin() {
     const from = cardAreaRef.current?.getBoundingClientRect()
-    const to = earningsRef.current?.getBoundingClientRect()
-    if (!from || !to) return
+    if (!from) return
     const id = ++flyId.current
-    const x = from.left + from.width / 2
-    const y = from.top + 40
-    const dx = to.left + to.width / 2 - x
-    const dy = to.top + to.height / 2 - y
-    setFlyers((f) => [...f, { id, x, y, dx, dy, amount }])
-    window.setTimeout(() => setFlyers((f) => f.filter((c) => c.id !== id)), COIN_FLY_MS)
+    setPoofs((p) => [...p, { id, x: from.left + from.width / 2, y: from.top + from.height * 0.4 }])
+    window.setTimeout(() => setPoofs((p) => p.filter((c) => c.id !== id)), COIN_POOF_MS)
   }
 
   async function rate(card: Card, rating: Rating) {
@@ -82,7 +105,7 @@ export default function Study() {
     const { coins, ...fields } = data as ReviewResult
 
     if (coins > 0) {
-      flyCoin(coins)
+      poofCoin()
       setBalance((b) => (b ?? 0) + coins)
       setEarned((e) => e + coins)
     }
@@ -141,7 +164,7 @@ export default function Study() {
   })
 
   if (error) return <p className="error">{error}</p>
-  if (!queue || !deck) return <p className="muted">Shuffling…</p>
+  if (!queue || !decks) return <p className="muted">Shuffling…</p>
 
   if (!card) {
     return (
@@ -155,14 +178,18 @@ export default function Study() {
             <p className="muted">Spend them on the pull screen.</p>
           </>
         ) : (
-          <p className="muted">{studyAll ? 'This deck has no cards yet.' : 'No cards are due in this deck right now.'}</p>
+          <p className="muted">
+            {studyAll
+              ? `This ${scope === 'box' ? 'deckbox' : 'deck'} has no cards yet.`
+              : `No cards are due in this ${scope === 'box' ? 'deckbox' : 'deck'} right now.`}
+          </p>
         )}
         <div className="row center-row">
-          <Link className="button gold" to={`/decks/${id}`}>
-            Back to deck
+          <Link className="button gold" to={studyPath}>
+            {scope === 'box' ? 'Back to deckbox' : 'Back to deck'}
           </Link>
           {done === 0 && !studyAll && (
-            <Link className="button gold" to={`/decks/${id}/study?all=1`}>
+            <Link className="button gold" to={`${studyPath}/study?all=1`}>
               Study anyway
             </Link>
           )}
@@ -177,6 +204,9 @@ export default function Study() {
     )
   }
 
+  // Each card keeps its own deck's look, so a shuffled deckbox round mixes suits and settings.
+  const deck = decks[card.deck_id] ?? DEFAULT_SETTINGS
+  const suit = deckSuit(card.deck_id)
   const pct = total ? Math.round((done / total) * 100) : 0
   const faceClass = isRedSuit(suit) ? 'face red' : 'face'
   const fontClass = `font-${card.font}`
@@ -184,12 +214,8 @@ export default function Study() {
   return (
     <>
       <p>
-        <Link to={`/decks/${id}`}>← Back to deck</Link>
+        <Link to={studyPath}>← Back to {scope === 'box' ? 'deckbox' : 'deck'}</Link>
       </p>
-
-      <div className="study-wallet" ref={earningsRef}>
-        <Earnings compact balance={balance} />
-      </div>
 
       <div className="progress" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
         <div className="progress-fill" style={{ width: `${pct}%` }} />
@@ -197,7 +223,6 @@ export default function Study() {
       <p className="muted center-text">
         {done} / {total} cleared
       </p>
-      {studyAll && <p className="muted center-text">Cards that aren't due yet don't earn coins.</p>}
 
       <div className="study" key={turn} ref={cardAreaRef}>
         {deck.show_both ? (
@@ -301,14 +326,12 @@ export default function Study() {
         </div>
       </div>
 
-      {flyers.map((f) => (
-        <div
-          key={f.id}
-          className="fly-coin"
-          style={{ left: f.x, top: f.y, '--dx': `${f.dx}px`, '--dy': `${f.dy}px` } as CSSProperties}
-          aria-hidden="true"
-        >
-          +{f.amount}
+      {poofs.map((f) => (
+        <div key={f.id} className="coin-poof" style={{ left: f.x, top: f.y }} aria-hidden="true">
+          <span className="poof-coin" />
+          {SPARK_ANGLES.map((a) => (
+            <i key={a} className="poof-spark" style={{ '--a': `${a}deg` } as CSSProperties} />
+          ))}
         </div>
       ))}
     </>

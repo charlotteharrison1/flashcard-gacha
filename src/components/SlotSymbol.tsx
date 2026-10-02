@@ -1,8 +1,7 @@
-import { SPRITES } from '../lib/sprites'
-import type { SymbolId } from '../lib/slots'
+import { SPRITES, type SpriteId } from '../lib/sprites'
 
 /** A pixel-art sprite (see lib/sprites.ts). Sized in CSS as a whole multiple of its grid so pixels stay square. */
-export function SlotSymbol({ id }: { id: SymbolId | 'ball' }) {
+export function SlotSymbol({ id }: { id: SpriteId }) {
   const { size, paths } = SPRITES[id]
   return (
     <svg viewBox={`0 0 ${size} ${size}`} shapeRendering="crispEdges" aria-hidden="true">

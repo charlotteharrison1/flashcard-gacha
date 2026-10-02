@@ -7,6 +7,9 @@ import type { SymbolId } from './slots'
  */
 export type Sprite = { size: number; paths: { color: string; d: string }[] }
 
+/** Everything drawable: the slot symbols, the lever knob, the four card suits (home page frame corners) and a deckbox. */
+export type SpriteId = SymbolId | 'ball' | 'spade' | 'heart' | 'club' | 'suitDiamond' | 'deckbox'
+
 const OUTLINE = '#0a1218'
 
 const PALETTE: Record<string, string> = {
@@ -19,9 +22,11 @@ const PALETTE: Record<string, string> = {
   B: '#1e9bff', // blue
   C: '#4dd8ff', // cyan
   O: '#ff9430', // orange
+  N: '#3d4455', // slate (black suits)
+  M: '#8a95ab', // slate highlight
 }
 
-const SHADE: Record<SymbolId | 'ball', Record<string, string>> = {
+const SHADE: Record<SpriteId, Record<string, string>> = {
   star: { D: '#b98410' },
   cherry: {},
   seven: { D: '#b3231a' },
@@ -29,6 +34,11 @@ const SHADE: Record<SymbolId | 'ball', Record<string, string>> = {
   diamond: { D: '#1e8fc4' },
   bell: { D: '#b85c0a' },
   ball: { D: '#b3231a' },
+  spade: {},
+  heart: {},
+  club: {},
+  suitDiamond: { D: '#b3231a' },
+  deckbox: { D: '#b85c0a' },
 }
 
 // Built from glyphs so the letters stay lined up.
@@ -52,7 +62,7 @@ function barRows(): string[] {
   return rows
 }
 
-const FILLS: Record<SymbolId | 'ball', string[]> = {
+const FILLS: Record<SpriteId, string[]> = {
   star: [
     '................',
     '.......YY.......',
@@ -144,6 +154,75 @@ const FILLS: Record<SymbolId | 'ball', string[]> = {
     '......YYYY......',
     '................',
   ],
+  // Card suits (11x11), used as corner jewels on the home page frame
+  heart: [
+    '...........',
+    '...........',
+    '..RR...RR..',
+    '.RRRR.RRRR.',
+    '.RWRRRRRRR.',
+    '.RRRRRRRRR.',
+    '..RRRRRRR..',
+    '...RRRRR...',
+    '....RRR....',
+    '.....R.....',
+    '...........',
+  ],
+  spade: [
+    '...........',
+    '.....N.....',
+    '....NNN....',
+    '...NNNNN...',
+    '..NNMNNNN..',
+    '.NNNNNNNNN.',
+    '.NNNNNNNNN.',
+    '..NNNNNNN..',
+    '.....N.....',
+    '....NNN....',
+    '...........',
+  ],
+  club: [
+    '...........',
+    '....NNN....',
+    '....NMN....',
+    '....NNN....',
+    '..NN.N.NN..',
+    '.NNMNNNNNN.',
+    '.NNNNNNNNN.',
+    '..NN.N.NN..',
+    '.....N.....',
+    '....NNN....',
+    '...........',
+  ],
+  suitDiamond: [
+    '...........',
+    '.....R.....',
+    '....RRR....',
+    '...RWRRR...',
+    '..RRRRRRD..',
+    '.RRRRRRRRD.',
+    '..RRRRRRD..',
+    '...RRRRD...',
+    '....RRD....',
+    '.....D.....',
+    '...........',
+  ],
+  // A card deckbox (13x13): orange lid, blue body, gold clasp
+  deckbox: [
+    '.............',
+    '.............',
+    '.OOOOOOOOOOO.',
+    '.OWWWWWWWWWO.',
+    '.OOOOOOOOOOO.',
+    '.DDDDDDDDDDD.',
+    '.BBBBBBBBBBB.',
+    '.BBBBBYBBBBB.',
+    '.BBBBYYYBBBB.',
+    '.BBBBBYBBBBB.',
+    '.BBBBBBBBBBB.',
+    '.DDDDDDDDDDD.',
+    '.............',
+  ],
   // The lever knob (10x10)
   ball: [
     '..........',
@@ -188,6 +267,6 @@ function build(rows: string[], shade: Record<string, string>): Sprite {
   return { size: w, paths }
 }
 
-export const SPRITES: Record<SymbolId | 'ball', Sprite> = Object.fromEntries(
-  (Object.keys(FILLS) as (SymbolId | 'ball')[]).map((id) => [id, build(FILLS[id], SHADE[id])]),
-) as Record<SymbolId | 'ball', Sprite>
+export const SPRITES: Record<SpriteId, Sprite> = Object.fromEntries(
+  (Object.keys(FILLS) as SpriteId[]).map((id) => [id, build(FILLS[id], SHADE[id])]),
+) as Record<SpriteId, Sprite>

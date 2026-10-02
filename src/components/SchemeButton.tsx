@@ -20,7 +20,6 @@ export default function SchemeButton() {
       aria-label={`Colour scheme: ${current.label}. Click to change.`}
     >
       <span className="swatch" style={{ background: current.swatch }} />
-      {current.label}
     </button>
   )
 }

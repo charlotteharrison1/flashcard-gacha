@@ -7,6 +7,7 @@ import Deck from './pages/Deck'
 import Study from './pages/Study'
 import Preview from './pages/Preview'
 import Pull from './pages/Pull'
+import Deckbox from './pages/Deckbox'
 import SchemeButton from './components/SchemeButton'
 
 function Layout() {
@@ -21,7 +22,9 @@ function Layout() {
         </Link>
         <span className="row">
           <SchemeButton />
-          <span className="muted">{session.user.email}</span>
+          <span className="muted user-email" title={session.user.email}>
+            {session.user.email}
+          </span>
           <button className="link" onClick={() => supabase.auth.signOut()}>
             Sign out
           </button>
@@ -59,7 +62,9 @@ export default function App() {
           <Route element={<Layout />}>
             <Route index element={<Decks />} />
             <Route path="decks/:id" element={<Deck />} />
-            <Route path="decks/:id/study" element={<Study />} />
+            <Route path="decks/:id/study" element={<Study scope="deck" />} />
+            <Route path="boxes/:id" element={<Deckbox />} />
+            <Route path="boxes/:id/study" element={<Study scope="box" />} />
             <Route path="decks/:id/preview" element={<Preview />} />
             <Route path="pull" element={<Pull />} />
           </Route>

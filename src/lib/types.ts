@@ -6,10 +6,18 @@ export type Deck = {
   created_at: string
   color: number | null
   icon_url: string | null
+  /** The deckbox (folder) this deck is in, if any. */
+  deckbox_id: string | null
   /** Study page shows front and back together, skipping flip-to-reveal. */
   show_both: boolean
   /** The study card's gentle floating animation. */
   float_anim: boolean
+}
+
+export type Deckbox = {
+  id: string
+  name: string
+  created_at: string
 }
 
 export type Card = {

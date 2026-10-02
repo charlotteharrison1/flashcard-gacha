@@ -364,6 +364,90 @@ button.danger { color: var(--red); }
 
 .collection { max-width: 780px; margin: 36px auto 0; }
 
+/* ---------- Home: one framed box on a checkerboard ---------- */
+
+/* Low-contrast checkerboard behind the box. Only the home page has a .home-box, so only it gets this. */
+body:has(.home-box) {
+  background:
+    conic-gradient(rgba(0, 0, 0, 0.13) 25%, transparent 0 50%, rgba(0, 0, 0, 0.13) 0 75%, transparent 0) 0 0 / 96px 96px,
+    var(--felt);
+}
+body:has(.home-box)::before { display: none; }
+body:has(.home-box) header { padding-bottom: 0; }
+
+.home-box {
+  position: relative;
+  max-width: 880px;
+  margin: 14px auto 0; /* the corner suits overhang the top by 14px, so this is as tight as it can go */
+  padding: 28px clamp(16px, 4vw, 40px) 40px;
+  /* Dark panel with a faint dither; clipped to the padding box so the frame's notched corners show the checkerboard. */
+  background:
+    conic-gradient(rgba(255, 255, 255, 0.035) 25%, transparent 0 50%, rgba(255, 255, 255, 0.035) 0 75%, transparent 0) 0 0 / 8px 8px,
+    var(--felt-dark);
+  background-clip: padding-box;
+  /* 9x9-unit pixel frame (black / gold / black bands, notched corners) stretched to a 12px border: 4px per frame pixel. */
+  border: 12px solid transparent;
+  border-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%229%22 height=%229%22 viewBox=%220 0 9 9%22 shape-rendering=%22crispEdges%22%3E%3Crect x=%221%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%222%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%223%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%224%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%225%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%226%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%227%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%223%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%224%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%225%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%226%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%227%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%222%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3C/svg%3E") 3 / 12px stretch;
+  /* drop-shadow (not box-shadow) so the shadow follows the notched corners */
+  filter: drop-shadow(8px 8px 0 rgba(0, 0, 0, 0.3));
+}
+.home-box .wallet { margin-top: 0; }
+.home-box .collection { margin: 0 auto; }
+
+/* Compact sizing so the whole box fits on one screen */
+.home-box { max-width: 600px; padding: 18px clamp(14px, 3vw, 26px) 24px; }
+.home-box .coin-pile { width: clamp(120px, 14vw, 160px); }
+.home-box .sale { width: clamp(124px, 14vw, 160px); }
+/* The sticker is smaller here, so its Spend button and text shrink with it */
+.home-box .sale .sale-btn { font-size: 0.8rem; padding: 4px 12px; letter-spacing: 0.1em; }
+.home-box .sale-tag { font-size: 0.75rem; }
+.home-box .sale-cost { font-size: 0.6rem; }
+.home-box .earn-value { font-size: 2.4rem; }
+.home-box .earn-label { font-size: 0.75rem; }
+.home-box .earn-sub { font-size: 0.7rem; }
+/* Three decks across, centred */
+.home-box .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; max-width: 420px; margin: 10px auto; }
+@media (max-width: 480px) { .home-box .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.home-box .tile-main { gap: 6px; padding: 10px 6px; }
+.home-box .tile-suit { font-size: 1.9rem; }
+.home-box .tile-icon { width: 40px; height: 40px; }
+.home-box .tile-plate { font-size: 0.75rem; padding: 3px 6px; }
+.home-box .tile-count { font-size: 0.65rem; }
+.home-box .tile-del { width: 22px; height: 22px; font-size: 1rem; top: -8px; right: -8px; }
+.home-box .new-stack { gap: 8px; }
+.home-box .new-deck-plus { font-size: 1.5rem; }
+.home-box .new-deck-btn { font-size: 0.7rem; gap: 2px; border-width: 2px; }
+.home-box .new-half .new-deck-form { inset: 4px; gap: 4px; }
+.home-box .new-deck-form input { font-size: 0.7rem; padding: 4px 6px; border-width: 2px; }
+.home-box .new-deck-form button.sm { font-size: 0.65rem; padding: 3px 8px; }
+
+/* The "new deck" and "new deckbox" buttons share one tile, one above the other */
+.new-stack { display: flex; flex-direction: column; gap: 10px; }
+.new-half { flex: 1; min-height: 0; }
+.new-half .new-deck-form { inset: 6px; gap: 6px; }
+.new-half .new-deck-plus { font-size: 1.8rem; }
+
+/* Drag a deck onto a deckbox */
+.tile.dragging { opacity: 0.45; }
+.tile.drop-target { transform: translateY(-8px) scale(1.04); outline: 4px dashed var(--gold); outline-offset: 4px; }
+
+/* Card-suit jewels on the four corners */
+.home-suit { position: absolute; z-index: 1; width: 33px; height: 33px; pointer-events: none; }
+.home-suit svg { display: block; width: 100%; height: 100%; }
+.home-suit.tl { top: -14px; left: -14px; }
+.home-suit.tr { top: -14px; right: -14px; }
+.home-suit.bl { bottom: -14px; left: -14px; }
+.home-suit.br { bottom: -14px; right: -14px; }
+
+/* Pixel dashes separating the wallet from the decks */
+.home-divider {
+  height: 4px;
+  max-width: 560px;
+  margin: 14px auto 20px;
+  background: repeating-linear-gradient(90deg, var(--gold) 0 8px, transparent 8px 16px);
+  opacity: 0.55;
+}
+
 .tiles {
   list-style: none;
   padding: 0;
@@ -448,6 +532,7 @@ button.danger { color: var(--red); }
   transition: opacity 0.15s, transform 0.08s;
 }
 .tile:hover .tile-del, .tile-del:focus-visible { opacity: 1; }
+.tile-out { right: auto; left: -10px; }
 @media (hover: none) { .tile-del { opacity: 1; } }
 
 .hero {
@@ -465,6 +550,22 @@ button.danger { color: var(--red); }
 .hero-info { flex: 1; min-width: 160px; }
 .hero h2 { margin: 0 0 4px; }
 .hero p { margin: 0; }
+.tile-icon { display: block; width: 52px; height: 52px; }
+.tile-icon svg { display: block; width: 100%; height: 100%; }
+.hero-icon { flex-shrink: 0; }
+.hero-icon-img { flex-shrink: 0; width: 52px; height: 52px; object-fit: cover; border: 3px solid var(--line); }
+/* Deckbox tile: same card back, with a lid band across the top so it reads as a box */
+.boxback::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -4px;
+  right: -4px;
+  height: 18%;
+  background: var(--a);
+  filter: brightness(0.75);
+  border: 3px solid var(--line);
+}
 .hero-done { font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.06em; }
 /* ---------- Customize: colour swatches + icon upload ---------- */
 
@@ -557,8 +658,7 @@ button.danger { color: var(--red); }
 }
 
 /* Page is full width, but a single flashcard reads badly at 1800px, so the study area stays centred. */
-.progress, .study, .study-wallet { max-width: 960px; margin-left: auto; margin-right: auto; }
-.study-wallet { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+.progress, .study { max-width: 960px; margin-left: auto; margin-right: auto; }
 
 .study {
   width: 100%;
@@ -740,6 +840,14 @@ button.danger { color: var(--red); }
 /* ---------- Pull screen (compact, centred), slot machine, SPEND ---------- */
 
 .scheme-btn { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; font-size: 0.85rem; }
+
+/* Header: keep the account controls small so they don't compete with the page */
+header .row { gap: 8px; }
+header .scheme-btn { padding: 3px 6px; }
+header .swatch { width: 12px; height: 12px; }
+header .user-email { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; }
+header button.link { font-size: 0.75rem; }
+header .brand { font-size: 1.2rem; }
 .swatch { width: 14px; height: 14px; border: 2px solid var(--line); border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35); }
 
 .pull { max-width: 720px; margin: 0 auto; overflow-x: clip; }
@@ -1023,31 +1131,43 @@ button.danger { color: var(--red); }
   .lever { position: relative; left: auto; top: auto; transform: none; flex: 0 0 auto; }
 }
 
-/* ---------- Flying coin (study correct-answer feedback) ---------- */
+/* ---------- Coin poof (study correct-answer feedback): a coin pops up, then bursts into sparks ---------- */
 
-.fly-coin {
-  position: fixed;
-  z-index: 50;
-  transform: translate(-50%, -50%);
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: #3a2500;
-  text-shadow: none;
+.coin-poof { position: fixed; z-index: 50; width: 0; height: 0; pointer-events: none; }
+.poof-coin {
+  position: absolute;
+  left: -16px;
+  top: -16px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #fff3b8, var(--gold) 55%, var(--gold-d));
   border: 2px solid var(--line);
-  pointer-events: none;
-  animation: fly-coin 0.75s cubic-bezier(0.3, 0.6, 0.3, 1) forwards;
+  animation: poof-coin 0.8s ease-out forwards;
 }
-@keyframes fly-coin {
-  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-  65% { opacity: 1; }
-  100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.35); opacity: 0; }
+/* Pop in and hover for a beat, then vanish at the moment the sparks fly out */
+@keyframes poof-coin {
+  0% { transform: scale(0.2) translateY(8px); opacity: 0; }
+  25% { transform: scale(1.2) translateY(-10px); opacity: 1; }
+  45% { transform: scale(1) translateY(-14px); opacity: 1; }
+  55% { transform: scale(1.3) translateY(-14px); opacity: 1; }
+  62%, 100% { transform: scale(0) translateY(-14px); opacity: 0; }
+}
+.poof-spark {
+  position: absolute;
+  left: -3px;
+  top: -17px; /* centred on where the coin hovers */
+  width: 6px;
+  height: 6px;
+  background: #fff3b8;
+  opacity: 0;
+  animation: poof-spark 0.8s ease-out forwards;
+}
+.poof-spark:nth-child(even) { background: var(--gold); }
+@keyframes poof-spark {
+  0%, 52% { transform: rotate(var(--a)) translateX(0) scale(1); opacity: 0; }
+  56% { opacity: 1; }
+  100% { transform: rotate(var(--a)) translateX(40px) scale(0.3); opacity: 0; }
 }
 
 /* ---------- Big spin: 10-coin batch reveal, full screen ---------- */
@@ -1137,7 +1257,8 @@ button.danger { color: var(--red); }
 
 @media (prefers-reduced-motion: reduce) {
   .logo, .flip, .celebrate .big-mark, .progress-fill, .study, .spend::after, .sale .sale-btn, .sale-shine::after, .slot.spinning, .slot.spinning .bulb, .lever.armed .lever-ball::after, .coin-panel.nudge, .coin-drop, .slot.tension .reel:nth-child(3)::before, .slot.win-gold .reel, .slot.win-silver .reel, .slot.win-gold .bulb, .slot.win-silver .bulb { animation: none; }
-  .fly-coin, .bigspin, .bigspin-strip { animation: none !important; transition: none !important; }
+  .coin-poof { display: none; }
+  .bigspin, .bigspin-strip { animation: none !important; transition: none !important; }
   .bigspin { opacity: 1; transform: scale(1); }
   .coin-shine, .coin-new, .coin-pile-empty, .sparkle, .coin-pile:hover .sparkle { animation: none !important; }
   .sale { transition: none; }

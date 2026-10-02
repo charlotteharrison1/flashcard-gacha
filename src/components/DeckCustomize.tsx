@@ -4,9 +4,16 @@ import { uploadImage } from '../lib/storage'
 import { errorMessage } from '../lib/errors'
 import { DECK_COLOR_COUNT } from '../lib/theme'
 
-type Props = { deckId: string; color: number | null; iconUrl: string | null; onSaved: () => void }
+type Props = {
+  deckId: string
+  color: number | null
+  iconUrl: string | null
+  onSaved: () => void
+  /** Which table the id belongs to: customising a deck (default) or a deckbox. */
+  table?: 'decks' | 'deckboxes'
+}
 
-export default function DeckCustomize({ deckId, color, iconUrl, onSaved }: Props) {
+export default function DeckCustomize({ deckId, color, iconUrl, onSaved, table = 'decks' }: Props) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -14,7 +21,7 @@ export default function DeckCustomize({ deckId, color, iconUrl, onSaved }: Props
   async function setColor(i: number) {
     setError(null)
     // Choosing a colour swaps out a custom icon, since the two are alternatives, not layers.
-    const { error } = await supabase.from('decks').update({ color: i, icon_url: null }).eq('id', deckId)
+    const { error } = await supabase.from(table).update({ color: i, icon_url: null }).eq('id', deckId)
     if (error) setError(error.message)
     else onSaved()
   }
@@ -26,8 +33,8 @@ export default function DeckCustomize({ deckId, color, iconUrl, onSaved }: Props
     setBusy(true)
     setError(null)
     try {
-      const { url } = await uploadImage(file, 'deck-icons')
-      const { error } = await supabase.from('decks').update({ icon_url: url }).eq('id', deckId)
+      const { url } = await uploadImage(file, table === 'decks' ? 'deck-icons' : 'box-icons')
+      const { error } = await supabase.from(table).update({ icon_url: url }).eq('id', deckId)
       if (error) throw error
       onSaved()
     } catch (err) {
@@ -39,7 +46,7 @@ export default function DeckCustomize({ deckId, color, iconUrl, onSaved }: Props
 
   async function clearIcon() {
     setError(null)
-    const { error } = await supabase.from('decks').update({ icon_url: null }).eq('id', deckId)
+    const { error } = await supabase.from(table).update({ icon_url: null }).eq('id', deckId)
     if (error) setError(error.message)
     else onSaved()
   }
