@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { deckSuit, effectiveColor } from '../lib/theme'
 import Earnings from '../components/Earnings'
-import SpendButton from '../components/SpendButton'
+import SaleSticker from '../components/SaleSticker'
 import { SlotSymbol } from '../components/SlotSymbol'
 import { useEarnings } from '../lib/earnings'
 import { useSettings } from '../lib/settings'
@@ -84,12 +84,12 @@ export default function Decks() {
   const [showSettings, setShowSettings] = useState(false)
   const boxRef = useRef<HTMLDivElement>(null)
 
-  // The gloves around the box all point at the Spend button, so tell the CSS where its centre is (relative to the box).
+  // The gloves around the box all point at the sale sticker, so tell the CSS where its centre is (relative to the box).
   useLayoutEffect(() => {
     const box = boxRef.current
     if (!box) return
     const place = () => {
-      const sticker = box.querySelector('.spend-cta')
+      const sticker = box.querySelector('.sale')
       if (!sticker) return
       const b = box.getBoundingClientRect()
       const s = sticker.getBoundingClientRect()
@@ -183,7 +183,7 @@ export default function Decks() {
       </span>
 
       <section className="wallet">
-        <SpendButton />
+        <SaleSticker />
         <Earnings balance={balance} />
       </section>
 
