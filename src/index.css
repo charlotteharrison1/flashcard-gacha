@@ -1609,6 +1609,9 @@ body:has(.pull)::before { display: none; }
 .glove-top svg { transform: rotate(90deg); }
 .home-box:has(.sale:hover) .glove-left, .glove-left:hover { animation: glove-nudge-right 0.9s steps(2) infinite; }
 .home-box:has(.sale:hover) .glove-top, .glove-top:hover { animation: glove-nudge-down 0.9s steps(2) infinite; }
+/* each glove runs on its own timer (different length and start point) so they don't move in lockstep */
+.home-box:has(.sale:hover) .glove-left-low, .glove-left-low:hover { animation-duration: 1.15s; animation-delay: -0.35s; }
+.home-box:has(.sale:hover) .glove-top, .glove-top:hover { animation-duration: 0.8s; animation-delay: -0.6s; }
 @keyframes glove-nudge-right { 50% { transform: translateX(6px); } }
 @keyframes glove-nudge-down { 50% { transform: translateY(6px); } }
 @media (max-width: 760px) { .home-glove { display: none; } }
