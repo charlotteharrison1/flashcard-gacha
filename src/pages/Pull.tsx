@@ -202,13 +202,7 @@ export default function Pull() {
             Insert {BULK_PULLS} coins
           </button>
         </div>
-        <p className="muted">
-          {balance === null
-            ? ' '
-            : broke
-              ? 'Out of coins. Earn more by studying.'
-              : `${plural(PULL_COST, 'coin')} per pull. ${BULK_PULLS} coins loads ${BULK_PULLS} fast pulls.`}
-        </p>
+        {broke && <p className="muted">Out of coins. Earn more by studying.</p>}
         {error && <p className="error">{error}</p>}
       </div>
 
