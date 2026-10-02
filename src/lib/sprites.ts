@@ -8,7 +8,7 @@ import type { SymbolId } from './slots'
 export type Sprite = { size: number; paths: { color: string; d: string }[] }
 
 /** Everything drawable: the slot symbols, the lever knob, the four card suits (home page frame corners) and a deckbox. */
-export type SpriteId = SymbolId | 'ball' | 'coin' | 'arrow' | 'spade' | 'heart' | 'club' | 'suitDiamond' | 'deckbox'
+export type SpriteId = SymbolId | 'ball' | 'coin' | 'arrow' | 'goldBadge' | 'silverBadge' | 'spade' | 'heart' | 'club' | 'suitDiamond' | 'deckbox'
 
 const OUTLINE = '#0a1218'
 
@@ -41,6 +41,8 @@ const SHADE: Record<SpriteId, Record<string, string>> = {
   deckbox: { D: '#b85c0a' },
   coin: { D: '#b98410' },
   arrow: { D: '#b98410' },
+  goldBadge: { D: '#b98410' },
+  silverBadge: { Y: '#cfd8e3', D: '#7d8a9a', W: '#ffffff' },
 }
 
 // Built from glyphs so the letters stay lined up.
@@ -62,6 +64,36 @@ function barRows(): string[] {
   rows.push('.BBBBBBBBBBBBBB.')
   while (rows.length < 16) rows.push('................')
   return rows
+}
+
+/** A round medal (15x15): shaded disc, a light arc, a little star, and two ribbon tails. Gold/silver differ only by palette. */
+function medalRows(): string[] {
+  const N = 15
+  const cx = 7
+  const cy = 6
+  const g: string[][] = Array.from({ length: N }, () => Array<string>(N).fill('.'))
+  // ribbon tails, behind the disc
+  for (let y = 10; y <= 13; y++) {
+    for (const x of [4, 5, 6, 8, 9, 10]) g[y][x] = 'R'
+  }
+  g[13][5] = '.'
+  g[13][9] = '.'
+  // disc
+  for (let y = 0; y < N; y++) {
+    for (let x = 0; x < N; x++) {
+      const dx = x - cx
+      const dy = y - cy
+      const d2 = dx * dx + dy * dy
+      if (d2 > 25) continue
+      if (dx + dy >= 5 && d2 >= 16) g[y][x] = 'D' // shade, lower right
+      else if (dx <= -3 && dy <= -2 && d2 >= 13) g[y][x] = 'W' // highlight arc, upper left
+      else g[y][x] = 'Y'
+    }
+  }
+  // star in the middle
+  const star = ['..W..', 'WWWWW', '.WWW.', '.W.W.']
+  star.forEach((row, r) => [...row].forEach((ch, c) => ch === 'W' && (g[cy - 2 + r][cx - 2 + c] = 'W')))
+  return g.map((row) => row.join(''))
 }
 
 const FILLS: Record<SpriteId, string[]> = {
@@ -220,6 +252,8 @@ const FILLS: Record<SpriteId, string[]> = {
     '..YYYY..',
     '........',
   ],
+  goldBadge: medalRows(),
+  silverBadge: medalRows(),
   // A chunky arrow pointing left (11x11)
   arrow: [
     '...........',

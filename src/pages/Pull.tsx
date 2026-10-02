@@ -204,8 +204,12 @@ export default function Pull() {
         {armed && <span className="gold-text">{plural(remaining, 'pull')} loaded. Drag the lever down!</span>}
       </div>
 
-      <section className="panel">
-        <h3>Winnings</h3>
+      <section className="panel winnings-panel">
+        <h3>
+          <SlotSymbol id="star" />
+          Winnings
+          <SlotSymbol id="star" />
+        </h3>
         <div className="winnings">
           <div className="win">
             <Badge tier="gold" />
@@ -218,6 +222,9 @@ export default function Pull() {
             <span className="win-label">Silver</span>
           </div>
           <div className="win">
+            <span className="win-icon">
+              <SlotSymbol id="coin" />
+            </span>
             <span className="win-count">{winnings?.pulls ?? '–'}</span>
             <span className="win-label">Total pulls</span>
           </div>

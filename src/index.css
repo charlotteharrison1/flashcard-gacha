@@ -300,7 +300,7 @@ button.danger { color: var(--red); }
 }
 .earn-panel { position: relative; width: min(100%, 326px); max-width: 100%; padding-top: 12px; padding-bottom: 12px; }
 /* a row of chasing marquee lights along the top and bottom edges */
-.earn-panel::before, .earn-panel::after {
+.earn-panel::before, .earn-panel::after, .winnings-panel::before, .winnings-panel::after {
   content: '';
   position: absolute;
   left: 4px;
@@ -309,8 +309,8 @@ button.danger { color: var(--red); }
   background: repeating-linear-gradient(90deg, #ffe27a 0 6px, transparent 6px 12px);
   animation: marquee-chase 0.8s steps(1) infinite;
 }
-.earn-panel::before { top: 3px; }
-.earn-panel::after { bottom: 3px; animation-delay: 0.4s; }
+.earn-panel::before, .winnings-panel::before { top: 3px; }
+.earn-panel::after, .winnings-panel::after { bottom: 3px; animation-delay: 0.4s; }
 @keyframes marquee-chase { 0% { background-position: 0 0; } 50% { background-position: 6px 0; } }
 .earn-panel .earnings-box.compact { padding: 0; gap: 10px; flex-wrap: wrap; justify-content: center; }
 .earn-panel .earnings-box.compact .coin-pile { width: min(150px, 45vw); }
@@ -1113,9 +1113,39 @@ body:has(.pull)::before { display: none; }
 .gold-text { color: var(--gold); }
 .silver-text { color: #dfe6ee; }
 
-.badge { width: 36px; height: 36px; }
+.badge { width: 45px; height: 45px; } /* 15-unit sprite, 3px per unit */
 .badge-sm { width: 30px; height: 30px; }
 
+/* Winnings: a pixel-framed box with marquee lights, a starred title, and LED-style count windows */
+.winnings-panel {
+  position: relative;
+  width: min(100%, 326px);
+  margin: 16px auto;
+  padding: 18px 10px;
+  background:
+    conic-gradient(rgba(255, 255, 255, 0.035) 25%, transparent 0 50%, rgba(255, 255, 255, 0.035) 0 75%, transparent 0) 0 0 / 8px 8px,
+    var(--felt-dark);
+  background-clip: padding-box;
+  border: 9px solid transparent;
+  border-image: var(--frame) 3 / 9px stretch;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.3));
+}
+.pull .winnings-panel { margin: 16px auto; padding: 18px 10px; }
+.winnings-panel > h3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-shadow: 0 2px 0 var(--line);
+}
+.winnings-panel > h3 svg { display: block; width: 16px; height: 16px; }
 .winnings { display: flex; gap: 8px; }
 .win {
   flex: 1;
@@ -1123,14 +1153,17 @@ body:has(.pull)::before { display: none; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 8px 6px;
-  background: #0d151c;
+  gap: 4px;
+  padding: 8px 4px 6px;
+  background: #050a0e;
   border: 3px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
+  box-shadow: inset 0 0 0 2px var(--gold-d);
 }
-.win-count { font-size: 1.25rem; font-weight: 700; line-height: 1; }
-.win-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+.win-icon { display: block; width: 40px; height: 40px; }
+.win-icon svg { display: block; width: 100%; height: 100%; }
+.win-count { font-size: 1.5rem; font-weight: 700; line-height: 1; color: var(--gold); text-shadow: 3px 3px 0 #7a4a00; }
+.win-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold-d); }
 
 .pull-actions { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 6px; text-align: center; }
 .pull-actions p { margin: 0; font-size: 0.8rem; }
@@ -1311,7 +1344,7 @@ body:has(.pull)::before { display: none; }
 .bigspin-strip.land { visibility: hidden; }
 .bigspin-cell { flex: 0 0 48px; height: 48px; }
 .bigspin-cell svg { display: block; width: 100%; height: 100%; }
-.bigspin-badge { width: 26px; height: 26px; }
+.bigspin-badge { width: 30px; height: 30px; }
 .bigspin-summary { margin-top: 18px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .bigspin-summary p { margin: 0; color: #fff; font-size: 1.05rem; }
 
@@ -1348,7 +1381,7 @@ body:has(.pull)::before { display: none; }
   .bigspin, .bigspin-strip { animation: none !important; transition: none !important; }
   .bigspin { opacity: 1; transform: scale(1); }
   .coin-shine, .coin-new, .coin-pile-empty, .sparkle { animation: none !important; }
-  .earn-panel::before, .earn-panel::after { animation: none; }
+  .earn-panel::before, .earn-panel::after, .winnings-panel::before, .winnings-panel::after { animation: none; }
   .sale { transition: none; }
   .confetti { display: none; }
   .flip-inner, .tile, .progress-fill { transition: none; }
