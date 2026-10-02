@@ -7,12 +7,13 @@ const PX = 5 // one sprite pixel, in SVG units
 const COIN_W = 8 * PX // 40
 const COIN_H = 3 * PX // 15
 
-// A row of stacks, filled one at a time left to right. 5 stacks of up to 7 coins = 35 coins max.
-const STACKS = 5
-const STACK_CAP = 7
-const CAP = STACKS * STACK_CAP
-const STACK_GAP = 12
-const START_X = 6
+// A row of stacks of different heights, tallest in the middle, like coins stacked by hand.
+// Each stack's max height is its share of the pile; 4+6+7+5+3 = 25 coins max.
+const STACK_CAPS = [4, 6, 7, 5, 3]
+const STACKS = STACK_CAPS.length
+const CAP = STACK_CAPS.reduce((a, b) => a + b, 0)
+const STACK_GAP = 6
+const START_X = (260 - (STACKS * COIN_W + (STACKS - 1) * STACK_GAP)) / 2 // centred in the 260-wide viewBox
 const BASE_Y = 118 // top of each stack's bottom outline row
 
 function coinCount(balance: number | null) {
@@ -20,24 +21,47 @@ function coinCount(balance: number | null) {
   return Math.min(CAP, 1 + Math.floor(Math.sqrt(balance) * 1.4))
 }
 
-type Placed = { x: number; y: number; top: boolean }
+const stackX = (s: number) => START_X + s * (COIN_W + STACK_GAP)
 
-/** Coins in the order they were "added": stack 0 bottom to top, then stack 1, and so on. */
+type Placed = { key: string; x: number; y: number; top: boolean; isNew: boolean }
+
+/**
+ * Hands out coins one at a time to whichever stack is furthest below its fair share, so every
+ * stack grows together but keeps its own height. Adding a coin never moves an existing one, so the
+ * newest coin is always the one that just landed on top.
+ */
 function layout(count: number): Placed[] {
+  const heights = STACK_CAPS.map(() => 0)
+  let newest = -1
+  for (let n = 1; n <= count; n++) {
+    let best = -1
+    let bestGap = -Infinity
+    STACK_CAPS.forEach((cap, s) => {
+      if (heights[s] >= cap) return
+      const gap = (n * cap) / CAP - heights[s]
+      if (gap > bestGap) {
+        bestGap = gap
+        best = s
+      }
+    })
+    heights[best]++
+    newest = best
+  }
+
   const coins: Placed[] = []
-  for (let s = 0; s < STACKS; s++) {
-    const n = Math.min(STACK_CAP, count - s * STACK_CAP)
-    if (n <= 0) break
-    for (let k = 0; k < n; k++) {
+  heights.forEach((h, s) => {
+    for (let k = 0; k < h; k++) {
       const t = (s + k) % 7
-      const wobble = t === 2 ? PX : t === 5 ? -PX : 0 // an occasional one-pixel nudge so stacks look hand-placed
+      const wobble = t === 2 ? PX : t === 5 ? -PX : 0 // an occasional one-pixel nudge
       coins.push({
-        x: START_X + s * (COIN_W + STACK_GAP) + (k === 0 ? 0 : wobble),
+        key: `${s}-${k}`,
+        x: stackX(s) + (k === 0 ? 0 : wobble),
         y: BASE_Y - (k + 1) * COIN_H,
-        top: k === n - 1,
+        top: k === h - 1,
+        isNew: s === newest && k === h - 1,
       })
     }
-  }
+  })
   return coins
 }
 
@@ -84,12 +108,12 @@ function StackBase({ x }: { x: number }) {
 
 // Scattered across the stacks' usual footprint — fixed, so they don't shift as the stacks grow.
 const SPARKLES = [
-  { x: 30, y: 60, delay: 0 },
-  { x: 90, y: 38, delay: 0.15 },
-  { x: 150, y: 70, delay: 0.3 },
-  { x: 205, y: 44, delay: 0.1 },
-  { x: 240, y: 80, delay: 0.25 },
-  { x: 120, y: 100, delay: 0.05 },
+  { x: 40, y: 78, delay: 0 },
+  { x: 92, y: 50, delay: 0.15 },
+  { x: 132, y: 28, delay: 0.3 },
+  { x: 178, y: 60, delay: 0.1 },
+  { x: 222, y: 88, delay: 0.25 },
+  { x: 112, y: 96, delay: 0.05 },
 ]
 
 /** A tiny 4-point sparkle, hidden until the pile is hovered (see .coin-pile:hover .sparkle in CSS). */
@@ -101,13 +125,13 @@ function Sparkle({ x, y, delay }: { x: number; y: number; delay: number }) {
 
 export default function CoinPile({ balance }: { balance: number | null }) {
   const coins = layout(coinCount(balance))
-  const stacksUsed = Math.ceil(coins.length / STACK_CAP)
+  const usedStacks = STACK_CAPS.map((_, s) => s).filter((s) => coins.some((c) => c.key.startsWith(`${s}-`)))
 
   return (
     <svg className="coin-pile" viewBox="0 0 260 135" role="img" aria-label={`${balance ?? 0} earnings`}>
       {coins.length === 0 ? (
         // Nothing earned yet: one grey, empty stack in the middle
-        <g className="coin-pile-empty" shapeRendering="crispEdges" transform={`translate(${START_X + 2 * (COIN_W + STACK_GAP)} ${BASE_Y - COIN_H})`}>
+        <g className="coin-pile-empty" shapeRendering="crispEdges" transform={`translate(${stackX(2)} ${BASE_Y - COIN_H})`}>
           {pixels(TOP_COIN_ROWS, () => '#5f7488').base.map((p, i) => (
             <rect key={i} x={p.x} y={p.y} width={PX} height={PX} fill={p.color} />
           ))}
@@ -115,14 +139,14 @@ export default function CoinPile({ balance }: { balance: number | null }) {
         </g>
       ) : (
         <>
-          {Array.from({ length: stacksUsed }, (_, s) => (
-            <StackBase key={s} x={START_X + s * (COIN_W + STACK_GAP)} />
+          {usedStacks.map((s) => (
+            <StackBase key={s} x={stackX(s)} />
           ))}
           {coins.map((c, i) => (
             // Outer <g> positions the coin (an SVG attribute, untouched by CSS); the inner <g>
             // carries the pop-in animation so the two don't fight over `transform`.
-            <g key={i} transform={`translate(${c.x} ${c.y})`}>
-              <g className={i === coins.length - 1 ? 'coin coin-new' : 'coin'}>
+            <g key={c.key} transform={`translate(${c.x} ${c.y})`}>
+              <g className={c.isNew ? 'coin coin-new' : 'coin'}>
                 <PixelCoin top={c.top} delay={(i * 0.21) % 2.8} />
               </g>
             </g>
