@@ -254,7 +254,8 @@ button.danger { color: var(--red); }
 .coin-pile { width: clamp(150px, 16vw, 210px); height: auto; flex-shrink: 0; overflow: visible; }
 
 /* Each coin's highlight twinkles on its own offset, like light catching the gold unevenly. */
-.coin-shine { animation: coin-twinkle 2.8s ease-in-out infinite; }
+.coin-shine { animation: none; }
+.coin-pile:hover .coin-shine { animation: coin-twinkle 3.2s ease-in-out infinite; } /* the shine only moves while you hover the pile */
 
 /* Sparkles: hidden until the pile is hovered, so they're a reward for noticing, not constant motion. */
 .fly { opacity: 0; pointer-events: none; }
@@ -273,7 +274,8 @@ button.danger { color: var(--red); }
   80% { transform: translate(112px, -94px); }
   100% { transform: translate(170px, -130px); opacity: 0; }
 }
-.sparkle { opacity: 0; pointer-events: none; animation: pixel-twinkle 1.6s steps(1) infinite; }
+.sparkle { opacity: 0; pointer-events: none; }
+.coin-pile:hover .sparkle { animation: pixel-twinkle 2.6s steps(1) infinite; } /* sparkles only appear while you hover the pile */
 @keyframes pixel-twinkle { 0% { opacity: 0; } 20% { opacity: 1; } 40% { opacity: 0; } 60% { opacity: 1; } 70%, 100% { opacity: 0; } }
 @keyframes coin-twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 @keyframes coin-pop {

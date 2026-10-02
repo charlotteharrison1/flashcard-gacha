@@ -103,12 +103,10 @@ function StackBase({ x }: { x: number }) {
 // Scattered around the stacks; fixed, so they don't shift as the pile grows or shrinks.
 const SPARKLES = [
   { x: 28, y: 76, delay: 0 },
-  { x: 62, y: 50, delay: 0.5 },
-  { x: 108, y: 44, delay: 1.1 },
-  { x: 150, y: 58, delay: 0.3 },
-  { x: 196, y: 70, delay: 0.8 },
-  { x: 214, y: 100, delay: 1.3 },
-  { x: 14, y: 104, delay: 0.9 },
+  { x: 108, y: 44, delay: 0.9 },
+  { x: 196, y: 70, delay: 1.7 },
+  { x: 62, y: 104, delay: 1.3 },
+  { x: 214, y: 102, delay: 0.4 },
 ]
 
 /** A pixel plus-sign sparkle that blinks on and off in whole steps (see .sparkle in CSS). */
