@@ -1602,9 +1602,10 @@ body:has(.pull)::before { display: none; }
    --sx / --sy (the sticker's centre in the box) are measured in Decks.tsx. Hidden on narrow screens. */
 .home-glove { position: absolute; z-index: 2; width: 45px; height: 45px; }
 .home-glove svg { display: block; width: 100%; height: 100%; }
-.glove-left { left: -42px; top: calc(var(--sy, 120px) - 22px - 36px); }
-.glove-left-low { top: calc(var(--sy, 120px) - 22px + 36px); }
-.glove-top { top: -42px; left: calc(var(--sx, 25%) - 22px); }
+/* aimed at the sticker's upper-left, so the hands sit toward the box's top-left corner: 20px up/left of its middle */
+.glove-left { left: -42px; top: calc(var(--sy, 120px) - 22px - 20px - 26px); }
+.glove-left-low { top: calc(var(--sy, 120px) - 22px - 20px + 26px); }
+.glove-top { top: -42px; left: calc(var(--sx, 25%) - 22px - 20px); }
 .glove-top svg { transform: rotate(90deg); }
 .home-box:has(.sale:hover) .glove-left, .glove-left:hover { animation: glove-nudge-right 0.9s steps(2) infinite; }
 .home-box:has(.sale:hover) .glove-top, .glove-top:hover { animation: glove-nudge-down 0.9s steps(2) infinite; }
