@@ -770,7 +770,7 @@ body:has(.home-box) header { padding-bottom: 0; }
   /* --base is the full size; FitScroll sets --fit (1 down to 0.5) on the scroll area to shrink long text to fit the card */
   --base: 1.5rem;
   font-size: calc(var(--base) * var(--fit, 1));
-  font-weight: 700;
+  font-weight: 400; /* regular weight; **bold** in the text is still bold */
   line-height: calc(1 + 0.25 * var(--fit, 1));
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -780,7 +780,7 @@ body:has(.home-box) header { padding-bottom: 0; }
 .font-clear { font-family: 'Atkinson Hyperlegible', system-ui, sans-serif; }
 .font-classic { font-family: 'Inter', system-ui, sans-serif; }
 .font-serif { font-family: 'Lora', Georgia, serif; }
-.font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 600; }
+.font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
 .font-retro { font-family: 'Pixelify Sans', monospace; }
 
 /* Reserves room for a typical question+answer pair up front, so revealing doesn't visibly grow
