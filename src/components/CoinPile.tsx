@@ -29,6 +29,9 @@ function coinCount(balance: number | null) {
   return Math.min(CAP, 6 + Math.floor(Math.sqrt(balance - 6) * 1.6))
 }
 
+/** Below this many earnings the pile is "poor": no sparkles, just a fly that shows up when you hover it. */
+const POOR_BELOW = 10
+
 const stackX = (s: number) => START_X + s * (COIN_W + STACK_GAP)
 
 type Placed = { key: string; x: number; y: number; top: boolean; isNew: boolean }
@@ -126,6 +129,26 @@ function Sparkle({ x, y, delay }: { x: number; y: number; delay: number }) {
   )
 }
 
+/** A pixel fly that buzzes out of a small pile when it's hovered (see .fly in CSS). Only shown below POOR_BELOW earnings. */
+function Fly() {
+  const u = 6
+  return (
+    <g transform={`translate(${VIEW_W / 2} ${BASE_Y - 45})`}>
+      <g className="fly" shapeRendering="crispEdges">
+        <rect x={0} y={u} width={3 * u} height={2 * u} fill="#9aa8b6" />
+        <rect x={0} y={2 * u} width={3 * u} height={u} fill="#4b5668" />
+        <rect x={2 * u} y={u} width={u} height={u} fill="#ff4d40" />
+        <g className="wing wing-up">
+          <rect x={0} y={-u} width={2 * u} height={2 * u} fill="#ffffff" />
+        </g>
+        <g className="wing wing-down">
+          <rect x={0} y={3 * u} width={2 * u} height={u} fill="#ffffff" />
+        </g>
+      </g>
+    </g>
+  )
+}
+
 /** A little pixel shelf the stacks sit on, with studs along it. */
 function Shelf() {
   const w = VIEW_W - 6
@@ -143,6 +166,7 @@ function Shelf() {
 
 export default function CoinPile({ balance }: { balance: number | null }) {
   const coins = layout(coinCount(balance))
+  const poor = !balance || balance < POOR_BELOW
   const usedStacks = STACK_CAPS.map((_, s) => s).filter((s) => coins.some((c) => c.key.startsWith(`${s}-`)))
 
   return (
@@ -172,7 +196,7 @@ export default function CoinPile({ balance }: { balance: number | null }) {
         </>
       )}
       <Shelf />
-      {coins.length > 0 && SPARKLES.map((s, i) => <Sparkle key={i} x={s.x} y={s.y} delay={s.delay} />)}
+      {poor ? <Fly /> : SPARKLES.map((s, i) => <Sparkle key={i} x={s.x} y={s.y} delay={s.delay} />)}
     </svg>
   )
 }
