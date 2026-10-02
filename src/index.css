@@ -277,8 +277,26 @@ button.danger { color: var(--red); }
 .earn-value { font-size: 3.2rem; font-weight: 700; line-height: 1; color: var(--gold); text-shadow: 0 3px 0 var(--line); }
 .earn-sub { font-size: 0.8rem; color: var(--muted); }
 .earnings-box.compact { gap: 10px; padding: 8px 16px 8px 8px; }
-.earnings-box.compact .coin-pile { width: 92px; }
-.earnings-box.compact .earn-value { font-size: 1.8rem; }
+.earnings-box.compact .coin-pile { width: 150px; }
+
+/* Pull page: the earnings sit in their own pixel-framed box */
+.earn-panel {
+  width: fit-content;
+  margin: 8px auto 14px;
+  padding: 6px 20px 8px;
+  background:
+    conic-gradient(rgba(255, 255, 255, 0.035) 25%, transparent 0 50%, rgba(255, 255, 255, 0.035) 0 75%, transparent 0) 0 0 / 8px 8px,
+    var(--felt-dark);
+  background-clip: padding-box;
+  border: 9px solid transparent;
+  border-image: var(--frame) 3 / 9px stretch;
+  filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.3));
+}
+.earn-panel { max-width: 100%; }
+.earn-panel .earnings-box.compact { padding: 0; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.earn-panel .earnings-box.compact .coin-pile { width: min(260px, 60vw); }
+.earn-panel .earnings-box.compact .earn-value { font-size: 2.6rem; }
+.earnings-box.compact .earn-value { font-size: 2.2rem; }
 
 /* Sticker: static starburst with a slow light sweep; only the button in the middle bobs. */
 .sale {
@@ -364,6 +382,13 @@ button.danger { color: var(--red); }
 
 .collection { max-width: 780px; margin: 36px auto 0; }
 
+/* ---------- Pixel frame (9x9-unit image, 4px per unit at a 12px border) shared by the home box, earnings box and slot cabinet ---------- */
+:root {
+  --frame: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%229%22 height=%229%22 viewBox=%220 0 9 9%22 shape-rendering=%22crispEdges%22%3E%3Crect x=%221%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%222%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%223%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%224%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%225%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%226%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%227%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%223%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%224%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%225%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%226%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%227%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%222%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3C/svg%3E");
+  --frame-win-gold: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%229%22 height=%229%22 viewBox=%220 0 9 9%22 shape-rendering=%22crispEdges%22%3E%3Crect x=%221%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%222%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%222%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%223%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%224%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%225%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%226%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%227%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%228%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%222%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%228%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%222%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%228%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%222%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%228%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%222%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%228%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%222%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%228%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%222%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%223%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%224%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%225%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%226%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%227%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23fff3b8%22/%3E%3Crect x=%228%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%222%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3C/svg%3E");
+  --frame-win-silver: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%229%22 height=%229%22 viewBox=%220 0 9 9%22 shape-rendering=%22crispEdges%22%3E%3Crect x=%221%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%222%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%222%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%223%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%224%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%225%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%226%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%227%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%228%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%222%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%228%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%222%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%228%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%222%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%228%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%222%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%228%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%222%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%228%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%222%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%223%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%224%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%225%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%226%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%227%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23dfe6ee%22/%3E%3Crect x=%228%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%222%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3C/svg%3E");
+}
+
 /* ---------- Home: one framed box on a checkerboard ---------- */
 
 /* Low-contrast checkerboard behind the box. Only the home page has a .home-box, so only it gets this. */
@@ -387,7 +412,7 @@ body:has(.home-box) header { padding-bottom: 0; }
   background-clip: padding-box;
   /* 9x9-unit pixel frame (black / gold / black bands, notched corners) stretched to a 12px border: 4px per frame pixel. */
   border: 12px solid transparent;
-  border-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%229%22 height=%229%22 viewBox=%220 0 9 9%22 shape-rendering=%22crispEdges%22%3E%3Crect x=%221%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%222%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%220%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%223%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%224%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%225%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%226%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%227%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%221%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%222%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%223%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%224%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%225%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%226%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%220%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%222%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%223%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%224%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%225%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%226%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%227%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%23ffc233%22/%3E%3Crect x=%228%22 y=%227%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%221%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%222%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%223%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%224%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%225%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%226%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3Crect x=%227%22 y=%228%22 width=%221%22 height=%221%22 fill=%22%230a1218%22/%3E%3C/svg%3E") 3 / 12px stretch;
+  border-image: var(--frame) 3 / 12px stretch;
   /* drop-shadow (not box-shadow) so the shadow follows the notched corners */
   filter: drop-shadow(8px 8px 0 rgba(0, 0, 0, 0.3));
 }
@@ -854,6 +879,18 @@ header button.link { font-size: 0.75rem; }
 header .brand { font-size: 1.2rem; }
 .swatch { width: 14px; height: 14px; border: 2px solid var(--line); border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35); }
 
+/* Roulette-style backdrop: wedges and thin gold spokes all pointing at the machine.
+   --burst-y is the machine's height on the page, measured in Pull.tsx. */
+body:has(.pull) {
+  background:
+    radial-gradient(circle at 50% var(--burst-y, 420px), rgba(255, 194, 51, 0.16), transparent 30%),
+    repeating-conic-gradient(from 0deg at 50% var(--burst-y, 420px), rgba(255, 194, 51, 0.3) 0 0.5deg, transparent 0.5deg 12deg),
+    repeating-conic-gradient(from 0deg at 50% var(--burst-y, 420px), rgba(0, 0, 0, 0.22) 0 12deg, transparent 12deg 24deg),
+    var(--felt);
+  background-repeat: no-repeat;
+}
+body:has(.pull)::before { display: none; }
+
 .pull { max-width: 720px; margin: 0 auto; overflow-x: clip; }
 .pull h2 { font-size: 1.5rem; margin: 6px 0 10px; }
 .pull .panel { margin: 16px 0; padding: 12px; }
@@ -862,16 +899,18 @@ header .brand { font-size: 1.2rem; }
 .slot {
   /* Pixel-art cabinet: square corners, hard concentric bands instead of blurred shadows.
      --px is one sprite pixel; reels are a whole multiple of it so symbols stay crisp. */
-  --px: 5px;
   --cell: calc(var(--px) * 16);
   flex: 0 1 360px;
-  margin: 12px;
+  margin: 0;
   padding: 10px 14px 14px;
   text-align: center;
   background: conic-gradient(rgba(0, 0, 0, 0.16) 25%, transparent 0 50%, rgba(0, 0, 0, 0.16) 0 75%, transparent 0) 0 0 / 8px 8px, #8a1624;
-  border: none;
+  /* the same notched pixel frame as the home box; clipped to the padding box so the corner notches stay clear */
+  border: 12px solid transparent;
+  border-image: var(--frame) 3 / 12px stretch;
+  background-clip: padding-box;
   border-radius: 0;
-  box-shadow: 0 0 0 4px var(--line), 0 0 0 8px var(--gold), 0 0 0 12px var(--line), 12px 12px 0 12px rgba(0, 0, 0, 0.35);
+  filter: drop-shadow(8px 8px 0 rgba(0, 0, 0, 0.35));
 }
 .slot-title { font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--gold); text-shadow: 0 4px 0 var(--line); }
 .bulbs { display: flex; justify-content: center; gap: 10px; margin: 6px 0 10px; }
@@ -883,40 +922,25 @@ header .brand { font-size: 1.2rem; }
 
 /* ---------- Machine: cabinet + big drag lever + coin slot ---------- */
 
-.machine { --arm: 130px; --ball: 50px; position: relative; display: flex; justify-content: center; width: min(100%, 360px); margin: 14px auto 0; }
+.machine { --px: 5px; position: relative; display: flex; justify-content: center; width: min(100%, 360px); margin: 14px auto 0; }
 
-.lever { position: absolute; left: 100%; top: 50%; transform: translateY(-50%); width: calc(var(--arm) + var(--ball) / 2 + 14px); height: calc(var(--arm) * 1.9); margin-left: -6px; }
-.lever-mount {
+/* The lever is a pixel-art SVG (bracket, arm, hub) drawn in Lever.tsx, with the knob sprite laid over its end so it can be grabbed.
+   It overlaps the cabinet's frame so it grows out of the machine instead of floating beside it. */
+.lever {
   position: absolute;
-  left: -3px;
+  left: 100%;
   top: 50%;
-  width: 26px;
-  height: 46px;
-  margin-top: -23px;
-  background: var(--panel-2);
-  border: 4px solid var(--line);
-  border-radius: 0;
-  box-shadow: inset 4px 4px 0 #4b6178, inset -4px -4px 0 #1b2631;
+  transform: translateY(-50%);
+  width: calc(var(--px) * 36);
+  height: calc(var(--px) * 60);
+  margin-left: calc(-10px - var(--px) * 5);
 }
-.lever-arm {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  width: var(--arm);
-  height: 14px;
-  margin-top: -7px;
-  background: linear-gradient(#e6ecf2 50%, #9aa8b6 50%);
-  border: 4px solid var(--line);
-  border-radius: 0;
-  transform-origin: 0 50%;
-}
+.lever-art { display: block; width: 100%; height: 100%; }
+.lever-pivot { position: absolute; left: calc(var(--px) * 5); top: calc(var(--px) * 30); width: 0; height: 0; }
 .lever-ball {
   position: absolute;
-  right: calc(var(--ball) / -2);
-  top: 50%;
-  width: var(--ball);
-  height: var(--ball);
-  margin-top: calc(var(--ball) / -2);
+  width: calc(var(--px) * 10);
+  height: calc(var(--px) * 10);
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -988,8 +1012,8 @@ header .brand { font-size: 1.2rem; }
 }
 
 /* Wins: the cabinet glows, bulbs flash, reels pop */
-.slot.win-gold { box-shadow: 0 0 0 4px var(--line), 0 0 0 8px #fff3b8, 0 0 0 12px var(--gold), 0 0 0 16px var(--line), 16px 16px 0 16px rgba(0, 0, 0, 0.35); }
-.slot.win-silver { box-shadow: 0 0 0 4px var(--line), 0 0 0 8px #dfe6ee, 0 0 0 12px var(--gold), 0 0 0 16px var(--line), 16px 16px 0 16px rgba(0, 0, 0, 0.35); }
+.slot.win-gold { border-image-source: var(--frame-win-gold); }
+.slot.win-silver { border-image-source: var(--frame-win-silver); }
 .slot.win-gold .bulb, .slot.win-silver .bulb { animation: blink 0.3s steps(2) infinite; }
 .slot.win-gold .reel, .slot.win-silver .reel { animation: win-pop 0.6s ease-in-out infinite; }
 .slot.win-gold .reel:nth-child(2), .slot.win-silver .reel:nth-child(2) { animation-delay: 0.1s; }
@@ -1254,8 +1278,8 @@ header .brand { font-size: 1.2rem; }
   .face-text { font-size: 1.35rem; }
   .logo { font-size: 2.6rem; }
   .earn-value { font-size: 2.4rem; }
-  .slot { --px: 3px; padding: 8px 10px 12px; }
-  .machine { --arm: 62px; --ball: 40px; }
+  .slot { padding: 8px 10px 12px; }
+  .machine { --px: 3px; }
   .ratings { gap: 6px; }
 }
 
@@ -1266,7 +1290,6 @@ header .brand { font-size: 1.2rem; }
   .bigspin { opacity: 1; transform: scale(1); }
   .coin-shine, .coin-new, .coin-pile-empty, .sparkle, .coin-pile:hover .sparkle { animation: none !important; }
   .sale { transition: none; }
-  .lever-arm { transition: none; }
   .confetti { display: none; }
   .flip-inner, .tile, .progress-fill { transition: none; }
 }

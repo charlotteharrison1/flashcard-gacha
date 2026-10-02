@@ -12,8 +12,13 @@ const COIN_H = 3 * PX // 15
 const STACK_CAPS = [4, 6, 7, 5, 3]
 const STACKS = STACK_CAPS.length
 const CAP = STACK_CAPS.reduce((a, b) => a + b, 0)
-const STACK_GAP = 6
-const START_X = (260 - (STACKS * COIN_W + (STACKS - 1) * STACK_GAP)) / 2 // centred in the 260-wide viewBox
+const STACK_GAP = 3 // stacks nearly touch
+const MARGIN = 10
+const VIEW_W = STACKS * COIN_W + (STACKS - 1) * STACK_GAP + MARGIN * 2
+const START_X = MARGIN
+// Cropped to fit stacks up to 5 coins tall; the SVG has overflow: visible, so taller ones just rise past the top edge.
+const VIEW_TOP = 36
+const VIEW_H = 92
 const BASE_Y = 118 // top of each stack's bottom outline row
 
 function coinCount(balance: number | null) {
@@ -108,12 +113,12 @@ function StackBase({ x }: { x: number }) {
 
 // Scattered across the stacks' usual footprint — fixed, so they don't shift as the stacks grow.
 const SPARKLES = [
-  { x: 40, y: 78, delay: 0 },
-  { x: 92, y: 50, delay: 0.15 },
-  { x: 132, y: 28, delay: 0.3 },
-  { x: 178, y: 60, delay: 0.1 },
-  { x: 222, y: 88, delay: 0.25 },
-  { x: 112, y: 96, delay: 0.05 },
+  { x: 34, y: 80, delay: 0 },
+  { x: 80, y: 58, delay: 0.15 },
+  { x: 116, y: 48, delay: 0.3 },
+  { x: 156, y: 64, delay: 0.1 },
+  { x: 198, y: 90, delay: 0.25 },
+  { x: 100, y: 100, delay: 0.05 },
 ]
 
 /** A tiny 4-point sparkle, hidden until the pile is hovered (see .coin-pile:hover .sparkle in CSS). */
@@ -128,7 +133,7 @@ export default function CoinPile({ balance }: { balance: number | null }) {
   const usedStacks = STACK_CAPS.map((_, s) => s).filter((s) => coins.some((c) => c.key.startsWith(`${s}-`)))
 
   return (
-    <svg className="coin-pile" viewBox="0 0 260 135" role="img" aria-label={`${balance ?? 0} earnings`}>
+    <svg className="coin-pile" viewBox={`0 ${VIEW_TOP} ${VIEW_W} ${VIEW_H}`} role="img" aria-label={`${balance ?? 0} earnings`}>
       {coins.length === 0 ? (
         // Nothing earned yet: one grey, empty stack in the middle
         <g className="coin-pile-empty" shapeRendering="crispEdges" transform={`translate(${stackX(2)} ${BASE_Y - COIN_H})`}>

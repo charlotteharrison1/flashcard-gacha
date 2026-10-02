@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { BULK_PULLS, PULL_COST, useEarnings } from '../lib/earnings'
@@ -28,6 +28,26 @@ export default function Pull() {
   const current = useRef<Pending | null>(null) // the pull whose reels are spinning
   const bulk = useRef(false) // a 10-coin batch: one lever drag reveals all of it at once
   const spinCount = useRef(0)
+  const stageRef = useRef<HTMLDivElement>(null)
+
+  // The page background is a burst of lines pointing at the machine; tell the CSS how far down the page the machine is.
+  useLayoutEffect(() => {
+    const stage = stageRef.current
+    if (!stage) return
+    const place = () => {
+      const r = stage.getBoundingClientRect()
+      document.body.style.setProperty('--burst-y', `${Math.round(r.top + window.scrollY + r.height / 2)}px`)
+    }
+    place()
+    window.addEventListener('resize', place)
+    const resizeObserver = new ResizeObserver(place) // the page above the machine can change height (errors, wrapping)
+    resizeObserver.observe(document.body)
+    return () => {
+      window.removeEventListener('resize', place)
+      resizeObserver.disconnect()
+      document.body.style.removeProperty('--burst-y')
+    }
+  }, [])
 
   useEffect(() => {
     supabase.rpc('get_winnings').then(({ data }) => {
@@ -124,7 +144,7 @@ export default function Pull() {
         <Link to="/">← Decks</Link>
       </p>
       <h2>Pull</h2>
-      <div className="wallet">
+      <div className="wallet earn-panel">
         <Earnings compact balance={balance} />
       </div>
 
@@ -137,20 +157,22 @@ export default function Pull() {
 
       {bigSpin && <BigSpinOverlay items={bigSpin} onDone={() => finishBigSpin(bigSpin)} />}
 
-      <SlotMachine
-        spin={spin}
-        phase={phase}
-        outcome={outcome}
-        armed={armed}
-        remaining={remaining}
-        inserting={inserting}
-        nudge={nudge}
-        canInsert={canLoad(1)}
-        onLanded={handleLanded}
-        onCoin={() => loadCoins(1)}
-        onPull={pullLever}
-        onBlocked={blocked}
-      />
+      <div ref={stageRef}>
+        <SlotMachine
+          spin={spin}
+          phase={phase}
+          outcome={outcome}
+          armed={armed}
+          remaining={remaining}
+          inserting={inserting}
+          nudge={nudge}
+          canInsert={canLoad(1)}
+          onLanded={handleLanded}
+          onCoin={() => loadCoins(1)}
+          onPull={pullLever}
+          onBlocked={blocked}
+        />
+      </div>
 
       <div className="slot-result" aria-live="polite">
         {phase === 'loading' && <span className="muted">Inserting {plural(inserting, 'coin')}…</span>}

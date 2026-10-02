@@ -1,14 +1,7 @@
-import {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  type CSSProperties,
-  type KeyboardEvent as ReactKeyboardEvent,
-  type PointerEvent as ReactPointerEvent,
-} from 'react'
+import { useLayoutEffect, useMemo, useRef, type CSSProperties } from 'react'
 import { INITIAL_REELS, randomFill, type Result, type SymbolId } from '../lib/slots'
 import { SlotSymbol } from './SlotSymbol'
+import Lever from './Lever'
 
 /** `fast` spins (from a 10-coin batch) play at a fraction of the time and skip the slow-crawl tension. */
 export type Spin = { id: number; from: SymbolId[]; final: SymbolId[]; fast?: boolean }
@@ -31,11 +24,6 @@ const FAST = 0.3 // time scale for spins from a 10-coin batch: ~1.6s per spin in
 const EASE_IN = 'cubic-bezier(0.55, 0.085, 0.68, 0.53)' // quad-in: average speed = V/2
 const EASE_OUT = 'cubic-bezier(0.33, 1, 0.68, 1)' // cubic-out: average speed = V/3
 
-// --- Lever (degrees; 0 = pointing right, positive = swinging down) -----------
-const LEVER_REST = -55
-const LEVER_END = 50
-const LEVER_PULL_AT = 32 // drag past this and the pull fires
-const SPRING = 'cubic-bezier(0.3, 1.5, 0.5, 1)'
 // -----------------------------------------------------------------------------
 
 type ReelPlan = { strip: SymbolId[]; frames: Keyframe[]; duration: number }
@@ -111,10 +99,6 @@ export default function SlotMachine({
   onBlocked,
 }: Props) {
   const stripRefs = useRef<(HTMLDivElement | null)[]>([])
-  const armRef = useRef<HTMLDivElement>(null)
-  const pivotRef = useRef<HTMLDivElement>(null)
-  const drag = useRef({ active: false, pulled: false })
-  const timers = useRef<number[]>([])
   const tension = !!spin && !spin.fast && spin.final[0] === spin.final[1]
 
   const reels = useMemo<ReelPlan[] | null>(() => {
@@ -155,64 +139,6 @@ export default function SlotMachine({
       cancelled = true
     }
   }, [spin, reels, onLanded])
-
-  useEffect(() => {
-    const pending = timers.current
-    return () => pending.forEach((t) => window.clearTimeout(t))
-  }, [])
-
-  // --- Lever: the arm follows the pointer around the pivot; dragging far enough fires the pull ---
-  function setAngle(deg: number, ms = 0, easing = 'linear') {
-    const arm = armRef.current
-    if (!arm) return
-    arm.style.transition = ms ? `transform ${ms}ms ${easing}` : 'none'
-    arm.style.transform = `rotate(${deg}deg)`
-  }
-  const snapBack = () => setAngle(LEVER_REST, 500, SPRING)
-  const later = (fn: () => void, ms: number) => timers.current.push(window.setTimeout(fn, ms))
-
-  function pull() {
-    drag.current.pulled = true
-    setAngle(LEVER_END, 120, 'ease-out')
-    onPull()
-    later(snapBack, 260)
-  }
-
-  function denied() {
-    if (phase === 'idle' || phase === 'done') onBlocked() // no wiggle while reels are running
-    setAngle(LEVER_REST + 14, 90, 'ease-out') // a dead "clunk": the lever won't go down without a coin
-    later(snapBack, 140)
-  }
-
-  function onLeverDown(e: ReactPointerEvent<HTMLDivElement>) {
-    if (!armed) return denied()
-    e.currentTarget.setPointerCapture(e.pointerId)
-    drag.current = { active: true, pulled: false }
-  }
-
-  function onLeverMove(e: ReactPointerEvent<HTMLDivElement>) {
-    if (!drag.current.active || drag.current.pulled || !pivotRef.current) return
-    const p = pivotRef.current.getBoundingClientRect()
-    const angle = (Math.atan2(e.clientY - (p.top + p.height / 2), e.clientX - (p.left + p.width / 2)) * 180) / Math.PI
-    // Pointer wandered back over the cabinet: treat the lever as let go.
-    const clamped = Math.abs(angle) > 100 ? LEVER_REST : Math.max(LEVER_REST, Math.min(LEVER_END, angle))
-    setAngle(clamped)
-    if (clamped >= LEVER_PULL_AT) pull()
-  }
-
-  function onLeverUp() {
-    if (!drag.current.active) return
-    const pulled = drag.current.pulled
-    drag.current.active = false
-    if (!pulled) snapBack()
-  }
-
-  function onLeverKey(e: ReactKeyboardEvent<HTMLDivElement>) {
-    if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'ArrowDown') return
-    e.preventDefault()
-    if (armed) pull()
-    else denied()
-  }
 
   const cls = [
     'slot',
@@ -278,25 +204,7 @@ export default function SlotMachine({
         </div>
       </div>
 
-      <div className={`lever${armed ? ' armed' : ''}`}>
-        <div className="lever-mount" ref={pivotRef} aria-hidden="true" />
-        <div className="lever-arm" ref={armRef} style={{ transform: `rotate(${LEVER_REST}deg)` }}>
-          <div
-            className="lever-ball"
-            role="button"
-            tabIndex={0}
-            aria-label="Pull lever"
-            aria-disabled={!armed}
-            onPointerDown={onLeverDown}
-            onPointerMove={onLeverMove}
-            onPointerUp={onLeverUp}
-            onPointerCancel={onLeverUp}
-            onKeyDown={onLeverKey}
-          >
-            <SlotSymbol id="ball" />
-          </div>
-        </div>
-      </div>
+      <Lever armed={armed} phase={phase} onPull={onPull} onBlocked={onBlocked} />
     </div>
   )
 }
