@@ -1612,3 +1612,13 @@ body:has(.pull)::before { display: none; }
 @keyframes glove-nudge-right { 50% { transform: translateX(6px); } }
 @keyframes glove-nudge-down { 50% { transform: translateY(6px); } }
 @media (max-width: 760px) { .home-glove { display: none; } }
+
+/* Home box: a second, thinner frame just inside the first makes it a double border */
+.home-box::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  pointer-events: none;
+  border: 6px solid transparent;
+  border-image: var(--frame) 3 / 6px stretch;
+}
