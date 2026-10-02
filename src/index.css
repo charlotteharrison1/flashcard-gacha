@@ -32,7 +32,7 @@ body {
   margin: 0;
   min-height: 100vh;
   color: var(--text);
-  font: 18px/1.4 'Pixelify Sans', ui-monospace, 'SF Mono', Menlo, monospace;
+  font: var(--ui-size, 18px) / 1.4 var(--ui-font, 'Pixelify Sans', ui-monospace, 'SF Mono', Menlo, monospace);
   background: radial-gradient(ellipse at 50% 25%, var(--felt-glow) 0%, var(--felt) 45%, var(--felt-dark) 100%);
   background-repeat: no-repeat;
 }
@@ -1525,3 +1525,10 @@ body:has(.pull)::before { display: none; }
 :root[data-card-anim='off'] .flip { animation: none; }
 :root[data-card-anim='off'] .flip-inner { transition: none; }
 .study-anim { font-size: 0.8rem; }
+
+/* App font choices (Settings > App font). Pixel is the default. */
+:root[data-ui-font='clear'] { --ui-font: 'Atkinson Hyperlegible', system-ui, sans-serif; --ui-size: 16px; }
+:root[data-ui-font='sans'] { --ui-font: 'Inter', system-ui, sans-serif; --ui-size: 16px; }
+:root[data-ui-font='serif'] { --ui-font: 'Lora', Georgia, serif; --ui-size: 17px; }
+:root[data-ui-font='mono'] { --ui-font: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; --ui-size: 15px; }
+:root[data-ui-font='system'] { --ui-font: system-ui, -apple-system, 'Segoe UI', sans-serif; --ui-size: 16px; }

@@ -4,6 +4,7 @@ import { FONT_OPTIONS, type CardFont } from '../lib/fonts'
 import type { Settings } from '../lib/settings'
 import type { Orientation } from '../lib/types'
 import CardAnimToggle from './CardAnimToggle'
+import { UI_FONTS, applyUiFont, loadUiFont, type UiFontId } from '../lib/uiFont'
 
 /** Presets for all decks: what new decks and cards start with, plus buttons to apply a preset to everything that already exists. */
 export default function SettingsPanel({
@@ -21,6 +22,7 @@ export default function SettingsPanel({
 }) {
   const [note, setNote] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [uiFont, setUiFont] = useState<UiFontId>(loadUiFont)
 
   async function applyFont() {
     if (!confirm(`Change the font of EVERY card in ALL your decks to "${FONT_OPTIONS.find((f) => f.id === settings.default_font)?.label}"?`)) return
@@ -99,6 +101,27 @@ export default function SettingsPanel({
         <button className="secondary sm" onClick={() => applyDeckSetting('orientation', 'Card shape')}>
           Apply to all decks
         </button>
+      </div>
+
+      <div className="setting-row">
+        <label className="file-field">
+          <span>App font</span>
+          <select
+            value={uiFont}
+            onChange={(e) => {
+              const id = e.target.value as UiFontId
+              applyUiFont(id)
+              setUiFont(id)
+            }}
+          >
+            {UI_FONTS.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <span className="muted">The buttons, labels and headings. Saved on this device.</span>
       </div>
 
       <div className="setting-row">

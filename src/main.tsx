@@ -17,10 +17,12 @@ import App from './App.tsx'
 import { applyScheme, loadScheme } from './lib/scheme'
 import { applyLights, loadLights } from './lib/lights'
 import { applyCardAnim, loadCardAnim } from './lib/cardAnim'
+import { applyUiFont, loadUiFont } from './lib/uiFont'
 
 applyScheme(loadScheme())
 applyLights(loadLights())
 applyCardAnim(loadCardAnim())
+applyUiFont(loadUiFont())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
