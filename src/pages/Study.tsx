@@ -243,20 +243,19 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
         <div className="big-mark big-mark-pixel" aria-hidden="true">
           <SlotSymbol id={done > 0 ? 'heart' : 'spade'} />
         </div>
-        <h2>{done > 0 ? 'Round cleared' : 'Nothing to play'}</h2>
         {done > 0 ? (
-          <>
-            <p className="score">+{earned} earnings</p>
-            <p className="muted">Spend them on the pull screen.</p>
-          </>
+          <p className="score">+{earned} earnings</p>
         ) : (
-          <p className="muted">
+          <>
+            <h2>Nothing to play</h2>
+            <p className="muted">
             {filter !== 'all'
               ? `No ${filterLabel(filter)} ${studyAll ? 'found' : 'are due'} in this ${scope === 'box' ? 'deckbox' : 'deck'}.`
               : cardCount === 0
                 ? `This ${scope === 'box' ? 'deckbox' : 'deck'} has no cards!`
                 : "You're done for the day!"}
-          </p>
+            </p>
+          </>
         )}
         <div className="row center-row">
           <Link className="button gold" to={studyPath}>

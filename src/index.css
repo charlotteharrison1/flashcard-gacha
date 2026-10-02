@@ -926,7 +926,7 @@ body:has(.home-box) header { padding-bottom: 0; }
 
 .celebrate { position: relative; }
 .celebrate h2 { font-size: 2.6rem; text-transform: uppercase; color: var(--gold); text-shadow: 0 4px 0 #7a4a00, 0 8px 0 var(--line); }
-.celebrate .big-mark { animation: bob 1.4s ease-in-out infinite; color: var(--suit-red); }
+.celebrate .big-mark { color: var(--suit-red); }
 .score { margin: 8px 0; font-size: 2.4rem; font-weight: 700; color: var(--green); text-shadow: 0 3px 0 var(--line); }
 
 .confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 10; }
