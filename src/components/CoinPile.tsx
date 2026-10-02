@@ -19,7 +19,7 @@ const VIEW_W = STACKS * COIN_W + (STACKS - 1) * STACK_GAP + MARGIN * 2
 const START_X = MARGIN
 // Cropped to fit stacks up to 5 coins tall; the SVG has overflow: visible, so taller ones just rise past the top edge.
 const VIEW_TOP = 36
-const VIEW_H = 92
+const VIEW_H = 106
 const BASE_Y = 118 // top of each stack's bottom outline row
 
 /** One coin per earning at first (1 earning = 1 coin), then the pile grows more slowly so it stops around 95 earnings. */
@@ -97,21 +97,48 @@ function StackBase({ x }: { x: number }) {
   )
 }
 
-// Scattered across the stacks' usual footprint — fixed, so they don't shift as the stacks grow.
+// Scattered around the stacks; fixed, so they don't shift as the pile grows or shrinks.
 const SPARKLES = [
-  { x: 34, y: 80, delay: 0 },
-  { x: 80, y: 58, delay: 0.15 },
-  { x: 116, y: 48, delay: 0.3 },
-  { x: 156, y: 64, delay: 0.1 },
-  { x: 198, y: 90, delay: 0.25 },
-  { x: 100, y: 100, delay: 0.05 },
+  { x: 28, y: 76, delay: 0 },
+  { x: 62, y: 50, delay: 0.5 },
+  { x: 108, y: 44, delay: 1.1 },
+  { x: 150, y: 58, delay: 0.3 },
+  { x: 196, y: 70, delay: 0.8 },
+  { x: 214, y: 100, delay: 1.3 },
+  { x: 14, y: 104, delay: 0.9 },
 ]
 
-/** A tiny 4-point sparkle, hidden until the pile is hovered (see .coin-pile:hover .sparkle in CSS). */
+/** A pixel plus-sign sparkle that blinks on and off in whole steps (see .sparkle in CSS). */
 function Sparkle({ x, y, delay }: { x: number; y: number; delay: number }) {
-  const s = 6
-  const d = `M${x} ${y - s} L${x + s * 0.3} ${y - s * 0.3} L${x + s} ${y} L${x + s * 0.3} ${y + s * 0.3} L${x} ${y + s} L${x - s * 0.3} ${y + s * 0.3} L${x - s} ${y} L${x - s * 0.3} ${y - s * 0.3} Z`
-  return <path className="sparkle" style={{ animationDelay: `${delay}s` }} d={d} fill="#fff3b8" />
+  const u = PX
+  return (
+    <g className="sparkle" style={{ animationDelay: `${delay}s` }} shapeRendering="crispEdges">
+      {[
+        [0, -u],
+        [-u, 0],
+        [u, 0],
+        [0, u],
+      ].map(([dx, dy], i) => (
+        <rect key={i} x={x + dx - u / 2} y={y + dy - u / 2} width={u} height={u} fill="#fff3b8" />
+      ))}
+      <rect x={x - u / 2} y={y - u / 2} width={u} height={u} fill="#ffffff" />
+    </g>
+  )
+}
+
+/** A little pixel shelf the stacks sit on, with studs along it. */
+function Shelf() {
+  const w = VIEW_W - 6
+  const studs = Array.from({ length: Math.floor(w / 24) }, (_, i) => 12 + i * 24)
+  return (
+    <g shapeRendering="crispEdges">
+      <rect x={3} y={BASE_Y + PX} width={w} height={PX} fill="#b98410" />
+      <rect x={3} y={BASE_Y + PX * 2} width={w} height={PX} fill="#0a1218" />
+      {studs.map((x) => (
+        <rect key={x} x={x} y={BASE_Y + PX} width={PX} height={PX} fill="#fff3b8" />
+      ))}
+    </g>
+  )
 }
 
 export default function CoinPile({ balance }: { balance: number | null }) {
@@ -144,6 +171,7 @@ export default function CoinPile({ balance }: { balance: number | null }) {
           ))}
         </>
       )}
+      <Shelf />
       {coins.length > 0 && SPARKLES.map((s, i) => <Sparkle key={i} x={s.x} y={s.y} delay={s.delay} />)}
     </svg>
   )
