@@ -29,3 +29,6 @@ export type Card = {
 
 /** 0 again, 1 hard, 2 good, 3 easy */
 export type Rating = 0 | 1 | 2 | 3
+
+/** What the review_card() database function returns: the card's new schedule plus the coins it paid. */
+export type ReviewResult = Pick<Card, 'ease' | 'interval_days' | 'repetitions' | 'lapses' | 'due_at'> & { coins: number }

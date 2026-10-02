@@ -292,7 +292,9 @@ export default function SlotMachine({
             onPointerUp={onLeverUp}
             onPointerCancel={onLeverUp}
             onKeyDown={onLeverKey}
-          />
+          >
+            <SlotSymbol id="ball" />
+          </div>
         </div>
       </div>
     </div>

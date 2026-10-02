@@ -2,7 +2,7 @@
 -- Run once in Supabase Dashboard > SQL Editor, AFTER 0001 and 0002.
 
 -- 1. Grants: lets you credit a user with extra earnings. No RLS policies on purpose,
---    so the API can't touch it; only the SQL editor (see supabase/grant_coins.sql) can insert.
+--    so the API can't touch it; only the SQL editor can insert.
 create table public.earnings_grants (
   id         uuid primary key default gen_random_uuid(),
   user_id    uuid not null references auth.users(id) on delete cascade,

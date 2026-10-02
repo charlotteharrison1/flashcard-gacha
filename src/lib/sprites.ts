@@ -1,0 +1,193 @@
+import type { SymbolId } from './slots'
+
+/**
+ * Pixel-art sprites for the slot reels. Each sprite is a grid of palette letters ('.' = empty);
+ * a 1px dark outline is added around every filled pixel automatically (see `spritePaths`), so the
+ * art below only describes the fill. Every sprite keeps a 1px empty margin so the outline fits.
+ */
+export type Sprite = { size: number; paths: { color: string; d: string }[] }
+
+const OUTLINE = '#0a1218'
+
+const PALETTE: Record<string, string> = {
+  Y: '#ffc233', // gold
+  W: '#fff3d0', // highlight
+  R: '#ff4d40', // red
+  D: '#b3231a', // dark red / shade (overridden per sprite below)
+  G: '#3ed598', // leaf green
+  S: '#3b6b2a', // stem
+  B: '#1e9bff', // blue
+  C: '#4dd8ff', // cyan
+  O: '#ff9430', // orange
+}
+
+const SHADE: Record<SymbolId | 'ball', Record<string, string>> = {
+  star: { D: '#b98410' },
+  cherry: {},
+  seven: { D: '#b3231a' },
+  bar: {},
+  diamond: { D: '#1e8fc4' },
+  bell: { D: '#b85c0a' },
+  ball: { D: '#b3231a' },
+}
+
+// Built from glyphs so the letters stay lined up.
+const GLYPHS: Record<string, string[]> = {
+  B: ['WW.', 'W.W', 'WW.', 'W.W', 'WW.'],
+  A: ['.W.', 'W.W', 'WWW', 'W.W', 'W.W'],
+  R: ['WW.', 'W.W', 'WW.', 'WW.', 'W.W'],
+}
+
+function barRows(): string[] {
+  const text = ['B', 'A', 'R']
+  const rows = ['................', '................', '................', '................']
+  rows.push('.BBBBBBBBBBBBBB.')
+  for (let r = 0; r < 5; r++) {
+    // 1px pad, then each glyph with 1px gaps between them
+    const line = text.map((g) => GLYPHS[g][r].replace(/\./g, 'B')).join('B')
+    rows.push('.BB' + line + 'B.')
+  }
+  rows.push('.BBBBBBBBBBBBBB.')
+  while (rows.length < 16) rows.push('................')
+  return rows
+}
+
+const FILLS: Record<SymbolId | 'ball', string[]> = {
+  star: [
+    '................',
+    '.......YY.......',
+    '......YYYY......',
+    '......YWYY......',
+    '.YYYYYYWYYYYYY..',
+    '..YYYYYYYYYYYY..',
+    '...YYYYYYYYYY...',
+    '....YYYYYYYY....',
+    '....YYYYYYYY....',
+    '...YYYYYYYYYY...',
+    '...YYYY..YYYY...',
+    '..YYYY....YYYY..',
+    '..YYY......YYY..',
+    '................',
+    '................',
+    '................',
+  ],
+  cherry: [
+    '................',
+    '..........GGGG..',
+    '.........GGGGGG.',
+    '........SS......',
+    '.......S.S......',
+    '......S...S.....',
+    '.....S.....S....',
+    '....S.......S...',
+    '...........RRR..',
+    '...RRR....RWRRR.',
+    '..RWRRR...RWRRR.',
+    '..RWRRR...RRRRR.',
+    '..RRRRR....RRR..',
+    '...RRR..........',
+    '................',
+    '................',
+  ],
+  seven: [
+    '................',
+    '................',
+    '..RRRRRRRRRRRR..',
+    '..RWWWWWWWWRRD..',
+    '..RRRRRRRRRRRD..',
+    '..........RRDD..',
+    '.........RRRD...',
+    '........RRRD....',
+    '.......RRRD.....',
+    '......RRRD......',
+    '......RRRD......',
+    '.....RRRD.......',
+    '.....RRRD.......',
+    '................',
+    '................',
+    '................',
+  ],
+  bar: barRows(),
+  diamond: [
+    '................',
+    '................',
+    '....CCCCCCCC....',
+    '...CCCWWCCCCD...',
+    '..CCCCWCCCCCDD..',
+    '.CCCCCCCCCCCCDD.',
+    '.CCCCCCCCCCCCCD.',
+    '..CCCCCCCCCCDD..',
+    '...CCCCCCCCDD...',
+    '....CCCCCCDD....',
+    '.....CCCCDD.....',
+    '......CCDD......',
+    '.......CD.......',
+    '................',
+    '................',
+    '................',
+  ],
+  bell: [
+    '................',
+    '.......OO.......',
+    '.....OOOOOO.....',
+    '....OOWWOOOO....',
+    '...OOWOOOOOOD...',
+    '...OWOOOOOOOD...',
+    '...OWOOOOOOOD...',
+    '..OOWOOOOOOODD..',
+    '..OOOOOOOOOOOD..',
+    '..OOOOOOOOOOOD..',
+    '.OOOOOOOOOOOOOD.',
+    '.OOOOOOOOOOOOOD.',
+    '.DDDDDDDDDDDDDD.',
+    '......YYYY......',
+    '......YYYY......',
+    '................',
+  ],
+  // The lever knob (10x10)
+  ball: [
+    '..........',
+    '...RRRR...',
+    '..RWWRRR..',
+    '.RWWRRRRD.',
+    '.RWRRRRRD.',
+    '.RRRRRRRD.',
+    '.RRRRRRDD.',
+    '..RRRRDD..',
+    '...DDDD...',
+    '..........',
+  ],
+}
+
+/** Fill pixels of each colour, plus the auto outline, merged into one SVG path per colour. */
+function build(rows: string[], shade: Record<string, string>): Sprite {
+  const h = rows.length
+  const w = rows[0].length
+  const at = (x: number, y: number) => (x >= 0 && y >= 0 && x < w && y < h ? rows[y][x] : '.')
+  const byColor = new Map<string, string>()
+  const add = (color: string, x: number, y: number) => {
+    // One 1x1 square per pixel; same-colour pixels share a path so the DOM stays tiny.
+    byColor.set(color, (byColor.get(color) ?? '') + `M${x} ${y}h1v1h-1z`)
+  }
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const c = at(x, y)
+      if (c !== '.') {
+        add(shade[c] ?? PALETTE[c], x, y)
+        continue
+      }
+      // Empty pixel touching a non-stem pixel becomes outline.
+      const near = [at(x - 1, y), at(x + 1, y), at(x, y - 1), at(x, y + 1)]
+      if (near.some((n) => n !== '.' && n !== 'S')) add(OUTLINE, x, y)
+    }
+  }
+  // Outline first so fills sit on top of any overlap.
+  const paths = [...byColor.entries()]
+    .sort(([a], [b]) => (a === OUTLINE ? -1 : b === OUTLINE ? 1 : 0))
+    .map(([color, d]) => ({ color, d }))
+  return { size: w, paths }
+}
+
+export const SPRITES: Record<SymbolId | 'ball', Sprite> = Object.fromEntries(
+  (Object.keys(FILLS) as (SymbolId | 'ball')[]).map((id) => [id, build(FILLS[id], SHADE[id])]),
+) as Record<SymbolId | 'ball', Sprite>

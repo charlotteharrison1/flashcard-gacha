@@ -5,7 +5,6 @@ import { BULK_PULLS, PULL_COST, useEarnings } from '../lib/earnings'
 import { INITIAL_REELS, isSpendResult, reelsFor, type Result, type SymbolId, type Winnings } from '../lib/slots'
 import Earnings from '../components/Earnings'
 import Badge from '../components/Badge'
-import Confetti from '../components/Confetti'
 import SlotMachine, { type SlotPhase, type Spin } from '../components/SlotMachine'
 import BigSpinOverlay, { type BigSpinItem } from '../components/BigSpinOverlay'
 
@@ -23,7 +22,6 @@ export default function Pull() {
   const [remaining, setRemaining] = useState(0) // loaded pulls the lever hasn't played yet
   const [inserting, setInserting] = useState(1)
   const [nudge, setNudge] = useState(0)
-  const [resultKey, setResultKey] = useState(0) // bumps on every reveal, so confetti always replays
   const [bigSpin, setBigSpin] = useState<BigSpinItem[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const queue = useRef<Pending[]>([]) // pulls paid for and rolled, waiting for the lever
@@ -94,7 +92,6 @@ export default function Pull() {
     const anyGold = items.some((i) => i.result === 'gold')
     const anySilver = items.some((i) => i.result === 'silver')
     setOutcome(anyGold ? 'gold' : anySilver ? 'silver' : 'nothing')
-    setResultKey((k) => k + 1)
     setBigSpin(null)
     bulk.current = false
     setPhase('done')
@@ -115,7 +112,6 @@ export default function Pull() {
         gold: w.gold + (p.result === 'gold' ? 1 : 0),
       },
     )
-    setResultKey((k) => k + 1)
     setPhase('done')
   }, [])
 
@@ -139,8 +135,6 @@ export default function Pull() {
         </p>
       )}
 
-      {outcome === 'gold' && <Confetti key={resultKey} count={130} />}
-      {outcome === 'silver' && <Confetti key={resultKey} count={45} />}
       {bigSpin && <BigSpinOverlay items={bigSpin} onDone={() => finishBigSpin(bigSpin)} />}
 
       <SlotMachine

@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { schedule } from '../lib/scheduler'
 import { deckSuit, isRedSuit } from '../lib/theme'
 import { useEarnings } from '../lib/earnings'
 import { useAuth } from '../lib/auth'
-import type { Card, Deck, Rating } from '../lib/types'
+import type { Card, Deck, Rating, ReviewResult } from '../lib/types'
 import Confetti from '../components/Confetti'
 import Earnings from '../components/Earnings'
 import CardText from '../lib/cardText'
@@ -76,14 +75,11 @@ export default function Study() {
   async function rate(card: Card, rating: Rating) {
     if (saving.current) return
     saving.current = true
-    const { coins, ...fields } = schedule(card, rating)
-    const [upd, rev] = await Promise.all([
-      supabase.from('cards').update(fields).eq('id', card.id),
-      supabase.from('reviews').insert({ card_id: card.id, rating, coins_earned: coins }),
-    ])
+    // The database reschedules the card and decides the payout (see review_card in 0012_review_card.sql).
+    const { data, error: rpcError } = await supabase.rpc('review_card', { p_card_id: card.id, p_rating: rating })
     saving.current = false
-    const err = upd.error ?? rev.error
-    if (err) return setError(err.message)
+    if (rpcError) return setError(rpcError.message)
+    const { coins, ...fields } = data as ReviewResult
 
     if (coins > 0) {
       flyCoin(coins)
@@ -175,6 +171,7 @@ export default function Study() {
       <p className="muted center-text">
         {done} / {total} cleared
       </p>
+      {studyAll && <p className="muted center-text">Cards that aren't due yet don't earn coins.</p>}
 
       <div className="study" key={turn} ref={cardAreaRef}>
         {deck.show_both ? (
