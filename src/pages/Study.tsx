@@ -244,7 +244,14 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
           <SlotSymbol id={done > 0 ? 'heart' : 'spade'} />
         </div>
         {done > 0 ? (
-          <p className="score">+{earned} earnings</p>
+          <>
+            <p className="score">+{earned} earnings</p>
+            <p>
+              <Link className="spend-them" to="/pull">
+                Spend them?
+              </Link>
+            </p>
+          </>
         ) : (
           <>
             <h2>Nothing to play</h2>
@@ -266,9 +273,11 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
               Study anyway
             </Link>
           )}
-          <Link className="button green" to="/pull">
-            Pull screen
-          </Link>
+          {done === 0 && (
+            <Link className="button green" to="/pull">
+              Pull screen
+            </Link>
+          )}
           <Link className="button secondary" to="/">
             All decks
           </Link>

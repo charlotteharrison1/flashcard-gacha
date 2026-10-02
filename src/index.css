@@ -1674,3 +1674,5 @@ main.page { padding-top: 6px; }
 /* The heart (round cleared) and spade (nothing to play) are pixel-art sprites: 11 units at 7px each */
 .big-mark-pixel { display: block; width: 77px; height: 77px; margin: 0 auto 8px; }
 .big-mark-pixel svg { display: block; width: 100%; height: 100%; }
+
+.spend-them { font-size: 1.25rem; color: var(--gold); }
