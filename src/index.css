@@ -465,7 +465,7 @@ body:has(.home-box) header { padding-bottom: 0; }
 .home-box .collection { margin: 0 auto; }
 
 /* Sizing for the centre block: big enough to match the other pages, three decks across */
-.home-box { --tile-w: clamp(108px, calc((100vh - 360px) / 2.8), 180px); max-width: 820px; padding: 18px clamp(16px, 4vw, 32px) 24px; }
+.home-box { --tile-w: clamp(108px, calc((100vh - 360px) / 2.8), 180px); width: fit-content; max-width: 100%; padding: 18px 26px 24px; } /* the frame hugs what's inside it */
 .home-box .coin-pile { width: clamp(150px, 26vh, 230px); }
 .home-box .sale { width: clamp(112px, 17vh, 190px); }
 .home-box .sale .sale-btn { font-size: 0.95rem; padding: 5px 14px; letter-spacing: 0.1em; }
