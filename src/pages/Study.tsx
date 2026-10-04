@@ -238,7 +238,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
 
   if (!card) {
     return (
-      <div className="center celebrate">
+      <div className="center celebrate result-panel">
         {done > 0 && <Confetti />}
         <div className="big-mark big-mark-pixel" aria-hidden="true">
           <SlotSymbol id={done > 0 ? 'heart' : 'spade'} />
