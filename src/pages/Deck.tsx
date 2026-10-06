@@ -168,7 +168,6 @@ export default function Deck() {
       <div className="hero">
         <div className={`mini-card cardback${deck.icon_url ? ' has-icon' : ''} c${effectiveColor(id, deck.color)}`}>
           {deck.icon_url ? <img src={deck.icon_url} alt="" className="cardback-img" /> : <span className="mini-logo"><CardLogo id={logoFor(id, deck.logo)} target={24} /></span>}
-          <span className={`mini-due${dueCount > 0 ? ' has-due' : ''}`}>{dueCount} due</span>
         </div>
         <div className="hero-info">
           <h2>{deck.name}</h2>
