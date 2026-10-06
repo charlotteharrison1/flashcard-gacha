@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import SchemeButton from '../components/SchemeButton'
+import PixelTitle, { Plait } from '../components/PixelTitle'
 
 export default function Login() {
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
@@ -28,7 +29,10 @@ export default function Login() {
 
   return (
     <main className="narrow">
-      <h1 className="logo">Tyche</h1>
+      <h1 className="logo">
+        <PixelTitle scale={3} />
+        <Plait scale={3} />
+      </h1>
       <form onSubmit={submit} className="stack">
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <input

@@ -9,6 +9,7 @@ import Preview from './pages/Preview'
 import Pull from './pages/Pull'
 import Deckbox from './pages/Deckbox'
 import SettingsMenu from './components/SettingsMenu'
+import PixelTitle from './components/PixelTitle'
 
 function Layout() {
   const { session, loading } = useAuth()
@@ -18,8 +19,8 @@ function Layout() {
     <>
       {/* The top bar spans the whole window: the logo at the left edge, the account controls at the right edge. */}
       <header className="app-header row between">
-        <Link to="/" className="brand">
-          Tyche
+        <Link to="/" className="brand" aria-label="Tyche">
+          <PixelTitle />
         </Link>
         <span className="row">
           <span className="muted user-email" title={session.user.email}>

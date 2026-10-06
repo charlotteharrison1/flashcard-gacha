@@ -1691,3 +1691,9 @@ main.page { padding-top: 6px; }
   border-image: var(--frame) 3 / 9px stretch;
   filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.3));
 }
+
+/* The Tyche logo is pixel art, so no rotation (it would blur): a steady little two-step bob instead */
+.brand { display: block; line-height: 0; text-shadow: none; }
+h1.logo { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 0; transform: none; text-shadow: none; animation: logo-bob 2.4s steps(2) infinite; }
+h1.logo svg { display: block; max-width: 100%; height: auto; }
+@keyframes logo-bob { 50% { transform: translateY(-4px); } }
