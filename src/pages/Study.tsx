@@ -54,7 +54,12 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   const [queue, setQueue] = useState<Card[] | null>(null)
   const [total, setTotal] = useState(0)
   const [cardCount, setCardCount] = useState<number | null>(null) // every card in the deck or box, due or not
-  const [revealed, setRevealed] = useState(false)
+  const [revealed, setRevealed] = useState(false) // the answer has been seen, so rating is allowed
+  const [showingBack, setShowingBack] = useState(false) // which side of a flip card is facing you (you can flip back to the question)
+  const resetFace = () => {
+    setRevealed(false)
+    setShowingBack(false)
+  }
   const [done, setDone] = useState(0)
   const [earned, setEarned] = useState(0)
   const [turn, setTurn] = useState(0)
@@ -133,7 +138,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
       return rating === 0 ? [...rest, { ...card, ...fields }] : rest
     })
     if (rating !== 0) setDone((n) => n + 1)
-    setRevealed(false)
+    resetFace()
     setTurn((t) => t + 1)
   }
 
@@ -146,7 +151,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
       rest.splice(1 + Math.floor(Math.random() * rest.length), 0, card) // never first, so a different card is next
       return rest
     })
-    setRevealed(false)
+    resetFace()
     setTurn((t) => t + 1)
   }
 
@@ -159,7 +164,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
     if (rpcError) return setError(rpcError.message)
     setQueue((q) => (q ?? []).slice(1))
     setTotal((t) => t - 1) // it's no longer part of this round, so the progress bar still reaches 100%
-    setRevealed(false)
+    resetFace()
     setTurn((t) => t + 1)
   }
 
@@ -225,6 +230,10 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
       } else if (!revealed && (e.key === ' ' || e.key === 'Enter')) {
         e.preventDefault()
         setRevealed(true)
+        setShowingBack(true)
+      } else if (revealed && (e.key === ' ' || e.key === 'Enter') && !decks?.[card.deck_id]?.show_both) {
+        e.preventDefault()
+        setShowingBack((b) => !b) // flip back to the question, or forward to the answer again
       } else if (revealed && ['1', '2', '3', '4'].includes(e.key)) {
         rate(card, (Number(e.key) - 1) as Rating)
       }
@@ -348,8 +357,11 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
           </div>
         ) : (
           <div
-            className={`flip${deck.float_anim ? '' : ' no-float'} ${revealed ? 'flipped' : ''}`}
-            onClick={() => setRevealed(true)}
+            className={`flip${deck.float_anim ? '' : ' no-float'} ${showingBack ? 'flipped' : ''}`}
+            onClick={() => {
+              setShowingBack((b) => !b) // click again to flip back
+              setRevealed(true)
+            }}
             role="button"
             tabIndex={0}
             aria-label="Show answer"
@@ -374,7 +386,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
                     <CardText text={card.front} userId={userId} />
                   </div>
                 </FitScroll>
-                {!revealed && <span className="face-hint">Click or press space to flip</span>}
+                <span className="face-hint">{revealed ? 'Click or press space to flip to the answer again' : 'Click or press space to flip'}</span>
               </div>
               <div className={`${faceClass} back`}>
                 <span className="corner tl">
@@ -395,6 +407,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
                     <CardText text={card.back} userId={userId} />
                   </div>
                 </FitScroll>
+                <span className="face-hint">Click or press space to flip back to the question</span>
               </div>
             </div>
           </div>
@@ -410,7 +423,13 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
             ))}
           </div>
         ) : (
-          <button className="gold" onClick={() => setRevealed(true)}>
+          <button
+            className="gold"
+            onClick={() => {
+              setRevealed(true)
+              setShowingBack(true)
+            }}
+          >
             Show answer
           </button>
         )}
