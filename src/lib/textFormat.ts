@@ -32,3 +32,14 @@ export function htmlToText(s: string): string {
     .replace(/\n{3,}/g, '\n\n')
     .trim()
 }
+
+/**
+ * A cosmetic one-line version of card text for lists: pictures (whose paths or data addresses can be
+ * very long) become "[image]", and line breaks become spaces. The card itself is untouched.
+ */
+export function previewText(s: string): string {
+  return s
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '[image]')
+    .replace(/\s+/g, ' ')
+    .trim()
+}

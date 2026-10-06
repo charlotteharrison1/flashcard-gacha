@@ -1,4 +1,4 @@
-import { BrowserRouter, Link, Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Link, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './lib/auth'
 import { isConfigured, supabase } from './lib/supabase'
 import Login from './pages/Login'
@@ -13,6 +13,7 @@ import PixelTitle from './components/PixelTitle'
 
 function Layout() {
   const { session, loading } = useAuth()
+  const onPull = useLocation().pathname.startsWith('/pull')
   if (loading) return <p className="narrow">Loading…</p>
   if (!session) return <Navigate to="/login" replace />
   return (
@@ -32,7 +33,7 @@ function Layout() {
           <SettingsMenu />
         </span>
       </header>
-      <main className="page">
+      <main className="page" data-checker={onPull ? undefined : 'true'}>
         <Outlet />
       </main>
     </>

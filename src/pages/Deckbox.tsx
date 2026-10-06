@@ -5,6 +5,7 @@ import { deckSuit, effectiveColor } from '../lib/theme'
 import { SlotSymbol } from '../components/SlotSymbol'
 import DeckCustomize from '../components/DeckCustomize'
 import CardFilterBar from '../components/CardFilterBar'
+import { previewText } from '../lib/textFormat'
 import StudyFilter from '../components/StudyFilter'
 import { StarButton, TagAdder, TagChips } from '../components/CardMeta'
 import { MAX_TAGS, matchesFilter, saveStar, saveTags, sortCards, tagCounts, type CardFilter, type CardSort } from '../lib/cardMeta'
@@ -223,8 +224,9 @@ export default function Deckbox() {
                     <li key={c.id} className="row nowrap card-row-main">
                       <StarButton starred={c.starred} onToggle={() => toggleStar(c)} />
                       <span>
-                        <strong>{c.front.replace(/\s+/g, ' ').slice(0, 110)}</strong>{' '}
-                        <span className="muted">· {deckName.get(c.deck_id)}</span>
+                        <span className="card-row-text">
+                          <strong>{previewText(c.front)}</strong> <span className="muted">· {deckName.get(c.deck_id)}</span>
+                        </span>
                         <span className="card-row-tags">
                           <TagChips
                             tags={c.tags}

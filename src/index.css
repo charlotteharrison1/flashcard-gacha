@@ -437,12 +437,12 @@ button.danger { color: var(--red); }
 /* ---------- Home: one framed box on a checkerboard ---------- */
 
 /* Low-contrast checkerboard behind the box. Only the home page has a .home-box, so only it gets this. */
-body:has(.home-box) {
+body:has(.home-box), body:has(main[data-checker]) {
   background:
     conic-gradient(rgba(0, 0, 0, 0.13) 25%, transparent 0 50%, rgba(0, 0, 0, 0.13) 0 75%, transparent 0) 0 0 / 96px 96px,
     var(--felt);
 }
-body:has(.home-box)::before { display: none; }
+body:has(.home-box)::before, body:has(main[data-checker])::before { display: none; }
 body:has(.home-box) header { padding-bottom: 0; }
 
 .home-box {
@@ -1703,3 +1703,8 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .login-box { width: min(100%, 440px); margin: 24px auto 0; padding: 30px 40px 26px; }
 
 .home-box .home-divider { margin: 10px auto 14px; }
+
+/* Card rows in lists: long text is cut off (two lines, then ...) instead of running past the box */
+.card-row-main { min-width: 0; flex: 1; }
+.card-row-main > span { min-width: 0; }
+.card-row-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }

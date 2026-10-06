@@ -12,6 +12,7 @@ import AttachmentPicker from '../components/AttachmentPicker'
 import FormatToolbar from '../components/FormatToolbar'
 import CardText, { setImageWidth } from '../lib/cardText'
 import CardFilterBar from '../components/CardFilterBar'
+import { previewText } from '../lib/textFormat'
 import { SlotSymbol } from '../components/SlotSymbol'
 import CardEditor, { type CardValues } from '../components/CardEditor'
 import { useSettings } from '../lib/settings'
@@ -299,7 +300,9 @@ export default function Deck() {
                     <span className="row nowrap card-row-main">
                       <StarButton starred={c.starred} onToggle={() => toggleStar(c)} />
                       <span>
-                        <strong>{c.front}</strong> <span className="muted">→ {c.back}</span>
+                        <span className="card-row-text">
+                          <strong>{previewText(c.front)}</strong> <span className="muted">→ {previewText(c.back)}</span>
+                        </span>
                         <span className="card-row-tags">
                           <TagChips
                             tags={c.tags}
