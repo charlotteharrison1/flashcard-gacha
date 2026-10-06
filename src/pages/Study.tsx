@@ -275,9 +275,9 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
         )}
         <div className="row center-row">
           <Link className="button gold" to={studyPath}>
-            {scope === 'box' ? 'Back to deckbox' : 'Back to deck'}
+            {filter === 'all' && cardCount === 0 ? 'Add some cards' : scope === 'box' ? 'Back to deckbox' : 'Back to deck'}
           </Link>
-          {done === 0 && !studyAll && (
+          {done === 0 && !studyAll && (cardCount ?? 0) > 0 && (
             <Link className="button gold" to={`${studyPath}/study?all=1${filter !== 'all' ? `&f=${encodeURIComponent(filter)}` : ''}`}>
               Study anyway
             </Link>
