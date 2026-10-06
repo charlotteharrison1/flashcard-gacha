@@ -8,7 +8,7 @@ import type { SymbolId } from './slots'
 export type Sprite = { size: number; paths: { color: string; d: string }[] }
 
 /** Everything drawable: the slot symbols, the lever knob, the four card suits (home page frame corners) and a deckbox. */
-export type SpriteId = SymbolId | 'ball' | 'coin' | 'arrow' | 'goldBadge' | 'silverBadge' | 'gear' | 'glove' | 'spade' | 'heart' | 'club' | 'suitDiamond' | 'deckbox'
+export type SpriteId = SymbolId | 'ball' | 'coin' | 'arrow' | 'goldBadge' | 'silverBadge' | 'gear' | 'glove' | 'gloveGold' | 'spade' | 'heart' | 'club' | 'suitDiamond' | 'deckbox'
 
 const OUTLINE = '#0a1218'
 
@@ -46,6 +46,7 @@ const SHADE: Record<SpriteId, Record<string, string>> = {
   goldBadge: { D: '#b98410' },
   gear: { D: '#b98410' },
   glove: { D: '#b3231a' },
+  gloveGold: { R: '#ffc233', D: '#b98410' }, // the same glove with a gold sleeve
   silverBadge: { Y: '#cfd8e3', D: '#7d8a9a', W: '#ffffff' },
 }
 
@@ -99,6 +100,25 @@ function medalRows(): string[] {
   star.forEach((row, r) => [...row].forEach((ch, c) => ch === 'W' && (g[cy - 2 + r][cx - 2 + c] = 'W')))
   return g.map((row) => row.join(''))
 }
+
+/** A cartoon glove pointing right (15x15): cuff, white glove, a pointing finger. Rotated and flipped in CSS. */
+const GLOVE_ROWS = [
+  '...............',
+  '...............',
+  '...............',
+  '.....LLL.......',
+  'RRR..LLLL......',
+  'RRR.LLLLLLLLLL.',
+  'RRR.LLLLLLLLLL.',
+  'RRR.LLLLLLL....',
+  'RRR.LLLHLLHL...',
+  'RRR.LLLHLLHL...',
+  'RRR.LLLLLLLL...',
+  'DDD..HHHHHH....',
+  '...............',
+  '...............',
+  '...............',
+]
 
 const FILLS: Record<SpriteId, string[]> = {
   star: [
@@ -256,24 +276,8 @@ const FILLS: Record<SpriteId, string[]> = {
     '..YYYY..',
     '........',
   ],
-  // A cartoon glove pointing right (15x15): red cuff, white glove, a pointing finger. Rotated and flipped in CSS.
-  glove: [
-    '...............',
-    '...............',
-    '...............',
-    '.....LLL.......',
-    'RRR..LLLL......',
-    'RRR.LLLLLLLLLL.',
-    'RRR.LLLLLLLLLL.',
-    'RRR.LLLLLLL....',
-    'RRR.LLLHLLHL...',
-    'RRR.LLLHLLHL...',
-    'RRR.LLLLLLLL...',
-    'DDD..HHHHHH....',
-    '...............',
-    '...............',
-    '...............',
-  ],
+  glove: GLOVE_ROWS,
+  gloveGold: GLOVE_ROWS,
   // A cog (11x11) for the Settings button
   gear: [
     '...........',

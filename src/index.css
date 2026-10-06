@@ -448,7 +448,7 @@ body:has(.home-box) header { padding-bottom: 0; }
 .home-box {
   position: relative;
   max-width: 880px;
-  margin: 14px auto 0; /* the corner suits overhang the top by 14px, so this is as tight as it can go */
+  margin: 8px auto 0;
   padding: 28px clamp(16px, 4vw, 40px) 40px;
   /* Dark panel with a faint dither; clipped to the padding box so the frame's notched corners show the checkerboard. */
   background:
@@ -465,9 +465,9 @@ body:has(.home-box) header { padding-bottom: 0; }
 .home-box .collection { margin: 0 auto; }
 
 /* Sizing for the centre block: big enough to match the other pages, three decks across */
-.home-box { --tile-w: clamp(108px, calc((100vh - 370px) / 2.8), 180px); width: fit-content; max-width: 100%; padding: 18px 38px 24px; } /* the frame hugs what's inside it */
-.home-box .coin-pile { width: clamp(150px, 26vh, 230px); }
-.home-box .sale { --sale-w: clamp(140px, 20vh, 220px); width: var(--sale-w); }
+.home-box { --tile-w: clamp(112px, calc((100vh - 385px) / 2.8), 190px); width: fit-content; max-width: 100%; padding: 20px 54px 28px; } /* the frame hugs what's inside it */
+.home-box .coin-pile { width: clamp(160px, 27vh, 250px); }
+.home-box .sale { --sale-w: clamp(150px, 21vh, 230px); width: var(--sale-w); }
 .home-box .sale .sale-btn { font-size: max(0.8rem, calc(var(--sale-w) * 0.085)); padding: 4px 12px; letter-spacing: 0.08em; }
 .home-box .sale-tag { font-size: max(0.75rem, calc(var(--sale-w) * 0.07)); }
 .home-box .sale-cost { font-size: max(0.62rem, calc(var(--sale-w) * 0.052)); letter-spacing: 0; }
@@ -1701,3 +1701,5 @@ h1.logo svg { display: block; max-width: 100%; height: auto; }
 /* Login: the logo and form sit in the home page's framed box */
 main.login-main { max-width: 620px; padding-top: 40px; }
 .login-box { width: min(100%, 440px); margin: 24px auto 0; padding: 30px 40px 26px; }
+
+.home-box .home-divider { margin: 10px auto 14px; }

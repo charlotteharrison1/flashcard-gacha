@@ -1,4 +1,4 @@
-import { BrowserRouter, Link, Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Link, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './lib/auth'
 import { isConfigured, supabase } from './lib/supabase'
 import Login from './pages/Login'
@@ -13,6 +13,7 @@ import PixelTitle from './components/PixelTitle'
 
 function Layout() {
   const { session, loading } = useAuth()
+  const onHome = useLocation().pathname === '/'
   if (loading) return <p className="narrow">Loading…</p>
   if (!session) return <Navigate to="/login" replace />
   return (
@@ -20,7 +21,7 @@ function Layout() {
       {/* The top bar spans the whole window: the logo at the left edge, the account controls at the right edge. */}
       <header className="app-header row between">
         <Link to="/" className="brand" aria-label="Tyche">
-          <PixelTitle />
+          <PixelTitle scale={onHome ? 2 : 1} />
         </Link>
         <span className="row">
           <span className="muted user-email" title={session.user.email}>

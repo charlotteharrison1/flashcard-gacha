@@ -179,7 +179,7 @@ export default function Decks() {
         <SlotSymbol id="glove" />
       </span>
       <span className="home-glove glove-top" aria-hidden="true">
-        <SlotSymbol id="glove" />
+        <SlotSymbol id="gloveGold" />
       </span>
 
       <section className="wallet">
