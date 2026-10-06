@@ -9,7 +9,8 @@ returns void
 language plpgsql
 security definer
 set search_path = public
-as $$
+-- Tagged ($fn$) rather than plain $$, because the card text below contains $$ for block maths.
+as $fn$
 declare
   v_deck_id uuid;
   v_star text := 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMjgiIGZpbGw9IiNmZmMyMzMiIHN0cm9rZT0iIzBhMTIxOCIgc3Ryb2tlLXdpZHRoPSI0Ii8+PHBhdGggZD0iTTMyIDE0bDUgMTEgMTIgMi05IDggMyAxMi0xMS02LTExIDYgMy0xMi05LTggMTItMnoiIGZpbGw9IiNmZmYzYjgiIHN0cm9rZT0iIzBhMTIxOCIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9zdmc+';
@@ -59,7 +60,7 @@ begin
      '.csv, .tsv and .txt all work, including Anki''s plain-text export. That''s the tour — make a deck of your own, or delete this one whenever you''re ready.',
      'clear');
 end;
-$$;
+$fn$;
 
 create or replace function public.handle_new_user()
 returns trigger
