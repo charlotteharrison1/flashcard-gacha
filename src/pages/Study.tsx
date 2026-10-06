@@ -310,7 +310,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   return (
     <>
       <p className="study-back">
-        <Link to={studyPath}>← Back to {scope === 'box' ? 'deckbox' : 'deck'}</Link>
+        <Link to="/">← Home</Link>
       </p>
 
       <div className="progress" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
