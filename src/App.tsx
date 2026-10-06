@@ -8,6 +8,8 @@ import Study from './pages/Study'
 import Preview from './pages/Preview'
 import Pull from './pages/Pull'
 import Deckbox from './pages/Deckbox'
+import Library from './pages/Library'
+import LibraryPreview from './pages/LibraryPreview'
 import SettingsMenu from './components/SettingsMenu'
 import PixelTitle from './components/PixelTitle'
 
@@ -72,6 +74,8 @@ export default function App() {
             <Route path="boxes/:id/study" element={<Study scope="box" />} />
             <Route path="decks/:id/preview" element={<Preview />} />
             <Route path="pull" element={<Pull />} />
+            <Route path="library" element={<Library />} />
+            <Route path="library/:slug" element={<LibraryPreview />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

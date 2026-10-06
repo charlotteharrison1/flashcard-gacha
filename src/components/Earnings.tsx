@@ -1,24 +1,29 @@
+import { Link } from 'react-router-dom'
 import CoinPile from './CoinPile'
 import { SlotSymbol } from './SlotSymbol'
 
-export default function Earnings({ balance, compact = false }: { balance: number | null; compact?: boolean }) {
+export default function Earnings({ balance, compact = false, library = false }: { balance: number | null; compact?: boolean; library?: boolean }) {
+  const empty = balance !== null && balance <= 0
   return (
-    <div className={`earnings-box${compact ? ' compact' : ''}`}>
-      <CoinPile balance={balance} />
-      <div className="earn-text">
-        {balance !== null && balance <= 0 ? (
-          <span className="earn-empty">No earnings yet. Study to get coins!</span>
-        ) : (
-          <>
+    <div className="earnings-col">
+      <div className={`earnings-box${compact ? ' compact' : ''}`}>
+        <CoinPile balance={balance} />
+        {!empty && (
+          <div className="earn-text">
             <span className="earn-label">
               <SlotSymbol id="star" />
               Earnings
               <SlotSymbol id="star" />
             </span>
             <span className="earn-value">{balance ?? '–'}</span>
-          </>
+          </div>
         )}
       </div>
+      {library && (
+        <Link to="/library" className="button spend library-btn">
+          Enter the library
+        </Link>
+      )}
     </div>
   )
 }

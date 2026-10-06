@@ -182,7 +182,7 @@ export default function Decks() {
 
       <section className="wallet">
         <SaleSticker />
-        <Earnings balance={balance} />
+        <Earnings balance={balance} library />
       </section>
 
       <div className="home-divider" aria-hidden="true" />

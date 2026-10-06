@@ -170,13 +170,10 @@ export default function CoinPile({ balance }: { balance: number | null }) {
   return (
     <svg className="coin-pile" viewBox={`0 ${VIEW_TOP} ${VIEW_W} ${VIEW_H}`} role="img" aria-label={`${balance ?? 0} earnings`}>
       {coins.length === 0 ? (
-        // Nothing earned yet: one grey, empty stack in the middle
-        <g className="coin-pile-empty" shapeRendering="crispEdges" transform={`translate(${stackX(2)} ${BASE_Y - COIN_H})`}>
-          {pixels(TOP_COIN_ROWS, () => '#5f7488').base.map((p, i) => (
-            <rect key={i} x={p.x} y={p.y} width={PX} height={PX} fill={p.color} />
-          ))}
-          <rect x={0} y={COIN_H} width={COIN_W} height={PX} fill="#5f7488" />
-        </g>
+        // Nothing earned yet: a note where the pile would be (the fly below still buzzes out on hover)
+        <foreignObject x={12} y={VIEW_TOP + 4} width={VIEW_W - 24} height={BASE_Y - VIEW_TOP - 10}>
+          <div className="pile-empty-text">No earnings yet. Study to get coins!</div>
+        </foreignObject>
       ) : (
         <>
           {usedStacks.map((s) => (
