@@ -146,7 +146,7 @@ export default function SlotMachine({
     .filter(Boolean)
     .join(' ')
 
-  const coinLabel = phase === 'loading' ? 'Inserting…' : phase === 'spinning' ? 'Spinning' : armed ? `${remaining} loaded` : ''
+  const coinLabel = armed ? `${remaining} loaded` : ''
   const drops = Math.min(inserting, 5)
 
   return (

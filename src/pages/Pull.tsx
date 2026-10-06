@@ -136,8 +136,6 @@ export default function Pull() {
     setPhase('done')
   }, [])
 
-  const broke = balance !== null && balance < PULL_COST
-
   return (
     <div className="pull">
       <div className="pull-main">
@@ -184,13 +182,10 @@ export default function Pull() {
             Insert {BULK_PULLS} coins
           </button>
         </div>
-        {broke && <p className="muted">Out of coins. Earn more by studying.</p>}
         {error && <p className="error">{error}</p>}
       </div>
 
       <div className="slot-result" aria-live="polite">
-        {phase === 'loading' && <span className="muted">Inserting {plural(inserting, 'coin')}…</span>}
-        {phase === 'spinning' && <span className="muted">Spinning…</span>}
         {phase === 'done' && outcome === 'gold' && (
           <>
             <Badge tier="gold" className="badge badge-sm" />
