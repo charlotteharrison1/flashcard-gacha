@@ -167,17 +167,14 @@ export default function Deck() {
         </div>
         {dueCount > 0 ? (
           <Link className="button gold" to={`/decks/${id}/study`}>
-            Study {dueCount}
+            {dueCount} card{dueCount === 1 ? '' : 's'} due
           </Link>
         ) : cards.length > 0 ? (
-          <span className="hero-done">All cleared</span>
+          <Link className="button secondary" to={`/decks/${id}/study?all=1`}>
+            0 cards due - study anyway?
+          </Link>
         ) : (
           <span className="hero-done">Add some cards</span>
-        )}
-        {cards.length > 0 && (
-          <Link className="button secondary" to={`/decks/${id}/study?all=1`}>
-            Study anyway
-          </Link>
         )}
         {cards.length > 0 && (
           <Link className="button secondary" to={`/decks/${id}/preview`}>
