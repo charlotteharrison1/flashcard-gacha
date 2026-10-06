@@ -4,7 +4,7 @@ import { SPRITES, type SpriteId } from '../lib/sprites'
  * A pixel-art logo for a card back, drawn at a whole number of screen pixels per art pixel so it stays crisp.
  * `target` is roughly how many screen pixels wide it should be; the exact size is the nearest whole multiple.
  */
-export default function CardLogo({ id, target = 52 }: { id: SpriteId; target?: number }) {
+export default function CardLogo({ id, target = 36 }: { id: SpriteId; target?: number }) {
   const { size, paths } = SPRITES[id]
   const unit = Math.max(2, Math.round(target / size))
   return (

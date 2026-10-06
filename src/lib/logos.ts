@@ -1,5 +1,5 @@
 import type { SpriteId } from './sprites'
-import { deckSuit } from './theme'
+import { hashIndex } from './theme'
 
 /** The pixel-art logos a deck's card back can wear. Keep in sync with the check constraint in 0021_deck_logo.sql. */
 export const DECK_LOGOS = [
@@ -18,10 +18,8 @@ export const DECK_LOGOS = [
 
 export type DeckLogoId = (typeof DECK_LOGOS)[number]['id']
 
-const SUIT_SPRITE: Record<string, DeckLogoId> = { '♠': 'spade', '♥': 'heart', '♦': 'suitDiamond', '♣': 'club' }
-
-/** The deck's chosen logo, or (if it hasn't picked one) the suit its id happens to hash to. */
+/** The deck's chosen logo, or (if it hasn't picked one) a random-looking but stable pick from all of them. */
 export function logoFor(deckId: string, logo: string | null | undefined): DeckLogoId {
   if (logo && DECK_LOGOS.some((l) => l.id === logo)) return logo as DeckLogoId
-  return SUIT_SPRITE[deckSuit(deckId)] ?? 'spade'
+  return DECK_LOGOS[hashIndex(deckId + ':logo', DECK_LOGOS.length)].id
 }

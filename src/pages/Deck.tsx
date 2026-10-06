@@ -167,7 +167,7 @@ export default function Deck() {
 
       <div className="hero">
         <div className={`mini-card cardback${deck.icon_url ? ' has-icon' : ''} c${effectiveColor(id, deck.color)}`}>
-          {deck.icon_url ? <img src={deck.icon_url} alt="" className="cardback-img" /> : <span className="mini-logo"><CardLogo id={logoFor(id, deck.logo)} target={36} /></span>}
+          {deck.icon_url ? <img src={deck.icon_url} alt="" className="cardback-img" /> : <span className="mini-logo"><CardLogo id={logoFor(id, deck.logo)} target={24} /></span>}
           <span className={`mini-due${dueCount > 0 ? ' has-due' : ''}`}>{dueCount} due</span>
         </div>
         <div className="hero-info">
@@ -268,6 +268,66 @@ export default function Deck() {
         </form>
       </details>
 
+      <details className="panel more-options">
+        <summary>Deck options: study settings, card font, import</summary>
+        <section className="panel">
+          <h3>Study options</h3>
+          <label className="row nowrap">
+            <input
+              type="checkbox"
+              checked={deck.show_both}
+              onChange={(e) => updateStudySetting({ show_both: e.target.checked })}
+            />
+            Keep the answer on screen with the question (no flip)
+          </label>
+          <label className="row nowrap">
+            <input
+              type="checkbox"
+              checked={deck.float_anim}
+              onChange={(e) => updateStudySetting({ float_anim: e.target.checked })}
+            />
+            Floating animation on the study card
+          </label>
+          <label className="file-field">
+            <span>Card shape</span>
+            <select
+              value={deck.orientation ?? 'horizontal'}
+              onChange={(e) => updateStudySetting({ orientation: e.target.value as 'horizontal' | 'vertical' })}
+            >
+              <option value="horizontal">Horizontal (wide)</option>
+              <option value="vertical">Vertical (tall)</option>
+            </select>
+          </label>
+        </section>
+
+        <section className="panel">
+          <h3>Card font</h3>
+          <div className="row">
+            <select value={bulkFont} onChange={(e) => setBulkFont(e.target.value as CardFont)} aria-label="Font for every card in this deck">
+              {FONT_OPTIONS.map((f) => (
+                <option key={f.id} value={f.id}>
+                  {f.label}
+                </option>
+              ))}
+            </select>
+            <button className="secondary" onClick={applyFontToAll} disabled={cards.length === 0}>
+              Apply to all {cards.length} cards
+            </button>
+          </div>
+          {fontNote && <p className="notice">{fontNote}</p>}
+        </section>
+
+        <CsvImport deckId={id} onImported={load} font={settings.default_font} />
+
+        <section className="panel">
+          <h3>Delete deck</h3>
+          <p className="muted">Removes this deck and all its cards. Coins earned from reviewing them are removed too.</p>
+          <button className="red" onClick={removeDeck}>
+            Delete this deck
+          </button>
+        </section>
+      </details>
+
       {cards.some((c) => c.starred || c.tags.length > 0) && <StudyFilter compact basePath={`/decks/${id}/study`} cards={cards} />}
 
       <h3>Cards ({cards.length})</h3>
@@ -349,65 +409,6 @@ export default function Deck() {
         </>
       )}
 
-      <details className="panel more-options">
-        <summary>Deck options: study settings, card font, import</summary>
-        <section className="panel">
-          <h3>Study options</h3>
-          <label className="row nowrap">
-            <input
-              type="checkbox"
-              checked={deck.show_both}
-              onChange={(e) => updateStudySetting({ show_both: e.target.checked })}
-            />
-            Keep the answer on screen with the question (no flip)
-          </label>
-          <label className="row nowrap">
-            <input
-              type="checkbox"
-              checked={deck.float_anim}
-              onChange={(e) => updateStudySetting({ float_anim: e.target.checked })}
-            />
-            Floating animation on the study card
-          </label>
-          <label className="file-field">
-            <span>Card shape</span>
-            <select
-              value={deck.orientation ?? 'horizontal'}
-              onChange={(e) => updateStudySetting({ orientation: e.target.value as 'horizontal' | 'vertical' })}
-            >
-              <option value="horizontal">Horizontal (wide)</option>
-              <option value="vertical">Vertical (tall)</option>
-            </select>
-          </label>
-        </section>
-
-        <section className="panel">
-          <h3>Card font</h3>
-          <div className="row">
-            <select value={bulkFont} onChange={(e) => setBulkFont(e.target.value as CardFont)} aria-label="Font for every card in this deck">
-              {FONT_OPTIONS.map((f) => (
-                <option key={f.id} value={f.id}>
-                  {f.label}
-                </option>
-              ))}
-            </select>
-            <button className="secondary" onClick={applyFontToAll} disabled={cards.length === 0}>
-              Apply to all {cards.length} cards
-            </button>
-          </div>
-          {fontNote && <p className="notice">{fontNote}</p>}
-        </section>
-
-        <CsvImport deckId={id} onImported={load} font={settings.default_font} />
-
-        <section className="panel">
-          <h3>Delete deck</h3>
-          <p className="muted">Removes this deck and all its cards. Coins earned from reviewing them are removed too.</p>
-          <button className="red" onClick={removeDeck}>
-            Delete this deck
-          </button>
-        </section>
-      </details>
     </>
   )
 }
