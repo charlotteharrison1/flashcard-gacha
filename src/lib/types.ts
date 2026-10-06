@@ -16,6 +16,8 @@ export type Deck = {
   float_anim: boolean
   /** Wide cards (horizontal) or tall ones (vertical). */
   orientation: Orientation
+  /** The pixel logo on the card back (see lib/logos.ts); null = the automatic suit. */
+  logo?: string | null
 }
 
 export type Deckbox = {

@@ -1,7 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { deckSuit, effectiveColor } from '../lib/theme'
+import { effectiveColor } from '../lib/theme'
+import CardLogo from '../components/CardLogo'
+import { logoFor } from '../lib/logos'
 import Earnings from '../components/Earnings'
 import SaleSticker from '../components/SaleSticker'
 import { SlotSymbol } from '../components/SlotSymbol'
@@ -15,6 +17,7 @@ type DeckRow = {
   created_at: string
   color: number | null
   icon_url: string | null
+  logo?: string | null
   cards: { count: number }[]
   due: { count: number }[] // the same cards, counting only the ones due now
 }
@@ -110,7 +113,7 @@ export default function Decks() {
     const [d, b] = await Promise.all([
       supabase
         .from('decks')
-        .select('id, name, created_at, color, icon_url, cards(count), due:cards(count)')
+        .select('*, cards(count), due:cards(count)') // all deck columns, so a missing newer one (like logo) can't break the page
         .lte('due.due_at', new Date().toISOString())
         .is('deckbox_id', null)
         .order('created_at', { ascending: false }),
@@ -276,7 +279,9 @@ export default function Decks() {
                     {d.icon_url ? (
                       <img src={d.icon_url} alt="" className="cardback-img" draggable={false} />
                     ) : (
-                      <span className="tile-suit">{deckSuit(d.id)}</span>
+                      <span className="tile-logo">
+                        <CardLogo id={logoFor(d.id, d.logo)} />
+                      </span>
                     )}
                     <span className="tile-plate">{d.name}</span>
                     <span className="tile-count">

@@ -1719,3 +1719,13 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .tile-due { font-size: 0.78rem; color: #fff; opacity: 0.75; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6); }
 .tile-due.has-due { opacity: 1; color: #ffe27a; }
 .home-box .tile-due { font-size: 0.78rem; }
+
+/* Pixel logos on card backs */
+.tile-logo { display: block; line-height: 0; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.35)); }
+.tile-logo svg { display: block; }
+.mini-card .mini-logo { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; line-height: 0; }
+.mini-card .mini-logo svg { display: block; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.4)); }
+.logo-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.logo-option { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; background: var(--panel-2); border: 3px solid var(--line); box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4); }
+.logo-option.active { outline: 3px solid var(--gold); outline-offset: 2px; }
+.logo-option svg { display: block; }

@@ -2,7 +2,9 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import type { Card, Deck as DeckType } from '../lib/types'
-import { deckSuit, effectiveColor } from '../lib/theme'
+import { effectiveColor } from '../lib/theme'
+import CardLogo from '../components/CardLogo'
+import { logoFor } from '../lib/logos'
 import { errorMessage } from '../lib/errors'
 import { useAuth } from '../lib/auth'
 import { DEFAULT_FONT, FONT_OPTIONS, type CardFont } from '../lib/fonts'
@@ -165,7 +167,7 @@ export default function Deck() {
 
       <div className="hero">
         <div className={`mini-card cardback${deck.icon_url ? ' has-icon' : ''} c${effectiveColor(id, deck.color)}`}>
-          {deck.icon_url ? <img src={deck.icon_url} alt="" className="cardback-img" /> : <span>{deckSuit(id)}</span>}
+          {deck.icon_url ? <img src={deck.icon_url} alt="" className="cardback-img" /> : <span className="mini-logo"><CardLogo id={logoFor(id, deck.logo)} target={36} /></span>}
         </div>
         <div className="hero-info">
           <h2>{deck.name}</h2>
@@ -194,7 +196,7 @@ export default function Deck() {
         </button>
       </div>
 
-      {customizing && <DeckCustomize deckId={id} color={deck.color} iconUrl={deck.icon_url} onSaved={load} />}
+      {customizing && <DeckCustomize deckId={id} color={deck.color} iconUrl={deck.icon_url} logo={deck.logo ?? null} onSaved={load} />}
 
       <details className="panel more-options add-card" open={cards.length === 0 ? true : undefined}>
         <summary>+ Add a card</summary>

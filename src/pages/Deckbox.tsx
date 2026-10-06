@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { deckSuit, effectiveColor } from '../lib/theme'
+import { effectiveColor } from '../lib/theme'
+import CardLogo from '../components/CardLogo'
+import { logoFor } from '../lib/logos'
 import { SlotSymbol } from '../components/SlotSymbol'
 import DeckCustomize from '../components/DeckCustomize'
 import CardFilterBar from '../components/CardFilterBar'
@@ -15,6 +17,7 @@ type DeckRow = {
   name: string
   color: number | null
   icon_url: string | null
+  logo?: string | null
   cards: { count: number }[]
   due: { count: number }[]
 }
@@ -45,7 +48,7 @@ export default function Deckbox() {
       supabase.from('deckboxes').select('id, name, color, icon_url').eq('id', id).single(),
       supabase
         .from('decks')
-        .select('id, name, color, icon_url, cards(count), due:cards(count)')
+        .select('*, cards(count), due:cards(count)')
         .lte('due.due_at', new Date().toISOString())
         .eq('deckbox_id', id)
         .order('created_at', { ascending: false }),
@@ -186,7 +189,9 @@ export default function Deckbox() {
                   {d.icon_url ? (
                     <img src={d.icon_url} alt="" className="cardback-img" />
                   ) : (
-                    <span className="tile-suit">{deckSuit(d.id)}</span>
+                    <span className="tile-logo">
+                      <CardLogo id={logoFor(d.id, d.logo)} />
+                    </span>
                   )}
                   <span className="tile-plate">{d.name}</span>
                   <span className="tile-count">
