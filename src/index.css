@@ -1714,3 +1714,8 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .tile-gear svg { display: block; width: 100%; height: 100%; }
 .tile-gear:hover { filter: brightness(1.2); }
 .home-box .tile-gear { width: 33px; height: 33px; top: -12px; right: -12px; }
+
+/* "N cards due" under the card count on a deck tile */
+.tile-due { font-size: 0.78rem; color: #fff; opacity: 0.75; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6); }
+.tile-due.has-due { opacity: 1; color: #ffe27a; }
+.home-box .tile-due { font-size: 0.78rem; }

@@ -16,6 +16,7 @@ type DeckRow = {
   color: number | null
   icon_url: string | null
   cards: { count: number }[]
+  due: { count: number }[]
 }
 type LooseDeck = { id: string; name: string }
 type BoxCard = { id: string; deck_id: string; front: string; starred: boolean; tags: string[]; due_at: string }
@@ -44,7 +45,8 @@ export default function Deckbox() {
       supabase.from('deckboxes').select('id, name, color, icon_url').eq('id', id).single(),
       supabase
         .from('decks')
-        .select('id, name, color, icon_url, cards(count)')
+        .select('id, name, color, icon_url, cards(count), due:cards(count)')
+        .lte('due.due_at', new Date().toISOString())
         .eq('deckbox_id', id)
         .order('created_at', { ascending: false }),
       supabase.from('decks').select('id, name').is('deckbox_id', null).order('name'),
@@ -189,6 +191,9 @@ export default function Deckbox() {
                   <span className="tile-plate">{d.name}</span>
                   <span className="tile-count">
                     {n} card{n === 1 ? '' : 's'}
+                  </span>
+                  <span className={`tile-due${(d.due[0]?.count ?? 0) > 0 ? ' has-due' : ''}`}>
+                    {d.due[0]?.count ?? 0} card{(d.due[0]?.count ?? 0) === 1 ? '' : 's'} due
                   </span>
                 </Link>
                 <button

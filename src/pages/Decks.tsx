@@ -16,6 +16,7 @@ type DeckRow = {
   color: number | null
   icon_url: string | null
   cards: { count: number }[]
+  due: { count: number }[] // the same cards, counting only the ones due now
 }
 
 type BoxRow = {
@@ -109,7 +110,8 @@ export default function Decks() {
     const [d, b] = await Promise.all([
       supabase
         .from('decks')
-        .select('id, name, created_at, color, icon_url, cards(count)')
+        .select('id, name, created_at, color, icon_url, cards(count), due:cards(count)')
+        .lte('due.due_at', new Date().toISOString())
         .is('deckbox_id', null)
         .order('created_at', { ascending: false }),
       supabase.from('deckboxes').select('id, name, color, icon_url, decks(count)').order('created_at', { ascending: false }),
@@ -279,6 +281,9 @@ export default function Decks() {
                     <span className="tile-plate">{d.name}</span>
                     <span className="tile-count">
                       {n} card{n === 1 ? '' : 's'}
+                    </span>
+                    <span className={`tile-due${(d.due[0]?.count ?? 0) > 0 ? ' has-due' : ''}`}>
+                      {d.due[0]?.count ?? 0} card{(d.due[0]?.count ?? 0) === 1 ? '' : 's'} due
                     </span>
                   </Link>
                   <Link className="tile-del tile-gear" to={`/decks/${d.id}`} aria-label={`${d.name}: edit cards and settings`} title="Edit cards and settings">
