@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import type { Card, Deck as DeckType } from '../lib/types'
 import { deckSuit, effectiveColor } from '../lib/theme'
@@ -24,6 +24,7 @@ const HAS_IMAGE_RE = /!\[[^\]]*\]\(/
 
 export default function Deck() {
   const { id = '' } = useParams()
+  const navigate = useNavigate()
   const { session } = useAuth()
   const userId = session?.user.id ?? ''
   const [deck, setDeck] = useState<DeckType | null>(null)
@@ -138,6 +139,13 @@ export default function Deck() {
     const { error } = await supabase.from('decks').update(patch).eq('id', id)
     if (error) return setError(errorMessage(error, 'Could not save setting.'))
     load()
+  }
+
+  async function removeDeck() {
+    if (!confirm(`Delete "${deck?.name}" and all its cards? This also removes the coins earned from reviewing them.`)) return
+    const { error: e } = await supabase.from('decks').delete().eq('id', id)
+    if (e) return setError(e.message)
+    navigate('/')
   }
 
   async function remove(cardId: string) {
@@ -389,6 +397,13 @@ export default function Deck() {
 
         <CsvImport deckId={id} onImported={load} font={settings.default_font} />
 
+        <section className="panel">
+          <h3>Delete deck</h3>
+          <p className="muted">Removes this deck and all its cards. Coins earned from reviewing them are removed too.</p>
+          <button className="red" onClick={removeDeck}>
+            Delete this deck
+          </button>
+        </section>
       </details>
     </>
   )

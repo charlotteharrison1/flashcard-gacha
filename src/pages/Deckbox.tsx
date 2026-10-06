@@ -148,12 +148,15 @@ export default function Deckbox() {
         <div className="row">
           {decks.length > 0 && (
             <>
-              <Link className="button gold" to={`/boxes/${id}/study`}>
-                Study shuffled
-              </Link>
-              <Link className="button secondary" to={`/boxes/${id}/study?all=1`}>
-                Study anyway
-              </Link>
+              {dueCount > 0 ? (
+                <Link className="button gold" to={`/boxes/${id}/study`}>
+                  {dueCount} card{dueCount === 1 ? '' : 's'} due
+                </Link>
+              ) : (
+                <Link className="button secondary" to={`/boxes/${id}/study?all=1`}>
+                  0 cards due - study anyway?
+                </Link>
+              )}
             </>
           )}
           <button className="secondary sm" onClick={() => setCustomizing((c) => !c)}>
@@ -177,7 +180,7 @@ export default function Deckbox() {
             const n = d.cards[0]?.count ?? 0
             return (
               <li key={d.id} className={`tile cardback${d.icon_url ? ' has-icon' : ''} c${effectiveColor(d.id, d.color)}`}>
-                <Link to={`/decks/${d.id}`} className="tile-main">
+                <Link to={`/decks/${d.id}/study`} className="tile-main">
                   {d.icon_url ? (
                     <img src={d.icon_url} alt="" className="cardback-img" />
                   ) : (
@@ -196,6 +199,9 @@ export default function Deckbox() {
                 >
                   ↩
                 </button>
+                <Link className="tile-del tile-gear" to={`/decks/${d.id}`} aria-label={`${d.name}: edit cards and settings`} title="Edit cards and settings">
+                  <SlotSymbol id="gear" />
+                </Link>
               </li>
             )
           })}

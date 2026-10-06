@@ -1708,3 +1708,9 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .card-row-main { min-width: 0; flex: 1; }
 .card-row-main > span { min-width: 0; }
 .card-row-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+
+/* The gear on a deck tile (appears on hover, where the delete x used to be): opens the deck's card editor */
+.tile-gear { display: block; width: 33px; height: 33px; padding: 0; background: var(--panel-2); border: 3px solid var(--line); box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4); }
+.tile-gear svg { display: block; width: 100%; height: 100%; }
+.tile-gear:hover { filter: brightness(1.2); }
+.home-box .tile-gear { width: 33px; height: 33px; top: -12px; right: -12px; }

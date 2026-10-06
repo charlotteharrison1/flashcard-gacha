@@ -157,13 +157,6 @@ export default function Decks() {
     load()
   }
 
-  async function remove(id: string) {
-    if (!confirm('Delete this deck and all its cards?')) return
-    const { error } = await supabase.from('decks').delete().eq('id', id)
-    if (error) return setError(error.message)
-    load()
-  }
-
   return (
     <div className="home-box" ref={boxRef}>
       <span className="home-suit tl"><SlotSymbol id="spade" /></span>
@@ -277,7 +270,7 @@ export default function Decks() {
                     setOverBox(null)
                   }}
                 >
-                  <Link to={`/decks/${d.id}`} className="tile-main">
+                  <Link to={`/decks/${d.id}/study`} className="tile-main">
                     {d.icon_url ? (
                       <img src={d.icon_url} alt="" className="cardback-img" draggable={false} />
                     ) : (
@@ -288,9 +281,9 @@ export default function Decks() {
                       {n} card{n === 1 ? '' : 's'}
                     </span>
                   </Link>
-                  <button className="tile-del red" onClick={() => remove(d.id)} aria-label={`Delete ${d.name}`} title="Delete deck">
-                    ×
-                  </button>
+                  <Link className="tile-del tile-gear" to={`/decks/${d.id}`} aria-label={`${d.name}: edit cards and settings`} title="Edit cards and settings">
+                    <SlotSymbol id="gear" />
+                  </Link>
                 </li>
               )
             })}
