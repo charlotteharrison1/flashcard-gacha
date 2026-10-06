@@ -28,11 +28,7 @@ export default function Login() {
 
   return (
     <main className="narrow">
-      <h1 className="logo">
-        Flashcard
-        <br />
-        Gacha
-      </h1>
+      <h1 className="logo">Tyche</h1>
       <p className="muted">Study the cards. Pull the rewards.</p>
       <form onSubmit={submit} className="stack">
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />

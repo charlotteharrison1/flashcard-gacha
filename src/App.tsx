@@ -19,7 +19,7 @@ function Layout() {
       {/* The top bar spans the whole window: the logo at the left edge, the account controls at the right edge. */}
       <header className="app-header row between">
         <Link to="/" className="brand">
-          Flashcard Gacha
+          Tyche
         </Link>
         <span className="row">
           <span className="muted user-email" title={session.user.email}>
