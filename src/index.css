@@ -1607,7 +1607,7 @@ body:has(.pull)::before { display: none; }
 .home-glove svg { display: block; width: 100%; height: 100%; }
 /* aimed at the sticker's upper-left, so the hands sit toward the box's top-left corner: 20px up/left of its middle */
 .glove-left { left: -42px; top: calc(var(--sy, 120px) - 22px - 20px - 26px); }
-.glove-left-low { top: calc(var(--sy, 120px) - 22px - 20px + 26px); }
+.glove-left-low { left: -30px; top: calc(var(--sy, 120px) - 22px - 20px + 26px); } /* sits on the inner frame; the others stay on the outer one */
 .glove-top { top: -42px; left: calc(var(--sx, 25%) - 22px - 20px); }
 .glove-top svg { transform: rotate(90deg); }
 .home-box:has(.sale:hover) .glove-left, .glove-left:hover { animation: glove-nudge-right 0.9s steps(2) infinite; }
