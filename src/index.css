@@ -1729,3 +1729,6 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .logo-option { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; background: var(--panel-2); border: 3px solid var(--line); box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4); }
 .logo-option.active { outline: 3px solid var(--gold); outline-offset: 2px; }
 .logo-option svg { display: block; }
+
+/* "Edit deck" label button replaces the gear on deck tiles */
+.tile-gear, .home-box .tile-gear { width: auto; height: auto; padding: 3px 7px; font-size: 0.7rem; font-weight: 700; color: var(--text); text-decoration: none; white-space: nowrap; top: -10px; right: -10px; }

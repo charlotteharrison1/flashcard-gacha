@@ -344,7 +344,6 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
               <div className={faceTextClass(card.front, card.font)}>
                 <CardText text={card.front} userId={userId} />
               </div>
-              {!revealed && <span className="face-hint">Click or press space to reveal the answer</span>}
               {revealed && (
                 <>
                   <hr className="combined-divider" />
@@ -386,7 +385,6 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
                     <CardText text={card.front} userId={userId} />
                   </div>
                 </FitScroll>
-                <span className="face-hint">{revealed ? 'Click or press space to flip to the answer again' : 'Click or press space to flip'}</span>
               </div>
               <div className={`${faceClass} back`}>
                 <span className="corner tl">
@@ -407,7 +405,6 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
                     <CardText text={card.back} userId={userId} />
                   </div>
                 </FitScroll>
-                <span className="face-hint">Click or press space to flip back to the question</span>
               </div>
             </div>
           </div>

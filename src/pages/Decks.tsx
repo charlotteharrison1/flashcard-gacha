@@ -291,9 +291,7 @@ export default function Decks() {
                       {d.due[0]?.count ?? 0} card{(d.due[0]?.count ?? 0) === 1 ? '' : 's'} due
                     </span>
                   </Link>
-                  <Link className="tile-del tile-gear" to={`/decks/${d.id}`} aria-label={`${d.name}: edit cards and settings`} title="Edit cards and settings">
-                    <SlotSymbol id="gear" />
-                  </Link>
+                  <Link className="tile-del tile-gear" to={`/decks/${d.id}`} aria-label={`${d.name}: edit cards and settings`} title="Edit cards and settings">Edit deck</Link>
                 </li>
               )
             })}

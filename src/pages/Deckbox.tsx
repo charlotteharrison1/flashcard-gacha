@@ -209,9 +209,7 @@ export default function Deckbox() {
                 >
                   ↩
                 </button>
-                <Link className="tile-del tile-gear" to={`/decks/${d.id}`} aria-label={`${d.name}: edit cards and settings`} title="Edit cards and settings">
-                  <SlotSymbol id="gear" />
-                </Link>
+                <Link className="tile-del tile-gear" to={`/decks/${d.id}`} aria-label={`${d.name}: edit cards and settings`} title="Edit cards and settings">Edit deck</Link>
               </li>
             )
           })}
