@@ -2,8 +2,8 @@
 -- deckbox) and each card is due once and only once. Rating buttons and coins work as normal, but after a card's
 -- first review the database parks it 100 years out, so it never comes back and can't be farmed for coins.
 -- Run once in Supabase Dashboard > SQL Editor, AFTER 0020. It also redefines create_tutorial_deck so new
--- signups get a guided deck. (If you had hand-edited the tutorial text in 0020, re-apply your edits in the
--- function below before running.) Then run seed_tutorial_for_existing_users.sql to replace existing decks.
+-- signups get a guided deck. The card text below is the edited tutorial text.
+-- Then run seed_tutorial_for_existing_users.sql to replace existing decks.
 
 alter table public.decks add column if not exists guided boolean not null default false;
 
@@ -111,43 +111,43 @@ begin
 
   insert into public.cards (deck_id, user_id, front, back, font, due_at) values
     (v_deck_id, p_user_id,
-     'This is a flashcard.' || E'\n\n' || 'Click it, or press **space**, to see the answer.',
-     'Now click **Good** below — that''s how you rate every card from here on.',
+     '==Welcome to Tyche==.'|| E'\n\n' || ' This is a flashcard' || E'\n\n' || 'The question appears here. Click it, or press **space**, to see the answer.',
+     'For each card, rate how difficult it was to answer between 1 and 4.'|| E'\n\n' || 'Only rate it good if the answer came to you quickly.' || E'\n\n' || 'Tyche uses spaced repititon to make you review cards at the optimal times to commit them to long term memory.',
      'clear', now() - interval '99 seconds'),
 
     (v_deck_id, p_user_id,
-     '# Ratings' || E'\n\n' || 'What do **Again**, **Hard**, **Good** and **Easy** actually do?',
-     'They schedule when this card comes back: **Again** in a few minutes, the others in days that grow longer each time you get it right. A deck''s **Study options** can also keep the answer on screen instead of flipping.',
+     'Card text can be formatted:' || E'\n\n' || '**bold**, *italic*, ==highlight==, and # headings.',
+     'Math works too - inline like $x^2+y^2=z^2$, or on its own line:' || E'\n\n' || '$$\int_0^1 x\,dx = \tfrac12$$ Enclose text between `$` or `$$` to trigger math',
      'clear', now() - interval '98 seconds'),
 
     (v_deck_id, p_user_id,
-     'Card text can be formatted:' || E'\n\n' || '**bold**, *italic*, ==highlight==, and # headings.',
-     'Math works too — inline like $x^2+y^2=z^2$, or on its own line:' || E'\n\n' || '$$\int_0^1 x\,dx = \tfrac12$$',
+     'There are lots of ways to customise your cards',
+     ' You can add code snippets ```print("hello Tyche")```' || E'\n\n' || 'Or pictures ![a small gold star](' || v_star || ')',
      'clear', now() - interval '97 seconds'),
 
     (v_deck_id, p_user_id,
-     'A card can carry a picture.' || E'\n\n' || '![a small gold star](' || v_star || ')',
-     'In the card editor, the picture icon drops one in at your cursor — then drag its corner in the preview below the textarea to resize it.',
+     'During study you can do more than rate a card.' || E'\n\n' || 'What are Edit, Skip, Suspend, star and tag for?',
+     '**Edit** fixes the card on the spot.' || E'\n\n' || '**Skip** puts it back later in this round.' || E'\n\n' || '**Suspend** hides it until tomorrow.' || E'\n\n' ||  'Use ==stars== and ==tags== for organisation, or to study just those cards later.',
      'clear', now() - interval '96 seconds'),
 
     (v_deck_id, p_user_id,
-     'During study you can do more than rate a card.' || E'\n\n' || 'What are Edit, Skip, Suspend, star and tag for?',
-     '**Edit** fixes the card on the spot. **Skip** puts it back later in this round. **Suspend** hides it until tomorrow. Starring or tagging marks it so you can study just those cards later.',
+     'Decks can live inside a **deckbox** — a folder of decks.',
+     'Studying a deckbox shuffles every deck inside it together into one session, instead of studying each deck on its own. You can still study each deck independently. Use this to organise your decks!',
      'clear', now() - interval '95 seconds'),
 
     (v_deck_id, p_user_id,
-     'Decks can live inside a **deckbox** — a folder of decks.',
-     'Studying a deckbox shuffles every deck inside it together into one session, instead of studying each deck on its own.',
+     'Every card you get right pays out coins. Harder cards earn more coins',
+     'Spend them on the **Pull** screen.',
      'clear', now() - interval '94 seconds'),
 
     (v_deck_id, p_user_id,
-     'Every card you get right pays out coins — more if it had been giving you trouble.',
-     'Spend them on the **Pull** screen: drag the lever for a badge, or load 10 coins for a full-screen reveal. A 10-pull always lands at least one win.',
+     'Already have cards elsewhere?' || E'\n\n' || 'Any deck page can **import from a CSV or text file**.',
+     '.csv, .tsv and .txt all work, including Anki''s plain-text export.',
      'clear', now() - interval '93 seconds'),
 
     (v_deck_id, p_user_id,
-     'Already have cards elsewhere?' || E'\n\n' || 'Any deck page can **import from a CSV or text file**.',
-     '.csv, .tsv and .txt all work, including Anki''s plain-text export. That''s the tour — make a deck of your own, or delete this one whenever you''re ready.',
+     'Use a preset deck, make your own cards, or import old cards to get started' ,
+     'Tutorial finished.',
      'clear', now() - interval '92 seconds');
 end;
 $fn$;
