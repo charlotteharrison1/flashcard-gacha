@@ -21,7 +21,10 @@ export default function Earnings({ balance, compact = false, library = false }: 
       </div>
       {library && (
         <Link to="/library" className="button spend library-btn">
-          Enter the library
+          <span>The library</span>
+          <span className="library-arrow">
+            <SlotSymbol id="arrow" />
+          </span>
         </Link>
       )}
     </div>
