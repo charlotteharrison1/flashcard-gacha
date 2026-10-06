@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import SchemeButton from '../components/SchemeButton'
 import PixelTitle, { Plait } from '../components/PixelTitle'
+import { SlotSymbol } from '../components/SlotSymbol'
 
 export default function Login() {
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
@@ -28,7 +29,14 @@ export default function Login() {
   }
 
   return (
-    <main className="narrow">
+    <main className="narrow login-main">
+      {/* The same double-framed box (and checkerboard behind it) as the home page */}
+      <div className="home-box login-box">
+        <span className="home-suit tl"><SlotSymbol id="spade" /></span>
+        <span className="home-suit tr"><SlotSymbol id="heart" /></span>
+        <span className="home-suit bl"><SlotSymbol id="suitDiamond" /></span>
+        <span className="home-suit br"><SlotSymbol id="club" /></span>
+
       <h1 className="logo">
         <PixelTitle scale={3} />
         <Plait scale={3} />
@@ -55,6 +63,7 @@ export default function Login() {
       <p>
         <SchemeButton />
       </p>
+      </div>
     </main>
   )
 }

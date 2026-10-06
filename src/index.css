@@ -1697,3 +1697,7 @@ main.page { padding-top: 6px; }
 h1.logo { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 0; transform: none; text-shadow: none; animation: logo-bob 2.4s steps(2) infinite; }
 h1.logo svg { display: block; max-width: 100%; height: auto; }
 @keyframes logo-bob { 50% { transform: translateY(-4px); } }
+
+/* Login: the logo and form sit in the home page's framed box */
+main.login-main { max-width: 620px; padding-top: 40px; }
+.login-box { width: min(100%, 440px); margin: 24px auto 0; padding: 30px 40px 26px; }
