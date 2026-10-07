@@ -316,7 +316,7 @@ button.danger { color: var(--red); }
   background-clip: padding-box;
   border: 9px solid transparent;
   border-image: var(--frame) 3 / 9px stretch;
-  filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.3));
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.3);
 }
 .earn-panel { position: relative; width: min(100%, 326px); max-width: 100%; padding-top: 12px; padding-bottom: 12px; }
 /* a row of chasing marquee lights along the top and bottom edges */
@@ -458,8 +458,8 @@ body:has(.home-box) header { padding-bottom: 0; }
   /* 9x9-unit pixel frame (black / gold / black bands, notched corners) stretched to a 12px border: 4px per frame pixel. */
   border: 12px solid transparent;
   border-image: var(--frame) 3 / 12px stretch;
-  /* drop-shadow (not box-shadow) so the shadow follows the notched corners */
-  filter: drop-shadow(8px 8px 0 rgba(0, 0, 0, 0.3));
+  /* a plain box-shadow (not a filter): a filter on this big box made every animation inside it repaint the whole thing */
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.3);
 }
 .home-box .wallet { margin-top: 0; }
 .home-box .collection { margin: 0 auto; }
@@ -988,7 +988,7 @@ body:has(.pull)::before { display: none; }
   border-image: var(--slot-frame) 5 / 15px round;
   background-clip: padding-box;
   border-radius: 0;
-  filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.35));
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.35);
 }
 /* little screws in the four inner corners of the front */
 .slot::before {
@@ -1183,7 +1183,7 @@ body:has(.pull)::before { display: none; }
   border-image: var(--frame) 3 / 9px stretch;
   border-radius: 0;
   box-shadow: none;
-  filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.3));
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.3);
 }
 .pull .winnings-panel { margin: 16px 0; padding: 18px 12px; }
 .winnings-panel > h3 {
@@ -1689,7 +1689,7 @@ main.page { padding-top: 6px; }
   background-clip: padding-box;
   border: 9px solid transparent;
   border-image: var(--frame) 3 / 9px stretch;
-  filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.3));
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.3);
 }
 
 /* The Tyche logo is pixel art, so no rotation (it would blur): a steady little two-step bob instead */

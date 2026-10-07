@@ -1,15 +1,16 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Link, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './lib/auth'
 import { isConfigured, supabase } from './lib/supabase'
 import Login from './pages/Login'
 import Decks from './pages/Decks'
-import Deck from './pages/Deck'
-import Study from './pages/Study'
-import Preview from './pages/Preview'
-import Pull from './pages/Pull'
-import Deckbox from './pages/Deckbox'
-import Library from './pages/Library'
-import LibraryPreview from './pages/LibraryPreview'
+const Deck = lazy(() => import('./pages/Deck'))
+const Study = lazy(() => import('./pages/Study'))
+const Preview = lazy(() => import('./pages/Preview'))
+const Pull = lazy(() => import('./pages/Pull'))
+const Deckbox = lazy(() => import('./pages/Deckbox'))
+const Library = lazy(() => import('./pages/Library'))
+const LibraryPreview = lazy(() => import('./pages/LibraryPreview'))
 import SettingsMenu from './components/SettingsMenu'
 import PixelTitle from './components/PixelTitle'
 
@@ -36,7 +37,9 @@ function Layout() {
         </span>
       </header>
       <main className="page" data-checker={onPull ? undefined : 'true'}>
-        <Outlet />
+        <Suspense fallback={null}>
+          <Outlet />
+        </Suspense>
       </main>
     </>
   )

@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useRef, type ReactNode } from 'react'
 import katex from 'katex'
+import 'katex/dist/katex.min.css'
 import { resolveImagePath } from './storage'
 
 /**
