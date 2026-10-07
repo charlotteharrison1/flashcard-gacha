@@ -3,3 +3,5 @@
 
 alter table public.decks add column show_both boolean not null default false;
 alter table public.decks add column float_anim boolean not null default true;
+
+
