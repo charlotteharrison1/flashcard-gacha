@@ -7,6 +7,7 @@ export const SCHEMES = [
   { id: 'silver', label: 'Silver (light)', swatch: '#d9dee6' },
   { id: 'pink', label: 'Pink (light)', swatch: '#ff9fcf' },
   { id: 'lightblue', label: 'Light blue (light)', swatch: '#8fd3ff' },
+  { id: 'lightgreen', label: 'Light green (light)', swatch: '#9fe870' },
 ] as const
 
 export type SchemeId = (typeof SCHEMES)[number]['id']
