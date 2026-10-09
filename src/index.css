@@ -26,6 +26,28 @@
 :root[data-scheme='crimson']  { --felt-glow: #8a2a3a; --felt: #561522; --felt-dark: #24070d; }
 :root[data-scheme='violet']   { --felt-glow: #6a3fa0; --felt: #3d2266; --felt-dark: #170c2b; }
 
+/* Light schemes: a bright table, pale panels and dark text. The pixel outlines stay black and the frames stay gold, so it's still tacky. */
+:root[data-scheme='gold'], :root[data-scheme='silver'], :root[data-scheme='pink'], :root[data-scheme='lightblue'] {
+  color-scheme: light;
+  --text: #1c1530;
+  --gold-text-on: #ffffff;
+}
+:root[data-scheme='gold']      { --felt-glow: #fff3bf; --felt: #f6d05a; --felt-dark: #fff4cf; --panel: #fff6dc; --panel-2: #ecd48a; --text: #2b1d00; --muted: #7a5f1c; --gold: #b77400; --gold-d: #70460a; }
+:root[data-scheme='silver']    { --felt-glow: #ffffff; --felt: #d9dee6; --felt-dark: #eef1f5; --panel: #f4f6f9; --panel-2: #c6cdd8; --text: #1b2230; --muted: #566175; --gold: #3d5a99; --gold-d: #243a6b; }
+:root[data-scheme='pink']      { --felt-glow: #ffe3f1; --felt: #ff9fcf; --felt-dark: #ffe6f3; --panel: #fff0f7; --panel-2: #f7b6d6; --text: #3d0a26; --muted: #8a3a62; --gold: #d81b78; --gold-d: #8e0a4d; }
+:root[data-scheme='lightblue'] { --felt-glow: #e6f7ff; --felt: #8fd3ff; --felt-dark: #e2f5ff; --panel: #eef9ff; --panel-2: #b5e0f8; --text: #0b2540; --muted: #3d6486; --gold: #0b6fc4; --gold-d: #064a85; }
+:root[data-scheme='gold'] .gold, :root[data-scheme='silver'] .gold, :root[data-scheme='pink'] .gold, :root[data-scheme='lightblue'] .gold { --tc: #fff; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35); }
+:root[data-scheme='gold'] body::after, :root[data-scheme='silver'] body::after, :root[data-scheme='pink'] body::after, :root[data-scheme='lightblue'] body::after { background: radial-gradient(ellipse at center, transparent 70%, rgba(0, 0, 0, 0.12) 100%); }
+
+/* Light-scheme fixes: fields and quiet buttons go pale with dark text; the LED window and coin text stay dark/gold. */
+:is(:root[data-scheme='gold'], :root[data-scheme='silver'], :root[data-scheme='pink'], :root[data-scheme='lightblue']) :is(input, textarea, select) { background: #fff; color: var(--text); border-color: var(--line); }
+:is(:root[data-scheme='gold'], :root[data-scheme='silver'], :root[data-scheme='pink'], :root[data-scheme='lightblue']) .secondary { --tc: var(--text); text-shadow: none; }
+:is(:root[data-scheme='gold'], :root[data-scheme='silver'], :root[data-scheme='pink'], :root[data-scheme='lightblue']) :is(.slot, .win, .earn-value, .bigspin) { --gold: #ffc233; --gold-d: #b98410; --muted: #9fb4c7; --text: #fff; --panel: #1f2a35; --panel-2: #33465a; }
+:is(:root[data-scheme='gold'], :root[data-scheme='silver'], :root[data-scheme='pink'], :root[data-scheme='lightblue']) .earn-label { text-shadow: none; }
+:is(:root[data-scheme='gold'], :root[data-scheme='silver'], :root[data-scheme='pink'], :root[data-scheme='lightblue']) .tile-count, :is(:root[data-scheme='gold'], :root[data-scheme='silver'], :root[data-scheme='pink'], :root[data-scheme='lightblue']) .tile-due { color: #fff; }
+
+
+
 * { box-sizing: border-box; }
 
 body {

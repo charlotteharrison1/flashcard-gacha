@@ -3,6 +3,10 @@ export const SCHEMES = [
   { id: 'midnight', label: 'Midnight', swatch: '#2b4a8f' },
   { id: 'crimson', label: 'Crimson', swatch: '#8a2a3a' },
   { id: 'violet', label: 'Violet', swatch: '#6a3fa0' },
+  { id: 'gold', label: 'Gold (light)', swatch: '#f6d05a' },
+  { id: 'silver', label: 'Silver (light)', swatch: '#d9dee6' },
+  { id: 'pink', label: 'Pink (light)', swatch: '#ff9fcf' },
+  { id: 'lightblue', label: 'Light blue (light)', swatch: '#8fd3ff' },
 ] as const
 
 export type SchemeId = (typeof SCHEMES)[number]['id']
