@@ -1,6 +1,7 @@
 /** The font used for the app's buttons, labels and headings (card text has its own font setting). CSS reads data-ui-font. */
 export const UI_FONTS = [
-  { id: 'pixel', label: 'Pixel (default)' },
+  { id: 'pixel', label: 'Pixel (default, easy to read)' },
+  { id: 'pixelify', label: 'Pixel (chunky, original)' },
   { id: 'clear', label: 'Clear (Atkinson Hyperlegible)' },
   { id: 'sans', label: 'Sans (Inter)' },
   { id: 'serif', label: 'Serif (Lora)' },

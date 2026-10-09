@@ -55,7 +55,8 @@ body {
   margin: 0;
   min-height: 100vh;
   color: var(--text);
-  font: var(--ui-size, 18px) / 1.4 var(--ui-font, 'Pixelify Sans', ui-monospace, 'SF Mono', Menlo, monospace);
+  font: var(--ui-size, 22px) / 1.3 var(--ui-font, 'Jersey 15', 'Pixelify Sans', ui-monospace, 'SF Mono', Menlo, monospace);
+  font-synthesis-weight: none; /* Jersey has one weight; a faked bold would smear the pixels */
   background: radial-gradient(ellipse at 50% 25%, var(--felt-glow) 0%, var(--felt) 45%, var(--felt-dark) 100%);
   background-repeat: no-repeat;
 }
@@ -1561,6 +1562,7 @@ body:has(.pull)::before { display: none; }
 .study-anim { font-size: 0.8rem; }
 
 /* App font choices (Settings > App font). Pixel is the default. */
+:root[data-ui-font='pixelify'] { --ui-font: 'Pixelify Sans', ui-monospace, 'SF Mono', Menlo, monospace; --ui-size: 18px; }
 :root[data-ui-font='clear'] { --ui-font: 'Atkinson Hyperlegible', system-ui, sans-serif; --ui-size: 16px; }
 :root[data-ui-font='sans'] { --ui-font: 'Inter', system-ui, sans-serif; --ui-size: 16px; }
 :root[data-ui-font='serif'] { --ui-font: 'Lora', Georgia, serif; --ui-size: 17px; }
@@ -1791,3 +1793,6 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .library-btn { display: flex; align-items: center; justify-content: center; gap: 10px; }
 .library-arrow { display: block; width: 20px; height: 20px; transform: scaleX(-1); } /* the arrow sprite points left; flip it */
 .library-arrow svg { display: block; width: 100%; height: 100%; }
+
+/* Jersey 15 (the default UI font) is small for its size, so scale the rem-based small text up a touch */
+:root:not([data-ui-font]), :root[data-ui-font='pixel'] { font-size: 17.6px; }

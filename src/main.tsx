@@ -1,5 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import '@fontsource/jersey-15/400.css'
 import '@fontsource/pixelify-sans/400.css'
 import '@fontsource/pixelify-sans/700.css'
 // Flashcard content fonts (see src/lib/fonts.ts) — the pixel font above stays for UI chrome only.
