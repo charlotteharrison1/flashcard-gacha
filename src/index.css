@@ -818,6 +818,7 @@ body:has(.home-box) header { padding-bottom: 0; }
   width: 100%;
   min-height: 0;
   flex: 0 1 auto;
+  padding: 8px 0; /* room for math that pokes a few px past its line box, which FitScroll would otherwise read as overflow and shrink the whole card's text */
   overflow-y: auto;
   display: flex;
   flex-direction: column;
