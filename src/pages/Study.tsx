@@ -248,7 +248,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
     function onKey(e: KeyboardEvent) {
       if (e.metaKey || e.ctrlKey || e.altKey || !card) return
       const target = e.target
-      if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) return // typing
+      if (target instanceof HTMLInputElement || target instanceof HTMLSelectElement || (target instanceof HTMLElement && target.isContentEditable)) return // typing (the card editor's fields are contenteditable)
       if (e.key === '8') {
         toggleStar(card)
       } else if (e.key === 'Delete' || e.key === 'd' || e.key === 'D') {
