@@ -1,13 +1,9 @@
-export const SYMBOL_IDS = ['star', 'cherry', 'seven', 'bar', 'diamond', 'bell'] as const
+const SYMBOL_IDS = ['star', 'cherry', 'seven', 'bar', 'diamond', 'bell'] as const
 export type SymbolId = (typeof SYMBOL_IDS)[number]
 
 export type Result = 'nothing' | 'silver' | 'gold'
 export type Winnings = { pulls: number; silver: number; gold: number }
-export type SpendResult = { balance: number; results: Result[] }
-
-/** 5-point star inside a 64x64 box, shared by the reel symbol and the badges. */
-export const STAR_POINTS =
-  '32,6 38.47,23.1 56.73,23.97 42.46,35.4 47.28,53.03 32,43 16.72,53.03 21.54,35.4 7.27,23.97 25.53,23.1'
+type SpendResult = { balance: number; results: Result[] }
 
 export const INITIAL_REELS: SymbolId[] = ['seven', 'bar', 'diamond']
 

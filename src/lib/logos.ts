@@ -16,7 +16,7 @@ export const DECK_LOGOS = [
   { id: 'coin', label: 'Coin' },
 ] as const satisfies readonly { id: SpriteId; label: string }[]
 
-export type DeckLogoId = (typeof DECK_LOGOS)[number]['id']
+type DeckLogoId = (typeof DECK_LOGOS)[number]['id']
 
 /** The deck's chosen logo, or (if it hasn't picked one) a random-looking but stable pick from all of them. */
 export function logoFor(deckId: string, logo: string | null | undefined): DeckLogoId {

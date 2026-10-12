@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth'
-import CardText from '../lib/cardText'
+import PreviewList from '../components/PreviewList'
 import { takeLibraryDeck, type LibraryDeck } from './Library'
 
 type LibCard = { id: string; position: number; front: string; back: string; font: string }
@@ -61,19 +61,7 @@ export default function LibraryPreview() {
         </button>
       </section>
       {error && <p className="error">{error}</p>}
-      <ul className="preview-list">
-        {cards.map((c) => (
-          <li key={c.id} className="face preview-card">
-            <div className={`face-text font-${c.font}`}>
-              <CardText text={c.front} userId={userId} />
-            </div>
-            <hr className="combined-divider" />
-            <div className={`face-text font-${c.font}`}>
-              <CardText text={c.back} userId={userId} />
-            </div>
-          </li>
-        ))}
-      </ul>
+      <PreviewList cards={cards} userId={userId} />
     </>
   )
 }

@@ -1,6 +1,6 @@
 import { supabase } from './supabase'
 
-export const MAX_IMAGE_BYTES = 5 * 1024 * 1024
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 const BUCKET = 'uploads'
 
 function extOf(file: File) {

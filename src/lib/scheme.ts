@@ -1,3 +1,6 @@
+import { applyPref, loadPref } from './pref'
+
+
 export const SCHEMES = [
   { id: 'felt', label: 'Felt', swatch: '#1b7167' },
   { id: 'midnight', label: 'Midnight', swatch: '#2b4a8f' },
@@ -12,25 +15,6 @@ export const SCHEMES = [
 
 export type SchemeId = (typeof SCHEMES)[number]['id']
 
-const KEY = 'scheme'
-
-export function loadScheme(): SchemeId {
-  try {
-    const saved = localStorage.getItem(KEY)
-    const match = SCHEMES.find((s) => s.id === saved)
-    if (match) return match.id
-  } catch {
-    // storage blocked (private window etc.) — fall through to default
-  }
-  return 'felt'
-}
-
 /** Sets the scheme on <html> (CSS reads data-scheme) and remembers it. */
-export function applyScheme(id: SchemeId) {
-  document.documentElement.dataset.scheme = id
-  try {
-    localStorage.setItem(KEY, id)
-  } catch {
-    // ignore
-  }
-}
+export const loadScheme = () => loadPref('scheme', 'felt', SCHEMES.map((s) => s.id)) as SchemeId
+export const applyScheme = (id: SchemeId) => applyPref('scheme', 'scheme', id)

@@ -1,3 +1,6 @@
+import { applyPref, loadPref } from './pref'
+
+
 /** The font used for the app's buttons, labels and headings (card text has its own font setting). CSS reads data-ui-font. */
 export const UI_FONTS = [
   { id: 'pixel', label: 'Pixel (default, easy to read)' },
@@ -11,25 +14,6 @@ export const UI_FONTS = [
 
 export type UiFontId = (typeof UI_FONTS)[number]['id']
 
-const KEY = 'uiFont'
-
-export function loadUiFont(): UiFontId {
-  try {
-    const saved = localStorage.getItem(KEY)
-    const match = UI_FONTS.find((f) => f.id === saved)
-    if (match) return match.id
-  } catch {
-    // storage blocked (private window etc.) — fall through to default
-  }
-  return 'pixel'
-}
-
 /** Sets data-ui-font on <html> and remembers it. */
-export function applyUiFont(id: UiFontId) {
-  document.documentElement.dataset.uiFont = id
-  try {
-    localStorage.setItem(KEY, id)
-  } catch {
-    // ignore
-  }
-}
+export const loadUiFont = () => loadPref('uiFont', 'pixel', UI_FONTS.map((f) => f.id)) as UiFontId
+export const applyUiFont = (id: UiFontId) => applyPref('uiFont', 'uiFont', id)

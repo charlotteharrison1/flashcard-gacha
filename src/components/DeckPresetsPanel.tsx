@@ -65,25 +65,22 @@ export default function DeckPresetsPanel({
         </button>
       </div>
 
-      <div className="setting-row">
-        <label className="row nowrap">
-          <input type="checkbox" checked={settings.show_both} onChange={(e) => save({ show_both: e.target.checked })} />
-          No flip (answer shows under the question)
-        </label>
-        <button className="secondary sm" onClick={() => applyDeckSetting('show_both', 'No-flip')}>
-          Apply to all
-        </button>
-      </div>
-
-      <div className="setting-row">
-        <label className="row nowrap">
-          <input type="checkbox" checked={settings.float_anim} onChange={(e) => save({ float_anim: e.target.checked })} />
-          Floating study card
-        </label>
-        <button className="secondary sm" onClick={() => applyDeckSetting('float_anim', 'Floating animation')}>
-          Apply to all
-        </button>
-      </div>
+      {(
+        [
+          ['show_both', 'No-flip', 'No flip (answer shows under the question)'],
+          ['float_anim', 'Floating animation', 'Floating study card'],
+        ] as const
+      ).map(([field, label, text]) => (
+        <div className="setting-row" key={field}>
+          <label className="row nowrap">
+            <input type="checkbox" checked={settings[field]} onChange={(e) => save({ [field]: e.target.checked })} />
+            {text}
+          </label>
+          <button className="secondary sm" onClick={() => applyDeckSetting(field, label)}>
+            Apply to all
+          </button>
+        </div>
+      ))}
 
       <div className="setting-row">
         <label className="file-field">

@@ -5,7 +5,7 @@ import type { SymbolId } from './slots'
  * a 1px dark outline is added around every filled pixel automatically (see `spritePaths`), so the
  * art below only describes the fill. Every sprite keeps a 1px empty margin so the outline fits.
  */
-export type Sprite = { size: number; paths: { color: string; d: string }[] }
+type Sprite = { size: number; paths: { color: string; d: string }[] }
 
 /** Everything drawable: the slot symbols, the lever knob, the four card suits (home page frame corners) and a deckbox. */
 export type SpriteId = SymbolId | 'ball' | 'coin' | 'arrow' | 'goldBadge' | 'silverBadge' | 'gear' | 'glove' | 'gloveGold' | 'spade' | 'heart' | 'club' | 'suitDiamond' | 'deckbox'

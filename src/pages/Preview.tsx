@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth'
 import type { Card } from '../lib/types'
-import CardText from '../lib/cardText'
+import PreviewList from '../components/PreviewList'
 import { SlotSymbol } from '../components/SlotSymbol'
 
 /** Every card in the deck, question and answer both shown, with no flipping or rating — just a read. */
@@ -44,19 +44,7 @@ export default function Preview() {
           <p>This deck has no cards yet.</p>
         </div>
       ) : (
-        <ul className="preview-list">
-          {cards.map((c) => (
-            <li key={c.id} className="face preview-card">
-              <div className={`face-text font-${c.font}`}>
-                <CardText text={c.front} userId={userId} />
-              </div>
-              <hr className="combined-divider" />
-              <div className={`face-text font-${c.font}`}>
-                <CardText text={c.back} userId={userId} />
-              </div>
-            </li>
-          ))}
-        </ul>
+        <PreviewList cards={cards} userId={userId} />
       )}
     </>
   )

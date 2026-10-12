@@ -47,8 +47,8 @@ const TITLE_CELLS: Cell[] = (() => {
   return cells
 })()
 
-export const TITLE_WIDTH = W + 2 * PAD
-export const TITLE_HEIGHT = H + 2 * PAD
+const TITLE_WIDTH = W + 2 * PAD
+const TITLE_HEIGHT = H + 2 * PAD
 
 /** The "TYCHE" logo: uncial lettering in pixel art, drawn at `scale` screen pixels per art pixel. */
 export default function PixelTitle({ scale = 1 }: { scale?: number }) {

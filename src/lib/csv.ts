@@ -1,7 +1,7 @@
 import Papa from 'papaparse'
 import { htmlToText } from './textFormat'
 
-export const MAX_CSV_BYTES = 5 * 1024 * 1024
+const MAX_CSV_BYTES = 5 * 1024 * 1024
 
 /**
  * Parses a CSV, TSV or plain-text (.txt) file into rows — the delimiter (comma, tab, etc.) is
@@ -28,7 +28,7 @@ export async function parseTabularFile(file: File): Promise<string[][]> {
   return html ? data.map((row) => row.map(htmlToText)) : data
 }
 
-export type ImportedCard = { front: string; back: string }
+type ImportedCard = { front: string; back: string }
 
 /** Apply the user's column mapping; drops rows where either side is blank. */
 export function mapRows(
