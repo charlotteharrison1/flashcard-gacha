@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
 
-const MIN_FIT = 0.5 // never shrink below half size; past that the text just scrolls
+const MIN_FIT = 0.75 // never shrink below three quarters size; past that the text just scrolls
 const STEP = 0.02 // how finely to search between half and full size
 
 /**
@@ -9,6 +9,8 @@ const STEP = 0.02 // how finely to search between half and full size
  * smaller type well before it hits its hard height cap (which is where it would start to scroll).
  */
 function fit(el: HTMLElement, comfortable: boolean) {
+  el.style.removeProperty('--fit')
+  if (!el.clientHeight) return // not laid out right now (hidden, mid-render): measuring would wrongly read as "too tall" and shrink the text
   const comfort = Math.max(200, window.innerHeight * 0.38)
   const fits = (f: number) => {
     el.style.setProperty('--fit', String(f))
@@ -48,8 +50,10 @@ export default function FitScroll({ watch, comfortable = false, children }: { wa
     window.addEventListener('resize', refit)
     el.addEventListener('load', refit, true) // <img> load events don't bubble, so listen in the capture phase
     document.fonts?.ready.then(refit)
+    document.fonts?.addEventListener('loadingdone', refit) // e.g. the math fonts, which only start loading once a formula is on screen
     return () => {
       window.removeEventListener('resize', refit)
+      document.fonts?.removeEventListener('loadingdone', refit)
       el.removeEventListener('load', refit, true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- `comfortable` is fixed for a given card face
