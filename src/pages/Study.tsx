@@ -217,9 +217,19 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
     setEditing(null)
   }
 
+  async function deleteCard(card: Card) {
+    if (!confirm('Delete this card for good?')) return
+    const { error: e } = await supabase.from('cards').delete().eq('id', card.id)
+    if (e) return setError(e.message)
+    setQueue((q) => q?.filter((c) => c.id !== card.id) ?? null)
+    setTotal((t) => t - 1)
+    resetFace()
+    setEditing(null)
+  }
+
   const card = queue?.[0]
 
-  // Keyboard: Space/Enter reveals the answer, 1-4 rates once it's visible, 8 stars the card, T adds a tag.
+  // Keyboard: Space/Enter reveals the answer, 1-4 rates once it's visible, 8 stars the card, T adds a tag, D/Delete deletes it.
   useEffect(() => {
     if (!card) return
     function onKey(e: KeyboardEvent) {
@@ -228,6 +238,9 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
       if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) return // typing
       if (e.key === '8') {
         toggleStar(card)
+      } else if (e.key === 'Delete' || e.key === 'd' || e.key === 'D') {
+        e.preventDefault()
+        deleteCard(card)
       } else if (e.key === 't' || e.key === 'T') {
         e.preventDefault()
         setTagging(true)
@@ -443,6 +456,9 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
           <button className="secondary sm" onClick={() => setEditing((m) => (m === 'edit' ? null : 'edit'))} title="Edit this card">
             Edit card
           </button>
+          <button className="secondary sm danger" onClick={() => deleteCard(card)} title="Delete this card (D)">
+            Delete
+          </button>
           <button className="secondary sm" onClick={() => setEditing((m) => (m === 'new' ? null : 'new'))} title="Add a new card to this deck">
             Add card
           </button>
@@ -483,8 +499,9 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
             key={`${editing}:${card.id}`}
             title={editing === 'edit' ? 'Edit this card' : 'Add a card to this deck'}
             submitLabel={editing === 'edit' ? 'Save changes' : 'Add card'}
-            initial={editing === 'edit' ? { front: card.front, back: card.back, font: card.font } : { front: '', back: '', font: card.font }}
+            initial={editing === 'edit' ? { front: card.front, back: card.back, font: card.font, tags: card.tags } : { front: '', back: '', font: card.font }}
             userId={userId}
+            knownTags={knownTags}
             onSave={(values) => (editing === 'edit' ? saveEdit(card, values) : addCard(card, values))}
             onCancel={() => setEditing(null)}
           />

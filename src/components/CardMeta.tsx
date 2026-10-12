@@ -57,8 +57,15 @@ export function TagAdder({
   autoFocus?: boolean
 }) {
   const [text, setText] = useState('')
-  const listId = `tag-suggestions-${existing.join('-')}`
   const full = existing.length >= MAX_TAGS
+
+  const matches = suggestions.filter((s) => !existing.includes(s) && s.includes(text.trim().toLowerCase().replace(/^#/, ''))).slice(0, 8)
+
+  function pick(tag: string) {
+    onAdd(tag)
+    setText('')
+    onClose()
+  }
 
   function submit() {
     const tag = normalizeTag(text)
@@ -71,7 +78,6 @@ export function TagAdder({
     <span className="tag-adder">
       <input
         autoFocus={autoFocus}
-        list={listId}
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => {
@@ -88,13 +94,15 @@ export function TagAdder({
         disabled={full}
         aria-label="Add a tag"
       />
-      <datalist id={listId}>
-        {suggestions
-          .filter((s) => !existing.includes(s))
-          .map((s) => (
-            <option key={s} value={s} />
+      {matches.length > 0 && (
+        <span className="tag-suggest">
+          {matches.map((s) => (
+            <button key={s} type="button" className="tag-pick" onMouseDown={(e) => e.preventDefault()} onClick={() => pick(s)}>
+              #{s}
+            </button>
           ))}
-      </datalist>
+        </span>
+      )}
       <button type="button" className="link" onClick={onClose}>
         Cancel
       </button>

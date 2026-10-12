@@ -356,8 +356,9 @@ export default function Deck() {
                       <CardEditor
                         title="Edit card"
                         submitLabel="Save changes"
-                        initial={{ front: c.front, back: c.back, font: c.font }}
+                        initial={{ front: c.front, back: c.back, font: c.font, tags: c.tags }}
                         userId={userId}
+                        knownTags={known}
                         onSave={(values) => saveEdit(c, values)}
                         onCancel={() => setEditingId(null)}
                       />

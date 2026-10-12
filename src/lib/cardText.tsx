@@ -7,7 +7,7 @@ import { resolveImagePath } from './storage'
  * Renders flashcard text with a small, fixed set of markup:
  *   # / ## / ### heading     **bold**     *italic*     ==highlight==
  *   $inline math$            $$block math$$ or \[block math\]
- *   ![alt](url) inline picture, optionally sized with ![alt](url =300) (width in px)
+ *   ![caption](url) inline picture (the text in [] is shown under it), optionally sized with ![alt](url =300) (width in px)
  *   - bullet / * bullet / • bullet, and 1. numbered lines (indent two spaces per level, up to three levels)
  *   `inline code` (also ``double`` and ```triple``` on one line), and a fenced block: a line with ```, the code, a line with ```
  *   Code is shown exactly as typed: nothing inside it is treated as maths, bold, pictures, etc.
@@ -185,10 +185,20 @@ function ResizableImage({
   }, [onResize, index])
 
   const style = width ? { width: `${width}px` } : undefined
-  if (!onResize) return <img src={src} alt={alt} className="md-img" loading="lazy" style={style} />
+  const caption = alt && <span className="md-caption">{alt}</span>
+  if (!onResize)
+    return (
+      <span className="md-fig">
+        <img src={src} alt={alt} className="md-img" loading="lazy" style={style} />
+        {caption}
+      </span>
+    )
   return (
-    <span ref={ref} className="md-img-resizable" style={style}>
-      <img src={src} alt={alt} loading="lazy" />
+    <span className="md-fig">
+      <span ref={ref} className="md-img-resizable" style={style}>
+        <img src={src} alt={alt} loading="lazy" />
+      </span>
+      {caption}
     </span>
   )
 }

@@ -358,7 +358,7 @@ button.danger { color: var(--red); }
 .earn-panel .earnings-box.compact { padding: 0; gap: 10px; flex-wrap: wrap; justify-content: center; }
 .earn-panel .earnings-box.compact .coin-pile { width: min(150px, 45vw); }
 .earn-panel .earnings-box.compact .earn-value { font-size: 1.8rem; }
-.earn-panel .earnings-box.compact .earn-label { font-size: 0.7rem; }
+.earn-panel .earnings-box.compact .earn-label { font-size: 0.85rem; }
 .earnings-box.compact .earn-value { font-size: 2.2rem; }
 
 /* Sticker: static starburst with a slow light sweep; only the button in the middle bobs. */
@@ -402,7 +402,7 @@ button.danger { color: var(--red); }
 }
 .sale .sale-btn { position: relative; animation: sale-bob 2s ease-in-out infinite; }
 .sale:hover .sale-btn { filter: brightness(1.1); }
-.sale-cost { position: absolute; bottom: 21%; left: 0; right: 0; text-align: center; font-size: 0.75rem; color: #ffe27a; text-shadow: 0 2px 0 var(--line); }
+.sale-cost { position: absolute; bottom: 21%; left: 0; right: 0; text-align: center; font-size: 0.85rem; color: #ffe27a; text-shadow: 0 2px 0 var(--line); }
 
 /* ---------- Card backs: deck tiles + hero ---------- */
 
@@ -500,14 +500,14 @@ body:has(.home-box) header { padding-bottom: 0; }
 .home-box .tile-main { gap: 8px; padding: 12px 8px; }
 .home-box .tile-icon { width: 52px; height: 52px; }
 .home-box .tile-plate { font-size: 0.9rem; padding: 4px 8px; }
-.home-box .tile-count { font-size: 0.78rem; }
+.home-box .tile-count { font-size: 0.85rem; }
 .home-box .tile-del { width: 26px; height: 26px; font-size: 1.1rem; top: -9px; right: -9px; }
 .home-box .new-stack { gap: 10px; }
 .home-box .new-deck-plus { font-size: 2rem; }
 .home-box .new-deck-btn { font-size: 0.85rem; gap: 3px; border-width: 3px; }
 .home-box .new-half .new-deck-form { inset: 6px; gap: 6px; }
 .home-box .new-deck-form input { font-size: 0.85rem; padding: 6px 8px; }
-.home-box .new-deck-form button.sm { font-size: 0.75rem; padding: 4px 10px; }
+.home-box .new-deck-form button.sm { font-size: 0.85rem; padding: 4px 10px; }
 
 /* The "new deck" and "new deckbox" buttons share one tile, one above the other */
 .new-stack { display: flex; flex-direction: column; gap: 10px; }
@@ -715,7 +715,7 @@ body:has(.home-box) header { padding-bottom: 0; }
 
 .attach-row { display: inline-flex; align-items: center; gap: 6px; }
 .attach-icon { width: 14px; height: 14px; }
-.attach-status { font-size: 0.75rem; }
+.attach-status { font-size: 0.85rem; }
 
 .card-row-main { gap: 10px; }
 
@@ -868,8 +868,8 @@ body:has(.home-box) header { padding-bottom: 0; }
 .format-help-details summary::before { content: '▸ '; }
 .format-help-details[open] summary::before { content: '▾ '; }
 .format-help-details summary:hover { color: var(--gold); }
-.format-help-inline { margin: 6px 0 0; font-size: 0.78rem; color: var(--muted); line-height: 1.6; }
-.format-help-inline code { font-size: 0.78rem; }
+.format-help-inline { margin: 6px 0 0; font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+.format-help-inline code { font-size: 0.85rem; }
 
 .face-text { text-align: center; }
 .md-h { font-weight: 800; }
@@ -895,8 +895,6 @@ body:has(.home-box) header { padding-bottom: 0; }
   vertical-align: middle;
   margin: 2px 0;
   border-radius: 8px;
-  border: 2px solid var(--line);
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
 }
 
 /* Drag-to-resize image, shown only in the card editor's live preview (see CardText's onImageResize). */
@@ -909,8 +907,6 @@ body:has(.home-box) header { padding-bottom: 0; }
   vertical-align: middle;
   margin: 2px 0;
   border-radius: 8px;
-  border: 2px solid var(--line);
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
 }
 .md-img-resizable img { display: block; width: 100%; height: auto; }
 
@@ -939,7 +935,7 @@ body:has(.home-box) header { padding-bottom: 0; }
 
 .ratings { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; }
 .rate { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 6px; }
-.rate kbd { font: inherit; font-size: 0.75rem; opacity: 0.7; }
+.rate kbd { font: inherit; font-size: 0.85rem; opacity: 0.7; }
 @media (hover: none) { .rate kbd { display: none; } }
 
 .celebrate { position: relative; }
@@ -965,8 +961,8 @@ body:has(.home-box) header { padding-bottom: 0; }
 header .row { gap: 8px; }
 header .scheme-btn { padding: 3px 6px; }
 header .swatch { width: 12px; height: 12px; }
-header .user-email { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; }
-header button.link { font-size: 0.75rem; }
+header .user-email { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.85rem; }
+header button.link { font-size: 0.85rem; }
 header .brand { font-size: 1.2rem; }
 .swatch { width: 14px; height: 14px; border: 2px solid var(--line); border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35); }
 
@@ -1105,7 +1101,7 @@ body:has(.pull)::before { display: none; }
   55% { transform: translateY(8px) scaleY(1); opacity: 1; }
   100% { transform: translateY(34px) scaleY(0.25); opacity: 1; } /* squashes flat as it slips into the slot */
 }
-.coin-label { flex: 0 0 76px; width: 76px; height: 18px; line-height: 18px; text-align: center; white-space: nowrap; overflow: hidden; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold); }
+.coin-label { flex: 0 0 76px; width: 76px; height: 18px; line-height: 18px; text-align: center; white-space: nowrap; overflow: hidden; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold); }
 
 /* Anticipation: when the first two reels match, the last one glows until it lands */
 .slot.tension .reel:nth-child(3)::before {
@@ -1233,7 +1229,7 @@ body:has(.pull)::before { display: none; }
 .win-icon { display: block; width: 40px; height: 40px; }
 .win-icon svg { display: block; width: 100%; height: 100%; }
 .win-count { font-size: 1.5rem; font-weight: 700; line-height: 1; color: var(--gold); text-shadow: 3px 3px 0 #7a4a00; }
-.win-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold-d); }
+.win-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold-d); }
 
 .pull-actions { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 6px; text-align: center; }
 .pull-actions p { margin: 0; font-size: 0.8rem; }
@@ -1482,7 +1478,7 @@ body:has(.pull)::before { display: none; }
   align-items: center;
   gap: 2px;
   padding: 1px 6px;
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   color: var(--gold);
   background: var(--panel-2);
   border: 2px solid var(--line);
@@ -1681,11 +1677,11 @@ main.page { padding-top: 6px; }
 /* Deck presets: compact enough for the home box */
 .presets-panel { margin: 0 0 12px; padding: 10px 12px; font-size: 0.8rem; box-shadow: none; }
 .presets-panel h3 { margin: 0; font-size: 0.95rem; }
-.presets-note { margin: 4px 0 6px; font-size: 0.72rem; }
+.presets-note { margin: 4px 0 6px; font-size: 0.85rem; }
 .presets-panel .setting-row { padding: 5px 0; gap: 8px; }
 .presets-panel select { width: auto; padding: 3px 8px; font-size: 0.8rem; }
 .presets-panel .file-field { font-size: 0.8rem; gap: 6px; }
-.presets-panel button.sm { font-size: 0.7rem; padding: 3px 8px; }
+.presets-panel button.sm { font-size: 0.85rem; padding: 3px 8px; }
 .presets-panel input[type='checkbox'] { width: auto; }
 
 /* The heart (round cleared) and spade (nothing to play) are pixel-art sprites: 11 units at 7px each */
@@ -1733,9 +1729,9 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .home-box .tile-gear { width: 33px; height: 33px; top: -12px; right: -12px; }
 
 /* "N cards due" under the card count on a deck tile */
-.tile-due { font-size: 0.78rem; color: #fff; opacity: 0.75; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6); }
+.tile-due { font-size: 0.85rem; color: #fff; opacity: 0.75; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6); }
 .tile-due.has-due { opacity: 1; color: #ffe27a; }
-.home-box .tile-due { font-size: 0.78rem; }
+.home-box .tile-due { font-size: 0.85rem; }
 
 /* Pixel logos on card backs */
 .tile-logo { display: block; line-height: 0; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.35)); }
@@ -1748,7 +1744,7 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .logo-option svg { display: block; }
 
 /* "Edit deck" label button replaces the gear on deck tiles */
-.tile-gear, .home-box .tile-gear { width: auto; height: auto; padding: 3px 7px; font-size: 0.7rem; font-weight: 700; color: var(--text); text-decoration: none; white-space: nowrap; top: -10px; right: -10px; }
+.tile-gear, .home-box .tile-gear { width: auto; height: auto; padding: 3px 7px; font-size: 0.85rem; font-weight: 700; color: var(--text); text-decoration: none; white-space: nowrap; top: -10px; right: -10px; }
 
 /* Zero earnings: the note sits where the coin pile would be */
 .pile-empty-text { display: flex; align-items: center; justify-content: center; height: 100%; text-align: center; font-size: 17px; line-height: 1.25; color: var(--muted); }
@@ -1788,3 +1784,15 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 
 /* Jersey 15 (the default UI font) is small for its size, so scale the rem-based small text up a touch */
 :root:not([data-ui-font]), :root[data-ui-font='pixel'] { font-size: 17.6px; }
+
+/* Login: centre the sign-in button */
+.login-box .stack { align-items: stretch; }
+.login-box .stack > button { align-self: center; }
+
+/* Image captions (the text in ![caption](url)) */
+.md-fig { display: inline-flex; flex-direction: column; align-items: center; max-width: 100%; vertical-align: middle; }
+.md-caption { font-size: 0.85rem; color: var(--muted); text-align: center; }
+
+/* Existing tags offered while typing a tag */
+.tag-suggest { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.tag-suggest .tag-pick { padding: 2px 8px; border: 2px solid var(--line); border-radius: 999px; font-size: 0.85rem; }

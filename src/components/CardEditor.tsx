@@ -3,8 +3,10 @@ import { FONT_OPTIONS, type CardFont } from '../lib/fonts'
 import CardText, { setImageWidth } from '../lib/cardText'
 import FormatToolbar from './FormatToolbar'
 import AttachmentPicker from './AttachmentPicker'
+import { TagAdder, TagChips } from './CardMeta'
+import { MAX_TAGS } from '../lib/cardMeta'
 
-export type CardValues = { front: string; back: string; font: CardFont }
+export type CardValues = { front: string; back: string; font: CardFont; tags?: string[] }
 
 const HAS_IMAGE_RE = /!\[[^\]]*\]\(/
 
@@ -14,6 +16,7 @@ export default function CardEditor({
   submitLabel,
   initial,
   userId,
+  knownTags = [],
   onSave,
   onCancel,
 }: {
@@ -21,12 +24,16 @@ export default function CardEditor({
   submitLabel: string
   initial: CardValues
   userId: string
+  /** Tags used elsewhere, offered as suggestions. Tags are only editable when `initial.tags` is given. */
+  knownTags?: string[]
   onSave: (values: CardValues) => Promise<void>
   onCancel: () => void
 }) {
   const [front, setFront] = useState(initial.front)
   const [back, setBack] = useState(initial.back)
   const [font, setFont] = useState<CardFont>(initial.font)
+  const [tags, setTags] = useState(initial.tags)
+  const [addingTag, setAddingTag] = useState(false)
   const [busy, setBusy] = useState(false)
   const frontRef = useRef<HTMLTextAreaElement>(null)
   const backRef = useRef<HTMLTextAreaElement>(null)
@@ -36,7 +43,7 @@ export default function CardEditor({
     if (!front.trim() || !back.trim()) return
     setBusy(true)
     try {
-      await onSave({ front: front.trim(), back: back.trim(), font })
+      await onSave({ front: front.trim(), back: back.trim(), font, tags })
     } finally {
       setBusy(false)
     }
@@ -99,6 +106,19 @@ export default function CardEditor({
             ))}
           </select>
         </label>
+
+        {tags && (
+          <div className="row">
+            <TagChips tags={tags} onRemove={(t) => setTags(tags.filter((x) => x !== t))} />
+            {addingTag ? (
+              <TagAdder existing={tags} suggestions={knownTags} onAdd={(t) => tags.length < MAX_TAGS && setTags([...tags, t])} onClose={() => setAddingTag(false)} />
+            ) : (
+              <button type="button" className="link" onClick={() => setAddingTag(true)}>
+                + tag
+              </button>
+            )}
+          </div>
+        )}
 
         <div className="row">
           <button className="gold" disabled={busy || !front.trim() || !back.trim()}>
