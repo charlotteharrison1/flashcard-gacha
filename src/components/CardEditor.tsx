@@ -1,14 +1,12 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { FONT_OPTIONS, type CardFont } from '../lib/fonts'
-import CardText, { setImageWidth } from '../lib/cardText'
+import RichField, { type TextTarget } from './RichField'
 import FormatToolbar from './FormatToolbar'
 import AttachmentPicker from './AttachmentPicker'
 import { TagAdder, TagChips } from './CardMeta'
 import { MAX_TAGS } from '../lib/cardMeta'
 
 export type CardValues = { front: string; back: string; font: CardFont; tags?: string[] }
-
-const HAS_IMAGE_RE = /!\[[^\]]*\]\(/
 
 /** Front/back/font editor used while reviewing, to fix a card or add a new one to the same deck. */
 export default function CardEditor({
@@ -35,8 +33,8 @@ export default function CardEditor({
   const [tags, setTags] = useState(initial.tags)
   const [addingTag, setAddingTag] = useState(false)
   const [busy, setBusy] = useState(false)
-  const frontRef = useRef<HTMLTextAreaElement>(null)
-  const backRef = useRef<HTMLTextAreaElement>(null)
+  const frontRef = useRef<TextTarget>(null)
+  const backRef = useRef<TextTarget>(null)
 
   async function submit(e: FormEvent) {
     e.preventDefault()
@@ -58,21 +56,16 @@ export default function CardEditor({
             <span className="fmt-sep" />
             <AttachmentPicker targetRef={frontRef} value={front} setValue={setFront} />
           </FormatToolbar>
-          <textarea
-            ref={frontRef}
-            placeholder="Front (the question)"
+          <RichField
+            targetRef={frontRef}
             value={front}
-            onChange={(e) => setFront(e.target.value)}
-            onKeyDown={(e) => e.key === 'Escape' && onCancel()}
-            maxLength={5000}
-            rows={3}
+            onChange={setFront}
+            userId={userId}
+            className={`font-${font}`}
+            placeholder="Front (the question)"
+            onEscape={onCancel}
             autoFocus
           />
-          {HAS_IMAGE_RE.test(front) && (
-            <div className="field-preview">
-              <CardText text={front} userId={userId} onImageResize={(i, w) => setFront((t) => setImageWidth(t, i, w))} />
-            </div>
-          )}
         </div>
 
         <div className="field-block">
@@ -80,20 +73,15 @@ export default function CardEditor({
             <span className="fmt-sep" />
             <AttachmentPicker targetRef={backRef} value={back} setValue={setBack} />
           </FormatToolbar>
-          <textarea
-            ref={backRef}
-            placeholder="Back (the answer)"
+          <RichField
+            targetRef={backRef}
             value={back}
-            onChange={(e) => setBack(e.target.value)}
-            onKeyDown={(e) => e.key === 'Escape' && onCancel()}
-            maxLength={5000}
-            rows={4}
+            onChange={setBack}
+            userId={userId}
+            className={`font-${font}`}
+            placeholder="Back (the answer)"
+            onEscape={onCancel}
           />
-          {HAS_IMAGE_RE.test(back) && (
-            <div className="field-preview">
-              <CardText text={back} userId={userId} onImageResize={(i, w) => setBack((t) => setImageWidth(t, i, w))} />
-            </div>
-          )}
         </div>
 
         <label className="file-field">

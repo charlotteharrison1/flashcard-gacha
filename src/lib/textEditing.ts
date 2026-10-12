@@ -1,6 +1,8 @@
+import type { TextTarget } from '../components/RichField'
+
 /** Wraps the current selection (or inserts a placeholder) in a textarea with marker text, e.g. **bold**. */
 export function wrapSelection(
-  el: HTMLTextAreaElement | null,
+  el: TextTarget | null,
   value: string,
   setValue: (v: string) => void,
   before: string,
@@ -23,7 +25,7 @@ export function wrapSelection(
 }
 
 /** Inserts text at the cursor (replacing any selection), e.g. dropping in an inline image. */
-export function insertAtCursor(el: HTMLTextAreaElement | null, value: string, setValue: (v: string) => void, text: string) {
+export function insertAtCursor(el: TextTarget | null, value: string, setValue: (v: string) => void, text: string) {
   if (!el) return
   const start = el.selectionStart ?? value.length
   const end = el.selectionEnd ?? value.length
@@ -37,7 +39,7 @@ export function insertAtCursor(el: HTMLTextAreaElement | null, value: string, se
 }
 
 /** Adds a prefix (e.g. "# ") to the start of whichever line the cursor is on. */
-export function prefixLine(el: HTMLTextAreaElement | null, value: string, setValue: (v: string) => void, prefix: string) {
+export function prefixLine(el: TextTarget | null, value: string, setValue: (v: string) => void, prefix: string) {
   if (!el) return
   const pos = el.selectionStart ?? value.length
   const lineStart = value.lastIndexOf('\n', pos - 1) + 1

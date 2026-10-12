@@ -32,6 +32,7 @@ export default function Deckbox() {
   const [name, setName] = useState<string | null>(null)
   const [color, setColor] = useState<number | null>(null)
   const [iconUrl, setIconUrl] = useState<string | null>(null)
+  const [description, setDescription] = useState<string | null>(null)
   const [customizing, setCustomizing] = useState(false)
   const [decks, setDecks] = useState<DeckRow[] | null>(null)
   const [loose, setLoose] = useState<LooseDeck[]>([]) // decks not in any box, offered for adding
@@ -45,7 +46,7 @@ export default function Deckbox() {
 
   const load = useCallback(async () => {
     const [b, d, l] = await Promise.all([
-      supabase.from('deckboxes').select('id, name, color, icon_url').eq('id', id).single(),
+      supabase.from('deckboxes').select('*').eq('id', id).single(),
       supabase
         .from('decks')
         .select('*, cards(count), due:cards(count)')
@@ -60,6 +61,7 @@ export default function Deckbox() {
     setName(b.data.name)
     setColor(b.data.color)
     setIconUrl(b.data.icon_url)
+    setDescription(b.data.description ?? null)
     setDecks(d.data as DeckRow[])
     setLoose(l.data)
 
@@ -149,6 +151,7 @@ export default function Deckbox() {
           <p className="muted">
             {decks.length} deck{decks.length === 1 ? '' : 's'} · {totalCards} card{totalCards === 1 ? '' : 's'} · {dueCount} due
           </p>
+          {description && <p className="hero-desc">{description}</p>}
         </div>
         <div className="row">
           {decks.length > 0 && (
@@ -173,7 +176,7 @@ export default function Deckbox() {
         </div>
       </section>
 
-      {customizing && <DeckCustomize table="deckboxes" deckId={id} color={color} iconUrl={iconUrl} onSaved={load} />}
+      {customizing && <DeckCustomize table="deckboxes" deckId={id} color={color} iconUrl={iconUrl} description={description} onSaved={load} />}
 
       {error && <p className="error">{error}</p>}
 

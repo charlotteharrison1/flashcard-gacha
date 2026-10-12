@@ -1,8 +1,9 @@
 import type { ReactNode, RefObject } from 'react'
+import type { TextTarget } from './RichField'
 import { prefixLine, wrapSelection } from '../lib/textEditing'
 
 type Props = {
-  targetRef: RefObject<HTMLTextAreaElement | null>
+  targetRef: RefObject<TextTarget | null>
   value: string
   setValue: (v: string) => void
   /** Extra buttons appended after the formatting ones, e.g. the picture attacher. */

@@ -18,6 +18,7 @@ export type Deck = {
   orientation: Orientation
   /** The pixel logo on the card back (see lib/logos.ts); null = the automatic suit. */
   logo?: string | null
+  description?: string | null
 }
 
 export type Deckbox = {

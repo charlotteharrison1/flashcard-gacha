@@ -2,9 +2,10 @@ import { useRef, useState, type ChangeEvent, type RefObject } from 'react'
 import { uploadImage } from '../lib/storage'
 import { errorMessage } from '../lib/errors'
 import { insertAtCursor } from '../lib/textEditing'
+import type { TextTarget } from './RichField'
 
 type Props = {
-  targetRef: RefObject<HTMLTextAreaElement | null>
+  targetRef: RefObject<TextTarget | null>
   value: string
   setValue: (v: string) => void
 }

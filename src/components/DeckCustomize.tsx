@@ -12,12 +12,13 @@ type Props = {
   iconUrl: string | null
   /** The pixel logo on the card back (decks only). */
   logo?: string | null
+  description?: string | null
   onSaved: () => void
   /** Which table the id belongs to: customising a deck (default) or a deckbox. */
   table?: 'decks' | 'deckboxes'
 }
 
-export default function DeckCustomize({ deckId, color, iconUrl, logo = null, onSaved, table = 'decks' }: Props) {
+export default function DeckCustomize({ deckId, color, iconUrl, logo = null, description = null, onSaved, table = 'decks' }: Props) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -27,6 +28,15 @@ export default function DeckCustomize({ deckId, color, iconUrl, logo = null, onS
     // Choosing a colour swaps out a custom icon, since the two are alternatives, not layers.
     const { error } = await supabase.from(table).update({ color: i, icon_url: null }).eq('id', deckId)
     if (error) setError(error.message)
+    else onSaved()
+  }
+
+  async function saveDescription(text: string) {
+    const value = text.trim() || null
+    if (value === description) return
+    setError(null)
+    const { error } = await supabase.from(table).update({ description: value }).eq('id', deckId)
+    if (error) setError(`${error.message} (If this says the column doesn't exist, run supabase/migrations/0025_descriptions.sql.)`)
     else onSaved()
   }
 
@@ -64,6 +74,14 @@ export default function DeckCustomize({ deckId, color, iconUrl, logo = null, onS
 
   return (
     <div className="customize">
+      <span className="customize-label">Description</span>
+      <textarea
+        defaultValue={description ?? ''}
+        maxLength={500}
+        rows={3}
+        placeholder="A little bio: what's in here?"
+        onBlur={(e) => saveDescription(e.target.value)}
+      />
       <span className="customize-label">Colour</span>
       <div className="swatches">
         {Array.from({ length: DECK_COLOR_COUNT }, (_, i) => (

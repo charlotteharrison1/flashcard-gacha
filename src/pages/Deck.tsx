@@ -12,7 +12,7 @@ import CsvImport from '../components/CsvImport'
 import DeckCustomize from '../components/DeckCustomize'
 import AttachmentPicker from '../components/AttachmentPicker'
 import FormatToolbar from '../components/FormatToolbar'
-import CardText, { setImageWidth } from '../lib/cardText'
+import RichField, { type TextTarget } from '../components/RichField'
 import CardFilterBar from '../components/CardFilterBar'
 import { previewText } from '../lib/textFormat'
 import { SlotSymbol } from '../components/SlotSymbol'
@@ -22,7 +22,6 @@ import StudyFilter from '../components/StudyFilter'
 import { StarButton, TagAdder, TagChips } from '../components/CardMeta'
 import { MAX_TAGS, matchesFilter, saveStar, saveTags, sortCards, tagCounts, type CardFilter, type CardSort } from '../lib/cardMeta'
 
-const HAS_IMAGE_RE = /!\[[^\]]*\]\(/
 
 export default function Deck() {
   const { id = '' } = useParams()
@@ -36,8 +35,8 @@ export default function Deck() {
   const [back, setBack] = useState('')
   const [font, setFont] = useState<CardFont>(DEFAULT_FONT)
   const [adding, setAdding] = useState(false)
-  const frontRef = useRef<HTMLTextAreaElement>(null)
-  const backRef = useRef<HTMLTextAreaElement>(null)
+  const frontRef = useRef<TextTarget>(null)
+  const backRef = useRef<TextTarget>(null)
   const [customizing, setCustomizing] = useState(false)
   const { settings, ready: settingsReady } = useSettings()
   const [bulkFont, setBulkFont] = useState<CardFont>(DEFAULT_FONT)
@@ -174,6 +173,7 @@ export default function Deck() {
           <p className="muted">
             {cards.length} card{cards.length === 1 ? '' : 's'} · {dueCount} due
           </p>
+          {deck.description && <p className="hero-desc">{deck.description}</p>}
         </div>
         {dueCount > 0 ? (
           <Link className="button gold" to={`/decks/${id}/study`}>
@@ -196,7 +196,7 @@ export default function Deck() {
         </button>
       </div>
 
-      {customizing && <DeckCustomize deckId={id} color={deck.color} iconUrl={deck.icon_url} logo={deck.logo ?? null} onSaved={load} />}
+      {customizing && <DeckCustomize deckId={id} color={deck.color} iconUrl={deck.icon_url} logo={deck.logo ?? null} description={deck.description ?? null} onSaved={load} />}
 
       <details className="panel more-options add-card" open={cards.length === 0 ? true : undefined}>
         <summary>+ Add a card</summary>
@@ -206,19 +206,14 @@ export default function Deck() {
               <span className="fmt-sep" />
               <AttachmentPicker targetRef={frontRef} value={front} setValue={setFront} />
             </FormatToolbar>
-            <textarea
-              ref={frontRef}
-              placeholder="Front (the question)"
+            <RichField
+              targetRef={frontRef}
               value={front}
-              onChange={(e) => setFront(e.target.value)}
-              maxLength={5000}
-              rows={2}
+              onChange={setFront}
+              userId={userId}
+              className={`font-${font}`}
+              placeholder="Front (the question)"
             />
-            {HAS_IMAGE_RE.test(front) && (
-              <div className="field-preview">
-                <CardText text={front} userId={userId} onImageResize={(i, w) => setFront((t) => setImageWidth(t, i, w))} />
-              </div>
-            )}
           </div>
 
           <div className="field-block">
@@ -226,19 +221,14 @@ export default function Deck() {
               <span className="fmt-sep" />
               <AttachmentPicker targetRef={backRef} value={back} setValue={setBack} />
             </FormatToolbar>
-            <textarea
-              ref={backRef}
-              placeholder="Back (the answer)"
+            <RichField
+              targetRef={backRef}
               value={back}
-              onChange={(e) => setBack(e.target.value)}
-              maxLength={5000}
-              rows={2}
+              onChange={setBack}
+              userId={userId}
+              className={`font-${font}`}
+              placeholder="Back (the answer)"
             />
-            {HAS_IMAGE_RE.test(back) && (
-              <div className="field-preview">
-                <CardText text={back} userId={userId} onImageResize={(i, w) => setBack((t) => setImageWidth(t, i, w))} />
-              </div>
-            )}
           </div>
 
           <details className="format-help-details">
@@ -246,7 +236,7 @@ export default function Deck() {
             <p className="format-help-inline">
               <code># heading</code> · <code>**bold**</code> · <code>*italic*</code> · <code>==highlight==</code> · <code>$inline math$</code> ·{' '}
               <code>$$block math$$</code> or <code>\[block math\]</code> · the picture icon inserts <code>![](url)</code> wherever your
-              cursor is, and once it shows up below you can drag its corner to resize it
+              cursor is, and the picture appears right there in the text, where you can drag its corner to resize it
             </p>
           </details>
           <div className="row add-row">

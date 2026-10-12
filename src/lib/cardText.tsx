@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, type ReactNode } from 'react'
+import { Fragment, type ReactNode } from 'react'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import { resolveImagePath } from './storage'
@@ -20,13 +20,9 @@ import { resolveImagePath } from './storage'
 type Props = {
   text: string
   userId: string
-  /** When set, images render with a drag handle; dragging reports (image index in `text`, new width in px). */
-  onImageResize?: (index: number, width: number) => void
 }
 
-export default function CardText({ text, userId, onImageResize }: Props) {
-  let imgIndex = 0
-  const nextImgIndex = () => imgIndex++
+export default function CardText({ text, userId }: Props) {
   const lines = text.split('\n')
   const out: ReactNode[] = []
   for (let i = 0; i < lines.length; i++) {
@@ -51,7 +47,7 @@ export default function CardText({ text, userId, onImageResize }: Props) {
       const level = heading[1].length
       out.push(
         <div key={i} className={`md-h md-h${level}`}>
-          {renderRich(heading[2], userId, nextImgIndex, onImageResize)}
+          {renderRich(heading[2], userId)}
         </div>,
       )
       continue
@@ -63,13 +59,13 @@ export default function CardText({ text, userId, onImageResize }: Props) {
       out.push(
         <div key={i} className="md-li" style={{ '--lvl': level } as React.CSSProperties}>
           {numbered ? <span className="md-num">{item[2]}</span> : <span className="md-bullet" aria-hidden="true" />}
-          <span className="md-li-text">{renderRich(item[3], userId, nextImgIndex, onImageResize)}</span>
+          <span className="md-li-text">{renderRich(item[3], userId)}</span>
         </div>,
       )
       continue
     }
     if (line.trim() === '') out.push(<br key={i} />)
-    else out.push(<div key={i}>{renderRich(line, userId, nextImgIndex, onImageResize)}</div>)
+    else out.push(<div key={i}>{renderRich(line, userId)}</div>)
   }
   return <>{out}</>
 }
@@ -78,14 +74,14 @@ export default function CardText({ text, userId, onImageResize }: Props) {
 const CODE_RE = /```([^`\n]+?)```|``([^\n]+?)``|`([^`\n]+?)`/g
 
 /** Splits a line into code spans (shown as typed) and everything else (pictures, maths, bold, ...). */
-function renderRich(line: string, userId: string, nextImgIndex: () => number, onImageResize?: (index: number, width: number) => void): ReactNode[] {
+function renderRich(line: string, userId: string): ReactNode[] {
   const matches = [...line.matchAll(CODE_RE)]
-  if (matches.length === 0) return renderLine(line, userId, nextImgIndex, onImageResize)
+  if (matches.length === 0) return renderLine(line, userId)
   const nodes: ReactNode[] = []
   let last = 0
   let k = 0
   for (const m of matches) {
-    if (m.index! > last) nodes.push(<Fragment key={k++}>{renderLine(line.slice(last, m.index), userId, nextImgIndex, onImageResize)}</Fragment>)
+    if (m.index! > last) nodes.push(<Fragment key={k++}>{renderLine(line.slice(last, m.index), userId)}</Fragment>)
     nodes.push(
       <code key={k++} className="md-code">
         {(m[1] ?? m[2] ?? m[3]).trim()}
@@ -93,7 +89,7 @@ function renderRich(line: string, userId: string, nextImgIndex: () => number, on
     )
     last = m.index! + m[0].length
   }
-  if (last < line.length) nodes.push(<Fragment key={k++}>{renderLine(line.slice(last), userId, nextImgIndex, onImageResize)}</Fragment>)
+  if (last < line.length) nodes.push(<Fragment key={k++}>{renderLine(line.slice(last), userId)}</Fragment>)
   return nodes
 }
 
@@ -108,23 +104,15 @@ const LIST_RE = /^([ \t]*)([-*•]|\d+[.)])[ \t]+(.*)$/
 const TOKEN_RE =
   /!\[([^\]]*)\]\((https?:\/\/[^\s)]+|data:image\/[^\s)]+|[\w./-]+)(?:\s+=(\d+))?\)|\$\$([\s\S]+?)\$\$|\\\[([\s\S]+?)\\\]|\$([^$\n]+?)\$/g
 
-function renderLine(line: string, userId: string, nextImgIndex: () => number, onImageResize?: (index: number, width: number) => void) {
+function renderLine(line: string, userId: string) {
   const nodes: React.ReactNode[] = []
   let last = 0
   let i = 0
   for (const m of line.matchAll(TOKEN_RE)) {
     if (m.index! > last) nodes.push(...renderInline(line.slice(last, m.index), i++))
     if (m[2] !== undefined) {
-      const idx = nextImgIndex()
       nodes.push(
-        <ResizableImage
-          key={i++}
-          src={resolveImagePath(userId, m[2])}
-          alt={m[1]}
-          width={m[3] ? Number(m[3]) : undefined}
-          index={idx}
-          onResize={onImageResize}
-        />,
+        <Picture key={i++} src={resolveImagePath(userId, m[2])} alt={m[1]} width={m[3] ? Number(m[3]) : undefined} />,
       )
     } else {
       const display = m[4] !== undefined || m[5] !== undefined
@@ -159,62 +147,18 @@ function renderInline(text: string, keyBase: number): React.ReactNode[] {
   return [<span key={keyBase}>{nodes}</span>]
 }
 
-/** A plain <img>, or — when `onResize` is given (the card editor's live preview) — one with a
- *  drag handle in the corner that reports its new width so the caller can save it back to the text. */
-function ResizableImage({
-  src,
-  alt,
-  width,
-  index,
-  onResize,
-}: {
-  src: string
-  alt: string
-  width?: number
-  index: number
-  onResize?: (index: number, width: number) => void
-}) {
-  const ref = useRef<HTMLSpanElement>(null)
-
-  useEffect(() => {
-    if (!onResize || !ref.current) return
-    const el = ref.current
-    const observer = new ResizeObserver(() => onResize(index, Math.round(el.getBoundingClientRect().width)))
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [onResize, index])
-
-  const style = width ? { width: `${width}px` } : undefined
-  const caption = alt && <span className="md-caption">{alt}</span>
-  if (!onResize)
-    return (
-      <span className="md-fig">
-        <img src={src} alt={alt} className="md-img" loading="lazy" style={style} />
-        {caption}
-      </span>
-    )
+function Picture({ src, alt, width }: { src: string; alt: string; width?: number }) {
   return (
     <span className="md-fig">
-      <span ref={ref} className="md-img-resizable" style={style}>
-        <img src={src} alt={alt} loading="lazy" />
-      </span>
-      {caption}
+      <img src={src} alt={alt} className="md-img" loading="lazy" style={width ? { width: `${width}px` } : undefined} />
+      {alt && <span className="md-caption">{alt}</span>}
     </span>
   )
 }
 
 // Must match TOKEN_RE's image alternative — kept separate because editing text (outside React)
 // doesn't need the math alternatives at all.
-const IMG_ONLY_RE = /!\[([^\]]*)\]\((https?:\/\/[^\s)]+|data:image\/[^\s)]+|[\w./-]+)(?:\s+=(\d+))?\)/g
-
-/** Rewrites the Nth image in `text` (0-indexed, same order CardText renders them) to carry `width`. */
-export function setImageWidth(text: string, index: number, width: number): string {
-  let i = -1
-  return text.replace(IMG_ONLY_RE, (whole, alt, src) => {
-    i++
-    return i === index ? `![${alt}](${src} =${width})` : whole
-  })
-}
+export const IMG_ONLY_RE = /!\[([^\]]*)\]\((https?:\/\/[^\s)]+|data:image\/[^\s)]+|[\w./-]+)(?:\s+=(\d+))?\)/g
 
 function MathSpan({ latex, display }: { latex: string; display: boolean }) {
   const html = katex.renderToString(latex, {
