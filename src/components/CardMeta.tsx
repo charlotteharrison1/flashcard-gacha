@@ -59,7 +59,11 @@ export function TagAdder({
   const [text, setText] = useState('')
   const full = existing.length >= MAX_TAGS
 
-  const matches = suggestions.filter((s) => !existing.includes(s) && s.includes(text.trim().toLowerCase().replace(/^#/, ''))).slice(0, 8)
+  const typed = text.trim().toLowerCase().replace(/^#/, '')
+  const open = suggestions.filter((s) => !existing.includes(s))
+  // Tags that start with what's typed come first, then ones that merely contain it.
+  const matches = [...open.filter((s) => s.startsWith(typed)), ...open.filter((s) => !s.startsWith(typed) && s.includes(typed))].slice(0, 8)
+  const completion = typed && matches[0]?.startsWith(typed) ? matches[0] : null
 
   function pick(tag: string) {
     onAdd(tag)
@@ -81,7 +85,10 @@ export function TagAdder({
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') {
+          if (e.key === 'Tab' && completion && completion !== typed) {
+            e.preventDefault()
+            setText(completion) // autofill the top match; Enter then adds it
+          } else if (e.key === 'Enter') {
             e.preventDefault()
             submit()
           } else if (e.key === 'Escape') {
@@ -89,7 +96,7 @@ export function TagAdder({
             onClose()
           }
         }}
-        placeholder={full ? `Up to ${MAX_TAGS} tags` : 'Tag, then Enter'}
+        placeholder={full ? `Up to ${MAX_TAGS} tags` : 'Tag, then Enter (Tab fills in)'}
         maxLength={30}
         disabled={full}
         aria-label="Add a tag"

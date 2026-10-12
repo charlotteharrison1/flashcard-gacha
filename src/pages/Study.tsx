@@ -61,6 +61,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
     setShowingBack(false)
   }
   const [done, setDone] = useState(0)
+  const [deckTags, setDeckTags] = useState<string[]>([])
   const [earned, setEarned] = useState(0)
   const [turn, setTurn] = useState(0)
   const [poofs, setPoofs] = useState<Poof[]>([])
@@ -229,6 +230,18 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
 
   const card = queue?.[0]
 
+  // Every tag already used in this card's deck (the queue only holds the cards still to study), for tag autocomplete.
+  const deckId = card?.deck_id
+  useEffect(() => {
+    if (!deckId) return
+    supabase
+      .from('cards')
+      .select('id, starred, tags')
+      .eq('deck_id', deckId)
+      .neq('tags', '{}')
+      .then(({ data }) => setDeckTags(tagCounts((data ?? []) as Card[]).map(([t]) => t)))
+  }, [deckId])
+
   // Keyboard: Space/Enter reveals the answer, 1-4 rates once it's visible, 8 stars the card, T adds a tag, D/Delete deletes it.
   useEffect(() => {
     if (!card) return
@@ -318,7 +331,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   const pct = total ? Math.round((done / total) * 100) : 0
   const faceClass = isRedSuit(suit) ? 'face red' : 'face'
   const fitKey = `${card.id}:${card.font}:${card.front.length}:${card.back.length}` // when this changes, the text is re-measured
-  const knownTags = tagCounts(queue).map(([t]) => t)
+  const knownTags = [...new Set([...deckTags, ...tagCounts(queue).map(([t]) => t)])]
 
   return (
     <>
