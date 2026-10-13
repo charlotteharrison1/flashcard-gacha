@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from './supabase'
 
-/** Display copy of pull_cost in supabase/migrations/0004_bulk_pulls.sql — the database is the source of truth. */
-export const PULL_COST = 1
+/** Display copy of pull_cost in supabase/migrations/0026_fsrs.sql — the database is the source of truth. */
+export const PULL_COST = 10
 
-/** Size of the "Insert 10 coins" bulk buy. The database allows up to 10 per call. */
+/** Size of the 10-pull bulk buy. The database allows up to 10 per call. */
 export const BULK_PULLS = 10
 
 export function useEarnings() {

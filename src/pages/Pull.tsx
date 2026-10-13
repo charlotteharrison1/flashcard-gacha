@@ -176,10 +176,10 @@ export default function Pull() {
       <div className="pull-actions">
         <div className="buttons">
           <button className="spend sm" onClick={() => loadCoins(1)} disabled={!canLoad(1)}>
-            Insert 1 coin
+            1 pull · {PULL_COST} coins
           </button>
           <button className="spend sm" onClick={() => loadCoins(BULK_PULLS)} disabled={!canLoad(BULK_PULLS)}>
-            Insert {BULK_PULLS} coins
+            {BULK_PULLS} pulls · {PULL_COST * BULK_PULLS} coins
           </button>
         </div>
         {error && <p className="error">{error}</p>}

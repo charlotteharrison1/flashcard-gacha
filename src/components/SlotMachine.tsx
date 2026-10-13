@@ -186,7 +186,7 @@ export default function SlotMachine({
             className={`coin-slot${armed ? ' ready' : ''}${phase === 'loading' || phase === 'spinning' ? ' busy' : ''}`}
             onClick={onCoin}
             disabled={!canInsert}
-            aria-label="Insert 1 coin to load a pull"
+            aria-label="Pay for a pull to load the machine"
           >
             <span className="coin-lamp" aria-hidden="true" />
             <span className="coin-slit" aria-hidden="true">
