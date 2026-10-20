@@ -201,7 +201,7 @@ export default function Decks() {
 
       <section className="collection">
         <button className="link wide-toggle" onClick={() => { applyWide(!wide); setWide(!wide) }} aria-pressed={wide}>
-          {wide ? 'Normal width' : 'Wide mode'}
+          {wide ? 'Thin mode' : 'Wide mode'}
         </button>
         {error && <p className="error">{error}</p>}
 
