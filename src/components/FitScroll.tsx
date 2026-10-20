@@ -1,10 +1,27 @@
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
 
 const MIN_FIT = 0.75 // never shrink below three quarters size; past that the text just scrolls
-const STEP = 0.02 // how finely to search between half and full size
+const MIN_FIT_WIDE = 0.35 // a formula too wide for the card may shrink this far before it scrolls sideways
+const STEP = 0.02 // how finely to search for the size
+
+/** The largest f from `floor` to 1 for which `ok(f)` holds (1 if it already does, `floor` if even that is not enough). */
+function largest(ok: (f: number) => boolean, floor: number) {
+  if (ok(1)) return 1
+  if (!ok(floor)) return floor
+  let lo = floor // ok
+  let hi = 1 // not ok
+  while (hi - lo > STEP) {
+    const mid = (lo + hi) / 2
+    if (ok(mid)) lo = mid
+    else hi = mid
+  }
+  return lo
+}
 
 /**
- * Sets --fit (a multiplier, 1 = full size) to the largest value at which the content fits inside `el`.
+ * Sets --fit (a multiplier, 1 = full size) to the largest value at which the content fits inside `el`, both
+ * ways: not too tall and not too wide. A long formula can't wrap, so it shrinks (down to MIN_FIT_WIDE) rather than
+ * pushing the card wider or scrolling sideways.
  * `comfortable` also asks for the card to stay under about a third of the screen height, so a big card gets
  * smaller type well before it hits its hard height cap (which is where it would start to scroll).
  */
@@ -12,20 +29,11 @@ function fit(el: HTMLElement, comfortable: boolean) {
   el.style.removeProperty('--fit')
   if (!el.clientHeight) return // not laid out right now (hidden, mid-render): measuring would wrongly read as "too tall" and shrink the text
   const comfort = Math.max(200, window.innerHeight * 0.38)
-  const fits = (f: number) => {
-    el.style.setProperty('--fit', String(f))
-    return el.scrollHeight <= (comfortable ? Math.min(el.clientHeight + 1, comfort) : el.clientHeight + 1)
-  }
-  if (fits(1)) return
-  if (!fits(MIN_FIT)) return // still too long at the smallest size: leave it there and let it scroll
-  let lo = MIN_FIT // fits
-  let hi = 1 // doesn't
-  while (hi - lo > STEP) {
-    const mid = (lo + hi) / 2
-    if (fits(mid)) lo = mid
-    else hi = mid
-  }
-  el.style.setProperty('--fit', String(lo))
+  const set = (f: number) => el.style.setProperty('--fit', String(f))
+  const tallOk = (f: number) => (set(f), el.scrollHeight <= (comfortable ? Math.min(el.clientHeight + 1, comfort) : el.clientHeight + 1))
+  // Display maths scrolls inside its own box, so check those boxes as well as the area itself.
+  const wideOk = (f: number) => (set(f), el.scrollWidth <= el.clientWidth + 1 && [...el.querySelectorAll('.md-math-block')].every((m) => m.scrollWidth <= m.clientWidth + 1))
+  set(Math.min(largest(wideOk, MIN_FIT_WIDE), largest(tallOk, MIN_FIT)))
 }
 
 /**
