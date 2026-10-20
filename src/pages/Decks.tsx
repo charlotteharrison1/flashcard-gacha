@@ -9,6 +9,7 @@ import SaleSticker from '../components/SaleSticker'
 import { SlotSymbol } from '../components/SlotSymbol'
 import { useEarnings } from '../lib/earnings'
 import { useSettings } from '../lib/settings'
+import { applyWide, loadWide } from '../lib/wide'
 import DeckPresetsPanel from '../components/DeckPresetsPanel'
 
 type DeckRow = {
@@ -86,6 +87,7 @@ export default function Decks() {
   const [error, setError] = useState<string | null>(null)
   const { settings, save: saveSettings, saveError } = useSettings()
   const [showSettings, setShowSettings] = useState(false)
+  const [wide, setWide] = useState(loadWide)
   const boxRef = useRef<HTMLDivElement>(null)
 
   // The gloves around the box all point at the sale sticker, so tell the CSS where its centre is (relative to the box).
@@ -198,6 +200,9 @@ export default function Decks() {
       )}
 
       <section className="collection">
+        <button className="link wide-toggle" onClick={() => { applyWide(!wide); setWide(!wide) }} aria-pressed={wide}>
+          {wide ? 'Normal width' : 'Wide mode'}
+        </button>
         {error && <p className="error">{error}</p>}
 
         {decks === null ? (

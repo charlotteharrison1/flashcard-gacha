@@ -1789,3 +1789,10 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .rf-box img { display: block; max-width: 100%; height: auto; min-width: 40px; border-radius: 8px; }
 .rf-handle { position: absolute; right: -6px; bottom: -6px; width: 16px; height: 16px; background: var(--gold); border: 2px solid var(--line); border-radius: 4px; cursor: nwse-resize; touch-action: none; opacity: 0.35; }
 .rf-box:hover .rf-handle, .rf-handle:active { opacity: 1; }
+
+/* Wide mode (home page): the box stretches across the screen and the decks fill it row after row */
+.wide-toggle { display: block; margin: 0 0 0 auto; font-size: 0.85rem; }
+:root[data-wide='on'] main:has(.home-box) { max-width: none; }
+:root[data-wide='on'] .home-box { width: auto; max-width: none; margin-left: 0; margin-right: 0; }
+:root[data-wide='on'] .home-box .tiles { grid-template-columns: repeat(auto-fill, var(--tile-w)); }
+:root[data-wide='on'] .home-box .collection { max-width: none; }

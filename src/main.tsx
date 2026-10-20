@@ -19,12 +19,14 @@ import { applyLights, loadLights } from './lib/lights'
 import { applyCardAnim, loadCardAnim } from './lib/cardAnim'
 import { applyUiFont, loadUiFont } from './lib/uiFont'
 import { applyAnim, loadAnim } from './lib/anim'
+import { applyWide, loadWide } from './lib/wide'
 
 applyScheme(loadScheme())
 applyLights(loadLights())
 applyCardAnim(loadCardAnim())
 applyUiFont(loadUiFont())
 applyAnim(loadAnim())
+applyWide(loadWide())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
