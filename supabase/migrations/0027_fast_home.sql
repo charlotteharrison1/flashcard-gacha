@@ -3,8 +3,8 @@
 -- before this is run (it falls back to the old, slower requests), so there's no rush on the order.
 --
 --  1. The coin balance is kept as a running total instead of being added up from every review, grant
---     and pull each time it's asked for. Triggers keep it exact; the balance means the same as before
---     (reviews + grants - pulls), including dropping if reviews are deleted along with their card.
+--     and pull each time it's asked for. Coins are added when you earn them and taken away only when you
+--     spend them on pulls. Deleting a card or deck no longer removes the coins it earned.
 --  2. Row-level security checks call auth.uid() once per query instead of once per row.
 --  3. home_summary(): the whole home screen (decks with card and due counts, deckboxes, balance) in one request.
 
@@ -24,38 +24,27 @@ security definer
 set search_path = public
 as $fn$
 declare
-  v_user uuid;
   v_delta bigint;
 begin
-  if tg_op = 'INSERT' then
-    v_user := new.user_id;
-    if tg_table_name = 'reviews' then v_delta := coalesce(new.coins_earned, 0);
-    elsif tg_table_name = 'earnings_grants' then v_delta := coalesce(new.amount, 0);
-    else v_delta := -coalesce(new.cost, 0);
-    end if;
-    insert into public.user_totals (user_id, balance) values (v_user, v_delta)
-    on conflict (user_id) do update set balance = public.user_totals.balance + excluded.balance;
-  else
-    v_user := old.user_id;
-    if tg_table_name = 'reviews' then v_delta := coalesce(old.coins_earned, 0);
-    elsif tg_table_name = 'earnings_grants' then v_delta := coalesce(old.amount, 0);
-    else v_delta := -coalesce(old.cost, 0);
-    end if;
-    update public.user_totals set balance = balance - v_delta where user_id = v_user;
+  if tg_table_name = 'reviews' then v_delta := coalesce(new.coins_earned, 0);
+  elsif tg_table_name = 'earnings_grants' then v_delta := coalesce(new.amount, 0);
+  else v_delta := -coalesce(new.cost, 0);
   end if;
+  insert into public.user_totals (user_id, balance) values (new.user_id, v_delta)
+  on conflict (user_id) do update set balance = public.user_totals.balance + excluded.balance;
   return null;
 end;
 $fn$;
 revoke all on function public.bump_balance() from public, anon, authenticated;
 
 drop trigger if exists bump_balance_reviews on public.reviews;
-create trigger bump_balance_reviews after insert or delete on public.reviews
+create trigger bump_balance_reviews after insert on public.reviews
   for each row execute function public.bump_balance();
 drop trigger if exists bump_balance_grants on public.earnings_grants;
-create trigger bump_balance_grants after insert or delete on public.earnings_grants
+create trigger bump_balance_grants after insert on public.earnings_grants
   for each row execute function public.bump_balance();
 drop trigger if exists bump_balance_pulls on public.pulls;
-create trigger bump_balance_pulls after insert or delete on public.pulls
+create trigger bump_balance_pulls after insert on public.pulls
   for each row execute function public.bump_balance();
 
 -- Start every account from its true balance, worked out the slow way one last time.
@@ -65,7 +54,7 @@ select u.id,
      + coalesce((select sum(amount) from public.earnings_grants where user_id = u.id), 0)
      - coalesce((select sum(cost) from public.pulls where user_id = u.id), 0)
 from auth.users u
-on conflict (user_id) do update set balance = excluded.balance;
+on conflict (user_id) do nothing; -- never overwrite a running total that already exists
 
 create or replace function public.get_earnings()
 returns int
@@ -141,7 +130,8 @@ $$;
 revoke all on function public.home_summary() from public, anon;
 grant execute on function public.home_summary() to authenticated;
 
--- To check the running balance matches the slow sum (should return no rows):
+-- Right after the first run, the running balance matches the old slow sum (should return no rows). Later
+-- it can be higher, because coins from deleted decks are kept:
 --   select t.user_id, t.balance from public.user_totals t
 --   where t.balance <> coalesce((select sum(coins_earned) from public.reviews where user_id = t.user_id), 0)
 --                    + coalesce((select sum(amount) from public.earnings_grants where user_id = t.user_id), 0)

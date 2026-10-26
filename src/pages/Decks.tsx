@@ -315,10 +315,8 @@ export default function Decks() {
                     )}
                     <span className="tile-plate">{d.name}</span>
                     <span className="tile-count">
-                      {n} card{n === 1 ? '' : 's'}
-                    </span>
-                    <span className={`tile-due${(d.due[0]?.count ?? 0) > 0 ? ' has-due' : ''}`}>
-                      {d.due[0]?.count ?? 0} card{(d.due[0]?.count ?? 0) === 1 ? '' : 's'} due
+                      {n} card{n === 1 ? '' : 's'}.{' '}
+                      <span className={`tile-due${(d.due[0]?.count ?? 0) > 0 ? ' has-due' : ''}`}>{d.due[0]?.count ?? 0} due</span>
                     </span>
                   </Link>
                   <Link className="tile-del tile-gear" to={`/decks/${d.id}`} aria-label={`${d.name}: edit cards and settings`} title="Edit cards and settings">Edit deck</Link>
