@@ -12,6 +12,7 @@ import { useAuth } from '../lib/auth'
 import { loadHome, saveHome } from '../lib/homeCache'
 import { useSettings } from '../lib/settings'
 import { applyWide, loadWide } from '../lib/wide'
+import { applyListMode, loadListMode } from '../lib/listMode'
 import DeckPresetsPanel from '../components/DeckPresetsPanel'
 
 type DeckRow = {
@@ -92,6 +93,7 @@ export default function Decks() {
   const { settings, save: saveSettings, saveError } = useSettings()
   const [showSettings, setShowSettings] = useState(false)
   const [wide, setWide] = useState(loadWide)
+  const [list, setList] = useState(loadListMode)
   const boxRef = useRef<HTMLDivElement>(null)
 
   // The gloves around the box all point at the sale sticker, so tell the CSS where its centre is (relative to the box).
@@ -189,6 +191,38 @@ export default function Decks() {
     load()
   }
 
+  // Dragging a deck onto a deckbox works the same in card mode and list mode.
+  const boxDrop = (boxId: string) => ({
+    onDragOver: (e: React.DragEvent) => {
+      if (!dragId) return
+      e.preventDefault() // lets this tile accept the drop
+      e.dataTransfer.dropEffect = 'move'
+      setOverBox(boxId)
+    },
+    onDragLeave: (e: React.DragEvent) => {
+      if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOverBox(null)
+    },
+    onDrop: (e: React.DragEvent) => {
+      e.preventDefault()
+      const deckId = dragId ?? e.dataTransfer.getData('text/plain')
+      setOverBox(null)
+      setDragId(null)
+      if (deckId) moveToBox(deckId, boxId)
+    },
+  })
+  const deckDrag = (deckId: string) => ({
+    draggable: true,
+    onDragStart: (e: React.DragEvent) => {
+      e.dataTransfer.setData('text/plain', deckId)
+      e.dataTransfer.effectAllowed = 'move'
+      setDragId(deckId)
+    },
+    onDragEnd: () => {
+      setDragId(null)
+      setOverBox(null)
+    },
+  })
+
   return (
     <div className="home-box" ref={boxRef}>
       <span className="home-suit tl"><SlotSymbol id="spade" /></span>
@@ -225,13 +259,74 @@ export default function Decks() {
       )}
 
       <section className="collection">
-        <button className="link wide-toggle" onClick={() => { applyWide(!wide); setWide(!wide) }} aria-pressed={wide}>
-          {wide ? 'Thin mode' : 'Wide mode'}
-        </button>
+        <div className="view-toggles">
+          <button className="link wide-toggle" onClick={() => { applyListMode(!list); setList(!list) }} aria-pressed={list}>
+            {list ? 'Card mode' : 'List mode'}
+          </button>
+          {!list && (
+            <button className="link wide-toggle" onClick={() => { applyWide(!wide); setWide(!wide) }} aria-pressed={wide}>
+              {wide ? 'Thin mode' : 'Wide mode'}
+            </button>
+          )}
+        </div>
         {error && <p className="error">{error}</p>}
 
         {decks === null ? (
           <p className="muted">Shuffling…</p>
+        ) : list ? (
+          <>
+            <div className="list-actions">
+              <NewTile label="New deck" placeholder="Deck name…" onCreate={createDeck} />
+              <NewTile label="New deckbox" placeholder="Deckbox name…" onCreate={createBox} />
+              <div className="new-half new-deck-tile">
+                <button className="new-deck-btn" onClick={() => setShowSettings((s) => !s)} aria-expanded={showSettings}>
+                  <span className="new-deck-gear">
+                    <SlotSymbol id="gear" />
+                  </span>
+                  <span>Deck presets</span>
+                </button>
+              </div>
+            </div>
+            <ul className="deck-list">
+              {boxes.map((b) => {
+                const n = b.decks[0]?.count ?? 0
+                return (
+                  <li key={b.id} className={`deck-row box-row c${effectiveColor(b.id, b.color)}${overBox === b.id ? ' drop-target' : ''}`} {...boxDrop(b.id)}>
+                    <Link to={`/boxes/${b.id}`} className="row-main">
+                      <span className="row-icon">
+                        {b.icon_url ? <img src={b.icon_url} alt="" draggable={false} /> : <span className="tile-icon-sm"><SlotSymbol id="deckbox" /></span>}
+                      </span>
+                      <span className="row-name">{b.name}</span>
+                      <span className="row-count">
+                        {n} deck{n === 1 ? '' : 's'}
+                      </span>
+                    </Link>
+                  </li>
+                )
+              })}
+              {decks.map((d) => {
+                const n = d.cards[0]?.count ?? 0
+                const due = d.due[0]?.count ?? 0
+                return (
+                  <li key={d.id} className={`deck-row c${effectiveColor(d.id, d.color)}${dragId === d.id ? ' dragging' : ''}`} {...deckDrag(d.id)}>
+                    <Link to={`/decks/${d.id}/study`} className="row-main">
+                      <span className="row-icon">
+                        {d.icon_url ? <img src={d.icon_url} alt="" draggable={false} /> : <CardLogo id={logoFor(d.id, d.logo)} target={28} />}
+                      </span>
+                      <span className="row-name">{d.name}</span>
+                      <span className="row-count">
+                        {n} card{n === 1 ? '' : 's'}.{' '}
+                        <span className={`row-due${due > 0 ? ' has-due' : ''}`}>{due} due</span>
+                      </span>
+                    </Link>
+                    <Link className="row-edit" to={`/decks/${d.id}`} aria-label={`${d.name}: edit cards and settings`}>
+                      Edit deck
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
+          </>
         ) : (
           <ul className="tiles">
             {/* One grid cell holding both "new" buttons, stacked, to save room */}
@@ -254,22 +349,7 @@ export default function Decks() {
                 <li
                   key={b.id}
                   className={`tile cardback boxback${b.icon_url ? ' has-icon' : ''} c${effectiveColor(b.id, b.color)}${overBox === b.id ? ' drop-target' : ''}`}
-                  onDragOver={(e) => {
-                    if (!dragId) return
-                    e.preventDefault() // lets this tile accept the drop
-                    e.dataTransfer.dropEffect = 'move'
-                    setOverBox(b.id)
-                  }}
-                  onDragLeave={(e) => {
-                    if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOverBox(null)
-                  }}
-                  onDrop={(e) => {
-                    e.preventDefault()
-                    const deckId = dragId ?? e.dataTransfer.getData('text/plain')
-                    setOverBox(null)
-                    setDragId(null)
-                    if (deckId) moveToBox(deckId, b.id)
-                  }}
+                  {...boxDrop(b.id)}
                 >
                   <Link to={`/boxes/${b.id}`} className="tile-main">
                     {b.icon_url ? (
@@ -294,16 +374,7 @@ export default function Decks() {
                 <li
                   key={d.id}
                   className={`tile cardback flashcard${d.icon_url ? ' has-icon' : ''} c${effectiveColor(d.id, d.color)}${dragId === d.id ? ' dragging' : ''}`}
-                  draggable
-                  onDragStart={(e) => {
-                    e.dataTransfer.setData('text/plain', d.id)
-                    e.dataTransfer.effectAllowed = 'move'
-                    setDragId(d.id)
-                  }}
-                  onDragEnd={() => {
-                    setDragId(null)
-                    setOverBox(null)
-                  }}
+                  {...deckDrag(d.id)}
                 >
                   <Link to={`/decks/${d.id}/study`} className="tile-main">
                     {d.icon_url ? (
