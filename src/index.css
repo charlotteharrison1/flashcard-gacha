@@ -1923,3 +1923,18 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .pellet.green { --c: var(--green); --cd: var(--green-d); --tc: #072b1a; text-shadow: none; }
 .pellet.blue { --c: var(--blue); --cd: var(--blue-d); }
 .pellet.purple { --c: #8e44ad; --cd: #5e2a75; }
+
+/* ---------- Edit homepage ---------- */
+.pellet.orange { --c: var(--orange); --cd: var(--orange-d); --tc: #2a1400; text-shadow: none; }
+.edit-hint { margin: 0 0 10px; font-size: 0.85rem; }
+.tile.editing, .deck-row.editing { outline: 3px dashed var(--gold); outline-offset: 3px; cursor: grab; }
+.tile.editing:hover, .deck-row.editing:hover { transform: none; }
+.tile.editing.dragging, .deck-row.editing.dragging { opacity: 0.4; }
+.tile.editing.over, .deck-row.editing.over { outline: 4px solid #fff; transform: scale(1.03); }
+.size-ctl { position: absolute; left: 8px; top: 8px; z-index: 3; display: flex; gap: 4px; padding: 4px; background: rgba(10, 18, 24, 0.88); border: 2px solid var(--line); border-radius: 6px; }
+.size-pip { display: grid; place-items: center; width: 34px; height: 24px; padding: 0; background: var(--panel-2); border: 2px solid var(--line); border-radius: 4px; box-shadow: none; }
+.size-pip.active { outline: 2px solid var(--gold); outline-offset: 1px; }
+.size-pip .size-shape { height: 9px; border-width: 2px; }
+.size-pip .size-shape-normal { width: 11px; }
+.size-pip .size-shape-wide { width: 22px; }
+.size-pip .size-shape-big { width: 22px; height: 15px; }

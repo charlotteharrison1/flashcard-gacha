@@ -196,7 +196,7 @@ export default function Deck() {
         </button>
       </div>
 
-      {customizing && <DeckCustomize deckId={id} color={deck.color} iconUrl={deck.icon_url} logo={deck.logo ?? null} cardSize={deck.card_size ?? null} description={deck.description ?? null} onSaved={load} />}
+      {customizing && <DeckCustomize deckId={id} color={deck.color} iconUrl={deck.icon_url} logo={deck.logo ?? null} description={deck.description ?? null} onSaved={load} />}
 
       <details className="panel more-options add-card" open={cards.length === 0 ? true : undefined}>
         <summary>+ Add a card</summary>
