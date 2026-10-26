@@ -187,7 +187,7 @@ export default function Deckbox() {
           {decks.map((d) => {
             const n = d.cards[0]?.count ?? 0
             return (
-              <li key={d.id} className={`tile cardback${d.icon_url ? ' has-icon' : ''} c${effectiveColor(d.id, d.color)}`}>
+              <li key={d.id} className={`tile cardback flashcard${d.icon_url ? ' has-icon' : ''} c${effectiveColor(d.id, d.color)}`}>
                 <Link to={`/decks/${d.id}/study`} className="tile-main">
                   {d.icon_url ? (
                     <img src={d.icon_url} alt="" className="cardback-img" />

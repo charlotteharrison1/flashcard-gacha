@@ -293,7 +293,7 @@ export default function Decks() {
               return (
                 <li
                   key={d.id}
-                  className={`tile cardback${d.icon_url ? ' has-icon' : ''} c${effectiveColor(d.id, d.color)}${dragId === d.id ? ' dragging' : ''}`}
+                  className={`tile cardback flashcard${d.icon_url ? ' has-icon' : ''} c${effectiveColor(d.id, d.color)}${dragId === d.id ? ' dragging' : ''}`}
                   draggable
                   onDragStart={(e) => {
                     e.dataTransfer.setData('text/plain', d.id)

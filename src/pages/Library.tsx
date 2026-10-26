@@ -72,7 +72,7 @@ export default function Library() {
               const n = d.library_cards?.[0]?.count ?? 0
               return (
                 <li key={d.id} className="library-item">
-                  <div className={`tile cardback c${effectiveColor(d.id, d.color)}`}>
+                  <div className={`tile cardback flashcard c${effectiveColor(d.id, d.color)}`}>
                     <Link to={`/library/${d.slug}`} className="tile-main" aria-label={`Preview ${d.name}`}>
                       <span className="tile-logo">
                         <CardLogo id={logoFor(d.id, d.logo)} />

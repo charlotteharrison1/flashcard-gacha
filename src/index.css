@@ -1751,7 +1751,7 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .library-btn:active { transform: translateY(3px); box-shadow: none; }
 
 /* The Library page */
-.library-shelf { list-style: none; padding: 0; margin: 14px 0 4px; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 22px 18px; }
+.library-shelf { list-style: none; padding: 0; margin: 14px 0 4px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 24px 20px; }
 .library-item { display: flex; flex-direction: column; gap: 8px; }
 .library-item .tile { width: 100%; }
 .library-blurb { margin: 0; font-size: 0.8rem; line-height: 1.3; }
@@ -1795,3 +1795,67 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 :root[data-wide='on'] .home-box { width: auto; max-width: none; margin-left: 0; margin-right: 0; }
 :root[data-wide='on'] .home-box .tiles { grid-template-columns: repeat(auto-fill, var(--tile-w)); }
 :root[data-wide='on'] .home-box .collection { max-width: none; }
+
+
+/* ---------- Flashcards: decks look like index cards (cream paper, coloured header band, blue ruled lines) ---------- */
+.tile, .tile.boxback { aspect-ratio: 3 / 2; }
+.tile.new-stack { aspect-ratio: auto; grid-row: span 2; } /* the "new" buttons fill two rows of cards */
+.home-box { --tile-w: clamp(150px, calc((100vh - 385px) / 2.3), 230px); }
+@media (max-width: 480px) { .home-box .tile.new-stack { grid-row: auto; aspect-ratio: auto; } }
+
+.tile.flashcard {
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 19px, rgba(48, 100, 200, 0.28) 19px 21px) 0 calc(27% + 6px) / 100% 100% no-repeat,
+    var(--card);
+  border-radius: 6px;
+}
+.tile.flashcard::before,
+.tile.flashcard.has-icon::before,
+.mini-card.flashcard::before,
+.mini-card.flashcard.has-icon::before {
+  content: '';
+  display: block;
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 27%;
+  border: 0;
+  border-bottom: 3px solid var(--line);
+  border-radius: 3px 3px 0 0;
+  background: var(--a);
+  box-shadow: 0 3px 0 #d8362b; /* the red rule under the header, like a real index card */
+}
+.tile.flashcard .tile-main { display: grid; grid-template-columns: 1fr auto; grid-template-rows: 1fr auto; align-items: center; justify-items: start; gap: 2px 8px; padding: calc(27% + 8px) 10px 7px 12px; }
+.tile.flashcard .tile-plate {
+  justify-self: stretch;
+  padding: 0;
+  text-align: left;
+  font-size: 0.95rem;
+  line-height: 1.1;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  box-shadow: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tile.flashcard .tile-logo { grid-column: 2; grid-row: 1; align-self: center; justify-self: end; }
+:root .tile.flashcard .tile-count { grid-column: 1 / -1; grid-row: 2; font-size: 0.8rem; color: #4a4a60; text-shadow: none; }
+:root .tile.flashcard .tile-due { color: #4a4a60; opacity: 1; text-shadow: none; }
+:root .tile.flashcard .tile-due.has-due { color: #c2271b; font-weight: 700; }
+.tile.flashcard.has-icon .cardback-img { position: absolute; top: calc(27% + 3px); right: 0; bottom: 0; width: 38%; height: auto; object-fit: cover; box-shadow: none; border-left: 3px solid var(--line); border-radius: 0 0 3px 0; }
+.tile.flashcard.has-icon .tile-main { padding-right: calc(38% + 8px); }
+
+/* Deckboxes stay card-shaped but landscape too, so rows line up with the flashcards */
+.tile.boxback .tile-main, .home-box .tile.boxback .tile-main { display: grid; grid-template-columns: 1fr auto; grid-template-rows: 1fr auto; align-items: center; justify-items: start; gap: 2px 8px; padding: calc(18% + 8px) 10px 6px 12px; }
+.tile.boxback .tile-plate { justify-self: stretch; font-size: 0.9rem; text-align: left; }
+.tile.boxback .tile-icon, .home-box .tile.boxback .tile-icon { grid-column: 2; grid-row: 1; width: 40px; height: 40px; }
+.tile.boxback .tile-count { grid-column: 1 / -1; grid-row: 2; font-size: 0.8rem; }
+
+/* The little card on a deck's own page */
+.mini-card.flashcard { width: 112px; height: 74px; transform: rotate(-3deg); border-radius: 5px; }
+.mini-card.flashcard::before, .mini-card.flashcard.has-icon::before { height: 27%; }
+.mini-card.flashcard { background: repeating-linear-gradient(to bottom, transparent 0 11px, rgba(48, 100, 200, 0.28) 11px 13px) 0 calc(27% + 4px) / 100% 100% no-repeat, var(--card); }
+.mini-card.flashcard .mini-logo { inset: 27% 0 0 0; }
+.mini-card.flashcard .cardback-img { position: absolute; top: calc(27% + 3px); left: 0; right: 0; bottom: 0; width: 100%; height: auto; object-fit: cover; box-shadow: none; }
