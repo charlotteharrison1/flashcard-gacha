@@ -426,12 +426,14 @@ export default function Decks() {
         <SlotSymbol id="gloveGold" />
       </span>
 
-      <section className="wallet">
-        <SaleSticker />
-        <Earnings balance={balance} library />
-      </section>
+      <div className="wallet-block">
+        <section className="wallet">
+          <SaleSticker />
+          <Earnings balance={balance} library />
+        </section>
 
-      <div className="home-divider" aria-hidden="true" />
+        <div className="home-divider" aria-hidden="true" />
+      </div>
 
       {showSettings && (
         <DeckPresetsPanel

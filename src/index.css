@@ -1965,3 +1965,8 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 
 /* Wide mode: the sticker, library button and coins sit at the left, lined up with the first card */
 :root[data-wide='on'] .home-box .wallet { margin-left: 0; margin-right: auto; justify-content: flex-start; }
+
+/* Wide mode: the dashed line under the wallet is as wide as the wallet and sits at the left with it */
+.wallet-block { display: contents; }
+:root[data-wide='on'] .home-box .wallet-block { display: block; width: fit-content; }
+:root[data-wide='on'] .home-box .wallet-block .home-divider { max-width: none; margin-left: 0; margin-right: 0; }
