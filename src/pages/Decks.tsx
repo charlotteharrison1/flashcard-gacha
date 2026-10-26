@@ -445,10 +445,10 @@ export default function Decks() {
             </span>
             Deck presets
           </button>
-          <button className={`pellet ${editing ? 'red' : 'orange'}`} onClick={() => setEditing((v) => !v)} aria-pressed={editing}>
-            {editing ? 'Done editing' : 'Edit homepage'}
-          </button>
           <span className="view-toggles">
+            <button className="link wide-toggle" onClick={() => setEditing((v) => !v)} aria-pressed={editing}>
+              {editing ? 'Done editing' : 'Edit homepage'}
+            </button>
             <button className="link wide-toggle" onClick={() => { applyListMode(!list); setList(!list) }} aria-pressed={list}>
               {list ? 'Card mode' : 'List mode'}
             </button>

@@ -1938,3 +1938,10 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .size-pip .size-shape-normal { width: 11px; }
 .size-pip .size-shape-wide { width: 22px; }
 .size-pip .size-shape-big { width: 22px; height: 15px; }
+/* Smaller size buttons so they sit inside the header band even on a small card */
+.size-ctl { left: 5px; top: 4px; gap: 3px; padding: 2px 3px; }
+.size-pip { width: 26px; height: 17px; }
+.size-pip .size-shape { height: 7px; }
+.size-pip .size-shape-normal { width: 9px; }
+.size-pip .size-shape-wide { width: 16px; }
+.size-pip .size-shape-big { width: 16px; height: 11px; }
