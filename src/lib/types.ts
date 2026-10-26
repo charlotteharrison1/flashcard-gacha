@@ -18,6 +18,8 @@ export type Deck = {
   orientation: Orientation
   /** The pixel logo on the card back (see lib/logos.ts); null = the automatic suit. */
   logo?: string | null
+  /** How big the deck is drawn on the home screen (see lib/deckSize.ts). */
+  card_size?: string | null
   description?: string | null
 }
 

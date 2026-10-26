@@ -5,6 +5,7 @@ import { errorMessage } from '../lib/errors'
 import { DECK_COLOR_COUNT } from '../lib/theme'
 import { DECK_LOGOS, logoFor } from '../lib/logos'
 import CardLogo from './CardLogo'
+import { DECK_SIZES, sizeOf } from '../lib/deckSize'
 
 type Props = {
   deckId: string
@@ -13,12 +14,14 @@ type Props = {
   /** The pixel logo on the card back (decks only). */
   logo?: string | null
   description?: string | null
+  /** How big the deck is drawn on the home screen (decks only). */
+  cardSize?: string | null
   onSaved: () => void
   /** Which table the id belongs to: customising a deck (default) or a deckbox. */
   table?: 'decks' | 'deckboxes'
 }
 
-export default function DeckCustomize({ deckId, color, iconUrl, logo = null, description = null, onSaved, table = 'decks' }: Props) {
+export default function DeckCustomize({ deckId, color, iconUrl, logo = null, description = null, cardSize = null, onSaved, table = 'decks' }: Props) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -44,6 +47,13 @@ export default function DeckCustomize({ deckId, color, iconUrl, logo = null, des
     setError(null)
     const { error } = await supabase.from('decks').update({ logo: id }).eq('id', deckId)
     if (error) setError(`${error.message} (If this says the column doesn't exist, run supabase/migrations/0021_deck_logo.sql.)`)
+    else onSaved()
+  }
+
+  async function setSize(id: string) {
+    setError(null)
+    const { error } = await supabase.from('decks').update({ card_size: id }).eq('id', deckId)
+    if (error) setError(`${error.message} (If this says the column doesn't exist, run supabase/migrations/0028_deck_size.sql.)`)
     else onSaved()
   }
 
@@ -115,6 +125,27 @@ export default function DeckCustomize({ deckId, color, iconUrl, logo = null, des
                 Automatic
               </button>
             )}
+          </div>
+        </>
+      )}
+
+      {table === 'decks' && (
+        <>
+          <span className="customize-label">Size on the home screen</span>
+          <div className="size-picker">
+            {DECK_SIZES.map((z) => (
+              <button
+                key={z.id}
+                type="button"
+                className={`size-option${sizeOf(cardSize) === z.id ? ' active' : ''}`}
+                onClick={() => setSize(z.id)}
+                aria-label={`${z.label} (${z.hint})`}
+                title={`${z.label} (${z.hint})`}
+              >
+                <span className={`size-shape size-shape-${z.id}`} />
+                <span>{z.label}</span>
+              </button>
+            ))}
           </div>
         </>
       )}

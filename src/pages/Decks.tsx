@@ -10,6 +10,7 @@ import { SlotSymbol } from '../components/SlotSymbol'
 import { useEarnings } from '../lib/earnings'
 import { useAuth } from '../lib/auth'
 import { loadHome, saveHome } from '../lib/homeCache'
+import { logoTargetFor, sizeOf } from '../lib/deckSize'
 import { useSettings } from '../lib/settings'
 import { applyWide, loadWide } from '../lib/wide'
 import { applyListMode, loadListMode } from '../lib/listMode'
@@ -22,6 +23,7 @@ type DeckRow = {
   color: number | null
   icon_url: string | null
   logo?: string | null
+  card_size?: string | null
   cards: { count: number }[]
   due: { count: number }[] // the same cards, counting only the ones due now
 }
@@ -373,7 +375,7 @@ export default function Decks() {
               return (
                 <li
                   key={d.id}
-                  className={`tile cardback flashcard${d.icon_url ? ' has-icon' : ''} c${effectiveColor(d.id, d.color)}${dragId === d.id ? ' dragging' : ''}`}
+                  className={`tile cardback flashcard${d.icon_url ? ' has-icon' : ''} size-${sizeOf(d.card_size)} c${effectiveColor(d.id, d.color)}${dragId === d.id ? ' dragging' : ''}`}
                   {...deckDrag(d.id)}
                 >
                   <Link to={`/decks/${d.id}/study`} className="tile-main">
@@ -381,7 +383,7 @@ export default function Decks() {
                       <img src={d.icon_url} alt="" className="cardback-img" draggable={false} />
                     ) : (
                       <span className="tile-logo">
-                        <CardLogo id={logoFor(d.id, d.logo)} />
+                        <CardLogo id={logoFor(d.id, d.logo)} target={logoTargetFor(sizeOf(d.card_size))} />
                       </span>
                     )}
                     <span className="tile-plate">{d.name}</span>

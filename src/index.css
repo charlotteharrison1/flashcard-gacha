@@ -1799,13 +1799,15 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 
 /* ---------- Flashcards: decks look like index cards (cream paper, coloured header band, blue ruled lines) ---------- */
 .tile, .tile.boxback { aspect-ratio: 3 / 2; }
+.tile.flashcard, .tile.boxback { --band: calc(var(--tile-w, 190px) * 0.18); } /* header band height, from the card width (percent padding would follow the width, so wide cards broke) */
+.mini-card.flashcard { --band: 20px; }
 .tile.new-stack { aspect-ratio: auto; grid-row: span 2; } /* the "new" buttons fill two rows of cards */
 .home-box { --tile-w: clamp(150px, calc((100vh - 385px) / 2.3), 230px); }
 @media (max-width: 480px) { .home-box .tile.new-stack { grid-row: auto; aspect-ratio: auto; } }
 
 .tile.flashcard {
   background:
-    repeating-linear-gradient(to bottom, transparent 0 19px, rgba(48, 100, 200, 0.28) 19px 21px) 0 calc(27% + 6px) / 100% 100% no-repeat,
+    repeating-linear-gradient(to bottom, transparent 0 19px, rgba(48, 100, 200, 0.28) 19px 21px) 0 calc(var(--band) + 6px) / 100% 100% no-repeat,
     var(--card);
   border-radius: 6px;
 }
@@ -1817,14 +1819,14 @@ main.login-main { max-width: 620px; padding-top: 40px; }
   display: block;
   position: absolute;
   inset: 0 0 auto 0;
-  height: 27%;
+  height: var(--band);
   border: 0;
   border-bottom: 3px solid var(--line);
   border-radius: 3px 3px 0 0;
   background: var(--a);
   box-shadow: 0 3px 0 #d8362b; /* the red rule under the header, like a real index card */
 }
-.tile.flashcard .tile-main { display: grid; grid-template-columns: 1fr auto; grid-template-rows: 1fr auto; align-items: center; justify-items: start; gap: 2px 8px; padding: calc(27% + 8px) 10px 7px 12px; }
+.tile.flashcard .tile-main { display: grid; grid-template-columns: 1fr auto; grid-template-rows: 1fr auto; align-items: center; justify-items: start; gap: 2px 8px; padding: calc(var(--band) + 8px) 10px 7px 12px; }
 .tile.flashcard .tile-plate {
   justify-self: stretch;
   padding: 0;
@@ -1844,21 +1846,21 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 :root .tile.flashcard .tile-count { grid-column: 1 / -1; grid-row: 2; font-size: 0.8rem; color: #4a4a60; text-shadow: none; }
 :root .tile.flashcard .tile-due { color: #4a4a60; opacity: 1; text-shadow: none; }
 :root .tile.flashcard .tile-due.has-due { color: #c2271b; font-weight: 700; }
-.tile.flashcard.has-icon .cardback-img { position: absolute; top: calc(27% + 3px); right: 0; bottom: 0; width: 38%; height: auto; object-fit: cover; box-shadow: none; border-left: 3px solid var(--line); border-radius: 0 0 3px 0; }
+.tile.flashcard.has-icon .cardback-img { position: absolute; top: calc(var(--band) + 3px); right: 0; bottom: 0; width: 38%; height: auto; object-fit: cover; box-shadow: none; border-left: 3px solid var(--line); border-radius: 0 0 3px 0; }
 .tile.flashcard.has-icon .tile-main { padding-right: calc(38% + 8px); }
 
 /* Deckboxes stay card-shaped but landscape too, so rows line up with the flashcards */
-.tile.boxback .tile-main, .home-box .tile.boxback .tile-main { display: grid; grid-template-columns: 1fr auto; grid-template-rows: 1fr auto; align-items: center; justify-items: start; gap: 2px 8px; padding: calc(18% + 8px) 10px 6px 12px; }
+.tile.boxback .tile-main, .home-box .tile.boxback .tile-main { display: grid; grid-template-columns: 1fr auto; grid-template-rows: 1fr auto; align-items: center; justify-items: start; gap: 2px 8px; padding: calc(var(--band) * 0.7 + 8px) 10px 6px 12px; }
 .tile.boxback .tile-plate { justify-self: stretch; font-size: 0.9rem; text-align: left; }
 .tile.boxback .tile-icon, .home-box .tile.boxback .tile-icon { grid-column: 2; grid-row: 1; width: 40px; height: 40px; }
 .tile.boxback .tile-count { grid-column: 1 / -1; grid-row: 2; font-size: 0.8rem; }
 
 /* The little card on a deck's own page */
 .mini-card.flashcard { width: 112px; height: 74px; transform: rotate(-3deg); border-radius: 5px; }
-.mini-card.flashcard::before, .mini-card.flashcard.has-icon::before { height: 27%; }
-.mini-card.flashcard { background: repeating-linear-gradient(to bottom, transparent 0 11px, rgba(48, 100, 200, 0.28) 11px 13px) 0 calc(27% + 4px) / 100% 100% no-repeat, var(--card); }
-.mini-card.flashcard .mini-logo { inset: 27% 0 0 0; }
-.mini-card.flashcard .cardback-img { position: absolute; top: calc(27% + 3px); left: 0; right: 0; bottom: 0; width: 100%; height: auto; object-fit: cover; box-shadow: none; }
+.mini-card.flashcard::before, .mini-card.flashcard.has-icon::before { height: var(--band); }
+.mini-card.flashcard { background: repeating-linear-gradient(to bottom, transparent 0 11px, rgba(48, 100, 200, 0.28) 11px 13px) 0 calc(var(--band) + 4px) / 100% 100% no-repeat, var(--card); }
+.mini-card.flashcard .mini-logo { inset: var(--band) 0 0 0; }
+.mini-card.flashcard .cardback-img { position: absolute; top: calc(var(--band) + 3px); left: 0; right: 0; bottom: 0; width: 100%; height: auto; object-fit: cover; box-shadow: none; }
 
 /* ---------- List mode: decks as rows with icons ---------- */
 .view-toggles { display: flex; justify-content: flex-end; gap: 14px; }
@@ -1883,3 +1885,28 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .row-edit { flex: none; align-self: center; margin-right: 12px; font-size: 0.85rem; font-weight: 700; color: var(--gold); text-decoration: underline; }
 @media (max-width: 520px) { .row-count { display: none; } .list-actions { flex-wrap: wrap; } }
 .home-box:has(.deck-list) { min-width: min(760px, 100%); }
+
+/* ---------- Deck sizes: normal, wide (2 across) and big (2 across and 2 down) ---------- */
+.home-box .tiles { grid-auto-rows: calc(var(--tile-w) * 2 / 3); grid-auto-flow: row dense; } /* every row is one card tall; bigger decks span rows */
+.home-box .tile { aspect-ratio: auto; }
+.home-box .tile.size-wide { grid-column: span 2; }
+.home-box .tile.size-big { grid-column: span 2; grid-row: span 2; }
+.home-box .tile.size-big .tile-plate { font-size: 1.6rem; -webkit-line-clamp: 3; }
+.home-box .tile.size-wide .tile-plate { font-size: 1.15rem; }
+:root .home-box .tile.size-big .tile-count { font-size: 1.05rem; }
+.home-box .tile.size-big .tile-main { padding-left: 20px; padding-right: 18px; }
+@media (max-width: 480px) {
+  .home-box .tiles { grid-auto-rows: auto; }
+  .home-box .tile { aspect-ratio: 3 / 2; }
+  .home-box .tile.new-stack { aspect-ratio: auto; }
+  .home-box .tile.size-big { grid-row: auto; }
+}
+
+/* The size picker in Customize */
+.size-picker { display: flex; gap: 10px; flex-wrap: wrap; }
+.size-option { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 14px; background: var(--panel-2); color: var(--text); border: 3px solid var(--line); border-radius: 6px; box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4); font-size: 0.85rem; text-transform: none; letter-spacing: 0; text-shadow: none; }
+.size-option.active { outline: 3px solid var(--gold); outline-offset: 2px; }
+.size-shape { display: block; background: var(--card); border: 3px solid var(--line); height: 22px; }
+.size-shape-normal { width: 32px; }
+.size-shape-wide { width: 70px; }
+.size-shape-big { width: 70px; height: 46px; }
