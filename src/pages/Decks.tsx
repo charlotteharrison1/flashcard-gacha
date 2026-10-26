@@ -8,6 +8,8 @@ import Earnings from '../components/Earnings'
 import SaleSticker from '../components/SaleSticker'
 import { SlotSymbol } from '../components/SlotSymbol'
 import { useEarnings } from '../lib/earnings'
+import { useAuth } from '../lib/auth'
+import { loadHome, saveHome } from '../lib/homeCache'
 import { useSettings } from '../lib/settings'
 import { applyWide, loadWide } from '../lib/wide'
 import DeckPresetsPanel from '../components/DeckPresetsPanel'
@@ -81,9 +83,11 @@ function NewTile({ label, placeholder, onCreate }: { label: string; placeholder:
 }
 
 export default function Decks() {
-  const [decks, setDecks] = useState<DeckRow[] | null>(null)
-  const [boxes, setBoxes] = useState<BoxRow[]>([])
-  const { balance } = useEarnings()
+  const userId = useAuth().session?.user.id ?? ''
+  const cached = useRef(userId ? loadHome<{ decks: DeckRow[]; boxes: BoxRow[] }>(userId) : null).current // last visit's screen, drawn at once
+  const [decks, setDecks] = useState<DeckRow[] | null>(cached?.decks ?? null)
+  const [boxes, setBoxes] = useState<BoxRow[]>(cached?.boxes ?? [])
+  const { balance, setBalance, refresh: refreshBalance } = useEarnings({ fetch: false }) // home_summary brings the balance too
   const [error, setError] = useState<string | null>(null)
   const { settings, save: saveSettings, saveError } = useSettings()
   const [showSettings, setShowSettings] = useState(false)
@@ -110,8 +114,30 @@ export default function Decks() {
   const [dragId, setDragId] = useState<string | null>(null) // the deck being dragged
   const [overBox, setOverBox] = useState<string | null>(null) // the deckbox it's hovering over
 
+  function show(d: DeckRow[], b: BoxRow[]) {
+    setDecks(d)
+    setBoxes(b)
+    if (userId) saveHome(userId, { decks: d, boxes: b })
+  }
+
   async function load() {
-    // Decks inside a deckbox only show up inside that box, like files in a folder.
+    // One round trip for the whole screen (0027_fast_home.sql). Decks inside a deckbox only show up inside that box.
+    const summary = await supabase.rpc('home_summary')
+    if (!summary.error && summary.data) {
+      const s = summary.data as {
+        balance: number
+        decks: (DeckRow & { card_count: number; due_count: number })[]
+        boxes: (BoxRow & { deck_count: number })[]
+      }
+      setBalance(s.balance)
+      return show(
+        s.decks.map((d) => ({ ...d, cards: [{ count: d.card_count }], due: [{ count: d.due_count }] })),
+        s.boxes.map((b) => ({ ...b, decks: [{ count: b.deck_count }] })),
+      )
+    }
+
+    // The migration hasn't been run yet: ask the old way, in separate requests.
+    refreshBalance()
     const [d, b] = await Promise.all([
       supabase
         .from('decks')
@@ -123,8 +149,7 @@ export default function Decks() {
     ])
     if (d.error) return setError(d.error.message)
     if (b.error) return setError(b.error.message)
-    setDecks(d.data as DeckRow[])
-    setBoxes(b.data as BoxRow[])
+    show(d.data as DeckRow[], b.data as BoxRow[])
   }
 
   useEffect(() => {

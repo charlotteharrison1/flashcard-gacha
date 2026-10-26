@@ -47,7 +47,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   const [searchParams] = useSearchParams()
   const studyAll = searchParams.get('all') === '1'
   const filter = readFilter(searchParams.get('f')) // all, starred, tagged, or tag:<name>
-  const { setBalance } = useEarnings()
+  const { setBalance } = useEarnings({ fetch: false })
   const { session } = useAuth()
   const userId = session?.user.id ?? '' // Study is behind an authenticated route, so this is always set
   const [decks, setDecks] = useState<Record<string, DeckSettings> | null>(null) // per-deck display settings

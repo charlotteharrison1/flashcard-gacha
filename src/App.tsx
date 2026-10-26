@@ -13,6 +13,7 @@ const Library = lazy(() => import('./pages/Library'))
 const LibraryPreview = lazy(() => import('./pages/LibraryPreview'))
 import SettingsMenu from './components/SettingsMenu'
 import PixelTitle from './components/PixelTitle'
+import { clearCache } from './lib/homeCache'
 
 function Layout() {
   const { session, loading } = useAuth()
@@ -30,7 +31,10 @@ function Layout() {
           <span className="muted user-email" title={session.user.email}>
             {session.user.email}
           </span>
-          <button className="link" onClick={() => supabase.auth.signOut()}>
+          <button className="link" onClick={() => {
+              clearCache()
+              supabase.auth.signOut()
+            }}>
             Sign out
           </button>
           <SettingsMenu />
