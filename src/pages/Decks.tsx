@@ -120,10 +120,18 @@ export default function Decks() {
       box.style.setProperty('--sy', `${Math.round(s.top - b.top + s.height / 2)}px`)
     }
     place()
-    const observer = new ResizeObserver(place) // the box changes size as decks load
+    const observer = new ResizeObserver(place) // the box changes size as decks load, and the sticker moves when wide mode flips
     observer.observe(box)
-    return () => observer.disconnect()
-  }, [])
+    const sticker = box.querySelector('.sale')
+    if (sticker) observer.observe(sticker)
+    window.addEventListener('resize', place)
+    const settle = window.setTimeout(place, 50) // after the wide/thin layout change has applied
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', place)
+      window.clearTimeout(settle)
+    }
+  }, [wide, list])
   const [dragId, setDragId] = useState<string | null>(null) // the deck being dragged
   const [overBox, setOverBox] = useState<string | null>(null) // the deckbox it's hovering over
 

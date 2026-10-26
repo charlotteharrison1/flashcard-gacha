@@ -1962,3 +1962,6 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 :root[data-wide='on'] .home-box .tile { aspect-ratio: 3 / 2; }
 :root[data-wide='on'] .home-box .tile.size-wide, :root[data-wide='on'] .home-box .tile.size-long { aspect-ratio: auto; min-height: calc(var(--tile-w) * 2 / 3); }
 :root[data-wide='on'] .home-box .tile.size-big { aspect-ratio: auto; min-height: calc(var(--tile-w) * 4 / 3 + 14px); }
+
+/* Wide mode: the sticker, library button and coins sit at the left, lined up with the first card */
+:root[data-wide='on'] .home-box .wallet { margin-left: 0; margin-right: auto; justify-content: flex-start; }
