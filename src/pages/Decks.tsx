@@ -36,8 +36,8 @@ type BoxRow = {
   decks: { count: number }[]
 }
 
-/** The dashed "+" tile that turns into a one-field form: used for both new decks and new deckboxes. */
-function NewTile({ label, placeholder, onCreate }: { label: string; placeholder: string; onCreate: (name: string) => Promise<boolean> }) {
+/** A solid pill-shaped "+ New ..." button that turns into a one-field form: used for both new decks and new deckboxes. */
+function NewPellet({ label, color, placeholder, onCreate }: { label: string; color: string; placeholder: string; onCreate: (name: string) => Promise<boolean> }) {
   const [creating, setCreating] = useState(false)
   const [name, setName] = useState('')
 
@@ -56,32 +56,26 @@ function NewTile({ label, placeholder, onCreate }: { label: string; placeholder:
     setName('')
   }
 
-  return (
-    <div className="new-half new-deck-tile">
-      {creating ? (
-        <form onSubmit={submit} className="new-deck-form">
-          <input
-            autoFocus
-            placeholder={placeholder}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => e.key === 'Escape' && cancel()}
-            maxLength={100}
-          />
-          <div className="row nowrap">
-            <button className="gold sm">Create</button>
-            <button className="link" type="button" onClick={cancel}>
-              Cancel
-            </button>
-          </div>
-        </form>
-      ) : (
-        <button className="new-deck-btn" onClick={() => setCreating(true)} aria-label={label}>
-          <span className="new-deck-plus">+</span>
-          <span>{label}</span>
-        </button>
-      )}
-    </div>
+  return creating ? (
+    <form onSubmit={submit} className="pellet-form">
+      <input
+        autoFocus
+        placeholder={placeholder}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        onKeyDown={(e) => e.key === 'Escape' && cancel()}
+        maxLength={100}
+      />
+      <button className="pellet gold">Create</button>
+      <button className="link" type="button" onClick={cancel}>
+        Cancel
+      </button>
+    </form>
+  ) : (
+    <button className={`pellet ${color}`} onClick={() => setCreating(true)} aria-label={label}>
+      <span className="pellet-plus">+</span>
+      {label}
+    </button>
   )
 }
 
@@ -261,15 +255,25 @@ export default function Decks() {
       )}
 
       <section className="collection">
-        <div className="view-toggles">
-          <button className="link wide-toggle" onClick={() => { applyListMode(!list); setList(!list) }} aria-pressed={list}>
-            {list ? 'Card mode' : 'List mode'}
+        <div className="shelf-bar">
+          <NewPellet label="New deck" color="green" placeholder="Deck name…" onCreate={createDeck} />
+          <NewPellet label="New deckbox" color="blue" placeholder="Deckbox name…" onCreate={createBox} />
+          <button className="pellet purple" onClick={() => setShowSettings((v) => !v)} aria-expanded={showSettings}>
+            <span className="pellet-gear">
+              <SlotSymbol id="gear" />
+            </span>
+            Deck presets
           </button>
-          {!list && (
-            <button className="link wide-toggle" onClick={() => { applyWide(!wide); setWide(!wide) }} aria-pressed={wide}>
-              {wide ? 'Thin mode' : 'Wide mode'}
+          <span className="view-toggles">
+            <button className="link wide-toggle" onClick={() => { applyListMode(!list); setList(!list) }} aria-pressed={list}>
+              {list ? 'Card mode' : 'List mode'}
             </button>
-          )}
+            {!list && (
+              <button className="link wide-toggle" onClick={() => { applyWide(!wide); setWide(!wide) }} aria-pressed={wide}>
+                {wide ? 'Thin mode' : 'Wide mode'}
+              </button>
+            )}
+          </span>
         </div>
         {error && <p className="error">{error}</p>}
 
@@ -277,18 +281,6 @@ export default function Decks() {
           <p className="muted">Shuffling…</p>
         ) : list ? (
           <>
-            <div className="list-actions">
-              <NewTile label="New deck" placeholder="Deck name…" onCreate={createDeck} />
-              <NewTile label="New deckbox" placeholder="Deckbox name…" onCreate={createBox} />
-              <div className="new-half new-deck-tile">
-                <button className="new-deck-btn" onClick={() => setShowSettings((s) => !s)} aria-expanded={showSettings}>
-                  <span className="new-deck-gear">
-                    <SlotSymbol id="gear" />
-                  </span>
-                  <span>Deck presets</span>
-                </button>
-              </div>
-            </div>
             <ul className="deck-list">
               {boxes.map((b) => {
                 const n = b.decks[0]?.count ?? 0
@@ -331,20 +323,6 @@ export default function Decks() {
           </>
         ) : (
           <ul className="tiles">
-            {/* One grid cell holding both "new" buttons, stacked, to save room */}
-            <li className="tile new-stack">
-              <NewTile label="New deck" placeholder="Deck name…" onCreate={createDeck} />
-              <NewTile label="New deckbox" placeholder="Deckbox name…" onCreate={createBox} />
-              <div className="new-half new-deck-tile">
-                <button className="new-deck-btn" onClick={() => setShowSettings((s) => !s)} aria-expanded={showSettings}>
-                  <span className="new-deck-gear">
-                    <SlotSymbol id="gear" />
-                  </span>
-                  <span>Deck presets</span>
-                </button>
-              </div>
-            </li>
-
             {boxes.map((b) => {
               const n = b.decks[0]?.count ?? 0
               return (

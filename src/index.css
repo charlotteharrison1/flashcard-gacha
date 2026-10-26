@@ -1910,3 +1910,16 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .size-shape-normal { width: 32px; }
 .size-shape-wide { width: 70px; }
 .size-shape-big { width: 70px; height: 46px; }
+
+/* ---------- The shelf bar: solid pill buttons in a line above the decks ---------- */
+.shelf-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 6px 0 14px; }
+.shelf-bar .view-toggles { margin-left: auto; }
+.pellet { display: inline-flex; align-items: center; gap: 6px; padding: 3px 14px 3px 10px; font-size: 0.85rem; letter-spacing: 0.04em; border-radius: 999px; white-space: nowrap; }
+.pellet-plus { font-size: 1.1rem; line-height: 1; }
+.pellet-gear { display: block; width: 18px; height: 18px; }
+.pellet-gear svg { display: block; width: 100%; height: 100%; }
+.pellet-form { display: flex; align-items: center; gap: 8px; }
+.pellet-form input { width: 190px; padding: 4px 12px; font-size: 0.9rem; border-radius: 999px; }
+.pellet.green { --c: var(--green); --cd: var(--green-d); --tc: #072b1a; text-shadow: none; }
+.pellet.blue { --c: var(--blue); --cd: var(--blue-d); }
+.pellet.purple { --c: #8e44ad; --cd: #5e2a75; }
