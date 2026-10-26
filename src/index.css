@@ -515,7 +515,6 @@ body:has(.home-box) header { padding-bottom: 0; }
 /* Each half lifts on its own; the shared tile itself stays put (it would otherwise lift both at once) */
 .tile.new-stack:hover { transform: none; }
 .new-half { transition: transform 0.18s ease-out; will-change: transform; }
-.new-half:hover, .new-half:focus-within { transform: translateY(-5px); }
 .new-half .new-deck-form { inset: 6px; gap: 6px; }
 .new-half .new-deck-plus { font-size: 1.8rem; }
 
@@ -554,7 +553,7 @@ body:has(.home-box) header { padding-bottom: 0; }
 .tile { aspect-ratio: 5 / 7; --tilt: -1.6deg; will-change: transform; transition: transform 0.18s ease-out; }
 .tile:nth-child(even) { --tilt: 1.6deg; }
 
-.tile:hover { transform: translateY(-8px) rotate(var(--tilt)); }
+:root[data-hover='on'] .tile:hover { transform: translateY(-8px) rotate(var(--tilt)); } /* off by default; Settings turns it on */
 
 .new-deck-tile { position: relative; background: transparent; box-shadow: none; }
 .new-deck-tile:hover { border-color: var(--gold); }
@@ -1872,7 +1871,7 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .list-actions .new-deck-plus { font-size: 1.5rem; }
 .deck-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .deck-row { position: relative; display: flex; align-items: stretch; background: var(--panel); border: 3px solid var(--line); border-left: 12px solid var(--a); border-radius: 6px; box-shadow: 0 4px 0 var(--line); transition: transform 0.12s ease-out; }
-.deck-row:hover { transform: translateX(4px); }
+:root[data-hover='on'] .deck-row:hover { transform: translateX(4px); }
 .deck-row.dragging { opacity: 0.45; }
 .deck-row.drop-target { outline: 4px dashed var(--gold); outline-offset: 3px; }
 .row-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 4px 10px; color: var(--text); text-decoration: none; }
@@ -1970,3 +1969,6 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .wallet-block { display: contents; }
 :root[data-wide='on'] .home-box .wallet-block { display: block; width: fit-content; }
 :root[data-wide='on'] .home-box .wallet-block .home-divider { max-width: none; margin-left: 0; margin-right: 0; }
+
+/* A little longer line under the wallet in wide mode */
+:root[data-wide='on'] .home-box .wallet-block .home-divider { width: calc(100% + 90px); }

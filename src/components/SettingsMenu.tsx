@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { SlotSymbol } from './SlotSymbol'
 import CardAnimToggle from './CardAnimToggle'
+import HoverAnimToggle from './HoverAnimToggle'
 import { UI_FONTS, applyUiFont, loadUiFont, type UiFontId } from '../lib/uiFont'
 import { SCHEMES, applyScheme, loadScheme, type SchemeId } from '../lib/scheme'
 import { applyLights, loadLights } from '../lib/lights'
@@ -97,6 +98,8 @@ export default function SettingsMenu() {
           </label>
 
           <CardAnimToggle />
+
+          <HoverAnimToggle />
 
           <label className="row nowrap">
             <input
