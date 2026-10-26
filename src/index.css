@@ -1634,7 +1634,7 @@ main.page { padding-top: 6px; }
 
 /* Header Settings button and dropdown */
 .settings-menu { position: relative; }
-.settings-gear { display: inline-block; width: 16px; height: 16px; vertical-align: -3px; margin-right: 4px; }
+.settings-gear { display: inline-block; width: 15px; height: 15px; vertical-align: -3px; margin-right: 4px; }
 .settings-gear svg { display: block; width: 100%; height: 100%; }
 .settings-dropdown {
   position: absolute;
@@ -1915,7 +1915,7 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .shelf-bar .view-toggles { margin-left: auto; }
 .pellet { display: inline-flex; align-items: center; gap: 6px; padding: 3px 14px 3px 10px; font-size: 0.85rem; letter-spacing: 0.04em; border-radius: 999px; white-space: nowrap; }
 .pellet-plus { font-size: 1.1rem; line-height: 1; }
-.pellet-gear { display: block; width: 18px; height: 18px; }
+.pellet-gear { display: block; width: 15px; height: 15px; } /* the gear sprite is 15 pixels wide, so this is one screen pixel each */
 .pellet-gear svg { display: block; width: 100%; height: 100%; }
 .pellet-form { display: flex; align-items: center; gap: 8px; }
 .pellet-form input { width: 190px; padding: 4px 12px; font-size: 0.9rem; border-radius: 999px; }
