@@ -1945,3 +1945,20 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .size-pip .size-shape-normal { width: 9px; }
 .size-pip .size-shape-wide { width: 16px; }
 .size-pip .size-shape-big { width: 16px; height: 11px; }
+
+/* ---------- Long decks, and bars that line up with the cards ---------- */
+.home-box .tile.size-long { grid-column: 1 / -1; }
+.home-box .tile.size-long .tile-plate { font-size: 1.3rem; }
+.size-pip .size-shape-long { width: 22px; }
+.size-shape-long { width: 90px; }
+
+/* The button bar and the list are exactly as wide as the cards below them: three cards across in thin mode, the full shelf in wide mode */
+.shelf-bar, .deck-list { --shelf-w: calc(var(--tile-w) * 3 + 28px); width: var(--shelf-w); margin-inline: calc((100% - var(--shelf-w)) / 2); } /* same width and centring as the grid, even when the grid is wider than its box */
+:root[data-wide='on'] .shelf-bar, :root[data-wide='on'] .deck-list { width: auto; margin-inline: 0; }
+@media (max-width: 480px) { .shelf-bar, .deck-list { width: 100%; margin-inline: 0; } }
+
+/* Wide mode: the columns stretch so the cards run right to the edges, flush with the buttons above */
+:root[data-wide='on'] .home-box .tiles { grid-template-columns: repeat(auto-fill, minmax(var(--tile-w), 1fr)); grid-auto-rows: auto; }
+:root[data-wide='on'] .home-box .tile { aspect-ratio: 3 / 2; }
+:root[data-wide='on'] .home-box .tile.size-wide, :root[data-wide='on'] .home-box .tile.size-long { aspect-ratio: auto; min-height: calc(var(--tile-w) * 2 / 3); }
+:root[data-wide='on'] .home-box .tile.size-big { aspect-ratio: auto; min-height: calc(var(--tile-w) * 4 / 3 + 14px); }
