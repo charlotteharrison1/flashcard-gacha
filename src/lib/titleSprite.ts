@@ -3,7 +3,7 @@
  * Generated once from the Uncial Antiqua typeface at a small size, emboldened so the strokes are two pixels
  * wide, then cleaned up. '#' is a filled pixel; the outline and shading are added in PixelTitle.
  */
-export const TITLE_ROWS: string[] = [
+const LETTER_ROWS: string[] = [
   '..........................................................#######..................................',
   '..........................................................#######..................................',
   '............................................................#####..................................',
@@ -30,3 +30,13 @@ export const TITLE_ROWS: string[] = [
   '......#......##.........#......##............#########....#......##..##................#########...',
   '.................................................####................#.....................####....',
 ]
+
+// The "!" after the E: a stem as thick as the letters' strokes (tapering at the bottom), a gap, then a rounded dot on the baseline.
+// Keyed by row number (the rows above are 0-24; the capitals run from row 5 down to row 22).
+const BANG: Record<number, string> = {
+  5: '#####', 6: '#####', 7: '#####', 8: '#####', 9: '#####', 10: '#####', 11: '#####', 12: '#####',
+  13: '.###.', 14: '.###.', 15: '.###.', 16: '.###.',
+  19: '.###.', 20: '#####', 21: '#####', 22: '.###.',
+}
+
+export const TITLE_ROWS: string[] = LETTER_ROWS.map((row, y) => row + '....' + (BANG[y] ?? '.....'))

@@ -50,7 +50,7 @@ const TITLE_CELLS: Cell[] = (() => {
 const TITLE_WIDTH = W + 2 * PAD
 const TITLE_HEIGHT = H + 2 * PAD
 
-/** The "TYCHE" logo: uncial lettering in pixel art, drawn at `scale` screen pixels per art pixel. */
+/** The "TYCHE!" logo: uncial lettering in pixel art, drawn at `scale` screen pixels per art pixel. */
 export default function PixelTitle({ scale = 1 }: { scale?: number }) {
   return (
     <svg
@@ -59,7 +59,7 @@ export default function PixelTitle({ scale = 1 }: { scale?: number }) {
       height={TITLE_HEIGHT * scale}
       shapeRendering="crispEdges"
       role="img"
-      aria-label="Tyche"
+      aria-label="Tyche!"
     >
       {toPaths(TITLE_CELLS)}
     </svg>
