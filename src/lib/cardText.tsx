@@ -104,46 +104,62 @@ const LIST_RE = /^([ \t]*)([-*•]|\d+[.)])[ \t]+(.*)$/
 const TOKEN_RE =
   /!\[([^\]]*)\]\((https?:\/\/[^\s)]+|data:image\/[^\s)]+|[\w./-]+)(?:\s+=(\d+))?\)|\$\$([\s\S]+?)\$\$|\\\[([\s\S]+?)\\\]|\$([^$\n]+?)\$/g
 
+// Pictures and maths are swapped for placeholder characters before **bold**, *italic* and ==highlight== are applied,
+// so formatting can wrap around them: "**the answer is $x^2$**" is bold all the way through. They're put back afterwards.
+const MARK_OPEN = '\uE000'
+const MARK_CLOSE = '\uE001'
+const MARK_RE = /\uE000(\d+)\uE001/g
+
 function renderLine(line: string, userId: string) {
-  const nodes: React.ReactNode[] = []
-  let last = 0
-  let i = 0
-  for (const m of line.matchAll(TOKEN_RE)) {
-    if (m.index! > last) nodes.push(...renderInline(line.slice(last, m.index), i++))
+  const tokens: React.ReactNode[] = []
+  const masked = line.replace(TOKEN_RE, (...m: (string | undefined)[]) => {
+    const key = `t${tokens.length}`
     if (m[2] !== undefined) {
-      nodes.push(
-        <Picture key={i++} src={resolveImagePath(userId, m[2])} alt={m[1]} width={m[3] ? Number(m[3]) : undefined} />,
-      )
+      tokens.push(<Picture key={key} src={resolveImagePath(userId, m[2])} alt={m[1] ?? ''} width={m[3] ? Number(m[3]) : undefined} />)
     } else {
       const display = m[4] !== undefined || m[5] !== undefined
-      nodes.push(<MathSpan key={i++} latex={m[4] ?? m[5] ?? m[6] ?? ''} display={display} />)
+      tokens.push(<MathSpan key={key} latex={m[4] ?? m[5] ?? m[6] ?? ''} display={display} />)
     }
-    last = m.index! + m[0].length
-  }
-  if (last < line.length) nodes.push(...renderInline(line.slice(last), i++))
-  return nodes
+    return `${MARK_OPEN}${tokens.length - 1}${MARK_CLOSE}`
+  })
+  return renderFormatted(masked, tokens, 'f')
 }
 
 const INLINE_RE = /\*\*(.+?)\*\*|\*(.+?)\*|==(.+?)==/g
 
-/** Applies **bold**, *italic* and ==highlight== to a run of plain text (no images or math in it). */
-function renderInline(text: string, keyBase: number): React.ReactNode[] {
+/** Puts the saved pictures and maths back into a run of plain text. */
+function withTokens(text: string, tokens: React.ReactNode[], keyBase: string): React.ReactNode[] {
+  const out: React.ReactNode[] = []
+  let last = 0
+  let n = 0
+  for (const m of text.matchAll(MARK_RE)) {
+    if (m.index! > last) out.push(text.slice(last, m.index))
+    out.push(<Fragment key={`${keyBase}-m${n++}`}>{tokens[Number(m[1])]}</Fragment>)
+    last = m.index! + m[0].length
+  }
+  if (last < text.length) out.push(text.slice(last))
+  return out
+}
+
+/** Applies **bold**, *italic* and ==highlight== (which can nest, and can contain pictures and maths). */
+function renderFormatted(text: string, tokens: React.ReactNode[], keyBase: string): React.ReactNode[] {
   const nodes: React.ReactNode[] = []
   let last = 0
   let i = 0
   for (const m of text.matchAll(INLINE_RE)) {
-    if (m.index! > last) nodes.push(text.slice(last, m.index))
-    if (m[1] !== undefined) nodes.push(<strong key={`${keyBase}-${i++}`}>{m[1]}</strong>)
-    else if (m[2] !== undefined) nodes.push(<em key={`${keyBase}-${i++}`}>{m[2]}</em>)
+    if (m.index! > last) nodes.push(...withTokens(text.slice(last, m.index), tokens, `${keyBase}-${i++}`))
+    const key = `${keyBase}-${i++}`
+    if (m[1] !== undefined) nodes.push(<strong key={key}>{renderFormatted(m[1], tokens, key)}</strong>)
+    else if (m[2] !== undefined) nodes.push(<em key={key}>{renderFormatted(m[2], tokens, key)}</em>)
     else
       nodes.push(
-        <mark key={`${keyBase}-${i++}`} className="md-mark">
-          {m[3]}
+        <mark key={key} className="md-mark">
+          {renderFormatted(m[3], tokens, key)}
         </mark>,
       )
     last = m.index! + m[0].length
   }
-  if (last < text.length) nodes.push(text.slice(last))
+  if (last < text.length) nodes.push(...withTokens(text.slice(last), tokens, `${keyBase}-${i++}`))
   return [<span key={keyBase}>{nodes}</span>]
 }
 
