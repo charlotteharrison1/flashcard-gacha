@@ -310,7 +310,6 @@ export default function Deck() {
 
         <section className="panel">
           <h3>Delete deck</h3>
-          <p className="muted">Removes this deck and all its cards.</p>
           <button className="red" onClick={removeDeck}>
             Delete this deck
           </button>
