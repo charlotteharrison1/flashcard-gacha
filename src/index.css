@@ -792,7 +792,7 @@ body:has(.home-box) header { padding-bottom: 0; }
 }
 .face.back { transform: rotateY(180deg); }
 .face-text {
-  /* --base is the full size; FitScroll sets --fit (1 down to 0.5) on the scroll area to shrink long text to fit the card */
+  /* --base is the full size; FitScroll sets --fit (1 down to 0.9) on the scroll area to shrink long text to fit the card */
   --base: 1.5rem;
   font-size: calc(var(--base) * var(--fit, 1));
   font-weight: 400; /* regular weight; **bold** in the text is still bold */
