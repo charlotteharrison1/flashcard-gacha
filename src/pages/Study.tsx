@@ -13,6 +13,7 @@ import FitScroll from '../components/FitScroll'
 import CardAnimToggle from '../components/CardAnimToggle'
 import CardEditor, { type CardValues } from '../components/CardEditor'
 import { StarButton, TagAdder, TagChips } from '../components/CardMeta'
+import { newCardsLeftToday } from '../lib/dailyLimit'
 import { MAX_TAGS, filterLabel, readFilter, saveStar, saveTags, tagCounts } from '../lib/cardMeta'
 
 const SESSION_LIMIT = 100
@@ -86,12 +87,27 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
       if (ids.length > 0) {
         const counted = await supabase.from('cards').select('id', { count: 'exact', head: true }).in('deck_id', ids)
         cardTotal = counted.count ?? 0
-        let cardsQuery = supabase.from('cards').select('*').in('deck_id', ids).order('due_at').limit(SESSION_LIMIT)
-        if (!studyAll) cardsQuery = cardsQuery.lte('due_at', new Date().toISOString())
-        if (filter === 'starred') cardsQuery = cardsQuery.eq('starred', true)
-        else if (filter === 'tagged') cardsQuery = cardsQuery.neq('tags', '{}')
-        else if (filter.startsWith('tag:')) cardsQuery = cardsQuery.contains('tags', [filter.slice(4)])
-        const c = await cardsQuery
+        // Cards you've studied before (reviews) and brand-new ones are fetched separately, so no more than the day's
+        // allowance of new cards (NEW_CARDS_PER_DAY, minus those already started today) makes it into a session.
+        const narrow = <T extends { lte: Function; eq: Function; neq: Function; contains: Function }>(q: T) => {
+          let r = q as any
+          if (!studyAll) r = r.lte('due_at', new Date().toISOString())
+          if (filter === 'starred') r = r.eq('starred', true)
+          else if (filter === 'tagged') r = r.neq('tags', '{}')
+          else if (filter.startsWith('tag:')) r = r.contains('tags', [filter.slice(4)])
+          return r
+        }
+        const base = () => supabase.from('cards').select('*').in('deck_id', ids)
+        const newLeft = await newCardsLeftToday()
+        const [reviewed, fresh] = await Promise.all([
+          narrow(base().not('last_reviewed_at', 'is', null)).order('due_at').limit(SESSION_LIMIT),
+          newLeft > 0 ? narrow(base().is('last_reviewed_at', null)).order('due_at').order('created_at').limit(newLeft) : Promise.resolve({ data: [], error: null }),
+        ])
+        let c = { data: [...(reviewed.data ?? []), ...(fresh.data ?? [])], error: reviewed.error ?? fresh.error }
+        if (c.error) {
+          // The database has no last_reviewed_at yet (0026 not run): fall back to one query with no daily limit.
+          c = await narrow(base()).order('due_at').limit(SESSION_LIMIT)
+        }
         if (c.error) return setError(c.error.message)
         cards = (c.data as Card[]).map((x) => ({ ...x, starred: x.starred ?? false, tags: x.tags ?? [] })) // tolerate a database without 0017 yet
       }
