@@ -793,7 +793,7 @@ body:has(.home-box) header { padding-bottom: 0; }
 .face.back { transform: rotateY(180deg); }
 .face-text {
   /* --base is the full size; FitScroll sets --fit (now always 1: text no longer shrinks) on the scroll area to shrink long text to fit the card */
-  --base: 1.65rem;
+  --base: 1.8rem;
   font-size: calc(var(--base) * var(--fit, 1));
   font-weight: 400; /* regular weight; **bold** in the text is still bold */
   line-height: calc(1 + 0.25 * var(--fit, 1));
@@ -852,7 +852,7 @@ body:has(.home-box) header { padding-bottom: 0; }
   gap: 10px;
   text-align: left;
 }
-.preview-card .face-text { text-align: left; font-size: 1.35rem; }
+.preview-card .face-text { text-align: left; font-size: 1.45rem; }
 .preview-card .combined-divider { width: 100%; }
 
 /* ---------- Card markup: headings, bold/italic/highlight, KaTeX math ---------- */
@@ -1413,7 +1413,7 @@ body:has(.pull)::before { display: none; }
 
 @media (max-width: 520px) {
   .face { padding: 30px 28px; }
-  .face-text { --base: 1.2rem; }
+  .face-text { --base: 1.35rem; }
   .logo { font-size: 2.6rem; }
   .earn-value { font-size: 2.4rem; }
   .slot { padding: 8px 10px 12px; }
@@ -1493,7 +1493,7 @@ body:has(.pull)::before { display: none; }
   padding: 22px 24px;
 }
 .study.portrait .face.combined { width: min(100%, 340px); height: min(54vh, 480px); max-height: none; }
-.study.portrait .face-text { --base: 1.3rem; }
+.study.portrait .face-text { --base: 1.45rem; }
 .study.portrait .ratings { max-width: 520px; }
 
 /* Code in cards: `inline`, and ``` fenced blocks. Shown exactly as typed, in a monospace font. */
