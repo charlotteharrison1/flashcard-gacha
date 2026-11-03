@@ -31,15 +31,30 @@ const LETTER_ROWS: string[] = [
   '.................................................####................#.....................####....',
 ]
 
-// The "!" after the E: a tall teardrop stem (flared at the top like the capitals' serifs, tapering to a point), a gap, then a diamond dot
-// on the baseline. Keyed by row number (the rows above are 0-24; the capitals run from row 5 down to row 22, the H's ascender up to row 0).
+// The "!" after the E: a tall teardrop that arcs like a closing bracket around the E's open side (its middle bows away from the E,
+// its ends lean back toward it), with a flared, flagged head like an uncial capital's serif, and a diamond dot on the baseline.
+// Keyed by row number (the rows above are 0-24; the capitals run from row 5 down to row 22, the H's ascender up to row 0).
 const BANG: Record<number, string> = {
-  1: '.#####.',
-  2: '#######', 3: '#######', 4: '#######',
-  5: '.#####.', 6: '.#####.', 7: '.#####.', 8: '.#####.',
-  9: '..###..', 10: '..###..', 11: '..###..', 12: '..###..', 13: '..###..', 14: '..###..',
-  15: '...#...', 16: '...#...',
-  19: '..###..', 20: '.#####.', 21: '.#####.', 22: '..###..',
+  1: '..#####....',
+  2: '########...',
+  3: '.#######...',
+  4: '...#####...',
+  5: '...#####...',
+  6: '...#####...',
+  7: '....#####..',
+  8: '.....###...',
+  9: '.....###...',
+  10: '.....###...',
+  11: '.....###...',
+  12: '....###....',
+  13: '....###....',
+  14: '....###....',
+  15: '....#......',
+  16: '....#......',
+  19: '...###.....',
+  20: '..#####....',
+  21: '..#####....',
+  22: '...###.....',
 }
 
-export const TITLE_ROWS: string[] = LETTER_ROWS.map((row, y) => row + '....' + (BANG[y] ?? '.......'))
+export const TITLE_ROWS: string[] = LETTER_ROWS.map((row, y) => row + '...' + (BANG[y] ?? '...........'))
