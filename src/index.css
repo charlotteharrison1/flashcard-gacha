@@ -774,7 +774,7 @@ body:has(.home-box) header { padding-bottom: 0; }
   min-width: 0;
   position: relative;
   min-height: 200px;
-  max-height: min(50vh, 400px); /* big cards stop growing and scroll inside instead */
+  max-height: min(56vh, 460px); /* big cards stop growing and scroll inside instead */
   padding: 26px 44px;
   display: flex;
   flex-direction: column;
@@ -792,8 +792,8 @@ body:has(.home-box) header { padding-bottom: 0; }
 }
 .face.back { transform: rotateY(180deg); }
 .face-text {
-  /* --base is the full size; FitScroll sets --fit (1 down to 0.9) on the scroll area to shrink long text to fit the card */
-  --base: 1.5rem;
+  /* --base is the full size; FitScroll sets --fit (now always 1: text no longer shrinks) on the scroll area to shrink long text to fit the card */
+  --base: 1.65rem;
   font-size: calc(var(--base) * var(--fit, 1));
   font-weight: 400; /* regular weight; **bold** in the text is still bold */
   line-height: calc(1 + 0.25 * var(--fit, 1));
@@ -811,7 +811,7 @@ body:has(.home-box) header { padding-bottom: 0; }
 /* Reserves room for a typical question+answer pair up front, so revealing doesn't visibly grow
    the card for ordinary content — it still grows beyond this for genuinely long text/images. */
 /* width: 100% so the card keeps its full width instead of shrinking to fit the text when the answer is revealed */
-.face.combined { width: 100%; justify-content: flex-start; gap: 10px; padding-top: 36px; height: clamp(280px, 48vh, 380px); max-height: none; }
+.face.combined { width: 100%; justify-content: flex-start; gap: 10px; padding-top: 36px; height: clamp(300px, 56vh, 460px); max-height: none; }
 .face.combined .face-scroll { flex: 1 1 auto; }
 
 /* The text area inside a card: it scrolls when the content is longer than the card allows. */
@@ -852,7 +852,7 @@ body:has(.home-box) header { padding-bottom: 0; }
   gap: 10px;
   text-align: left;
 }
-.preview-card .face-text { text-align: left; font-size: 1.1rem; }
+.preview-card .face-text { text-align: left; font-size: 1.35rem; }
 .preview-card .combined-divider { width: 100%; }
 
 /* ---------- Card markup: headings, bold/italic/highlight, KaTeX math ---------- */
@@ -1565,8 +1565,8 @@ body:has(.pull)::before { display: none; }
   .pull-side .winnings-panel > h3 { margin-bottom: 4px; font-size: 0.85rem; }
   .pull-side .win { padding: 2px 4px; }
   /* a shorter study card, so the rating buttons stay on screen */
-  .face { max-height: min(44vh, 360px); min-height: 170px; }
-  .face.combined { height: clamp(240px, 42vh, 340px); }
+  .face { max-height: min(50vh, 400px); min-height: 170px; }
+  .face.combined { height: clamp(260px, 50vh, 400px); }
   .study { gap: 10px; }
 }
 @media (max-height: 690px) {
