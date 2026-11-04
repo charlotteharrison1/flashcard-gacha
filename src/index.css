@@ -774,7 +774,7 @@ body:has(.home-box) header { padding-bottom: 0; }
   min-width: 0;
   position: relative;
   min-height: 200px;
-  max-height: min(52vh, 450px); /* big cards stop growing and scroll inside instead */
+  max-height: min(calc(100vh - 420px), 640px); /* big cards stop growing and scroll inside instead */
   padding: 26px 44px;
   display: flex;
   flex-direction: column;
@@ -811,7 +811,7 @@ body:has(.home-box) header { padding-bottom: 0; }
 /* Reserves room for a typical question+answer pair up front, so revealing doesn't visibly grow
    the card for ordinary content — it still grows beyond this for genuinely long text/images. */
 /* width: 100% so the card keeps its full width instead of shrinking to fit the text when the answer is revealed */
-.face.combined { width: 100%; justify-content: flex-start; gap: 10px; padding-top: 36px; height: clamp(300px, 52vh, 450px); max-height: none; }
+.face.combined { width: 100%; justify-content: flex-start; gap: 10px; padding-top: 36px; height: clamp(300px, calc(100vh - 420px), 640px); max-height: none; } /* as tall as the window allows with the buttons still on screen */
 .face.combined .face-scroll { flex: 1 1 auto; }
 
 /* The text area inside a card: it scrolls when the content is longer than the card allows. */
@@ -833,8 +833,8 @@ body:has(.home-box) header { padding-bottom: 0; }
 .face-scroll::-webkit-scrollbar-thumb { background: var(--gold-d); border: 2px solid var(--card); }
 .face-scroll > .face-text { width: 100%; }
 
-/* The answer is set smaller than the question (18px), so a long answer fits on the card; Settings > Card text size scales both */
-.face.back .face-text, .combined-divider ~ .face-text { --base: 18px; }
+/* The answer is set smaller than the question (20px), so a long answer fits on the card; Settings > Card text size scales both */
+.face.back .face-text, .combined-divider ~ .face-text { --base: 20px; }
 .face-text.has-list { text-align: left; }
 
 /* Bullet and numbered lines: a small square pixel bullet with a hanging indent */
@@ -1420,7 +1420,7 @@ body:has(.pull)::before { display: none; }
 @media (max-width: 520px) {
   .face { padding: 30px 28px; }
   .face-text { --base: 1.25rem; }
-  .face.back .face-text, .combined-divider ~ .face-text { --base: 17px; }
+  .face.back .face-text, .combined-divider ~ .face-text { --base: 18px; }
   .logo { font-size: 2.6rem; }
   .earn-value { font-size: 2.4rem; }
   .slot { padding: 8px 10px 12px; }
