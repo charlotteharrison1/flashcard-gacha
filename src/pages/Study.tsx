@@ -461,7 +461,6 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
             {RATINGS.map((r) => (
               <button key={r.value} className={`rate ${r.color}`} onClick={() => rate(card, r.value)}>
                 {r.label}
-                <kbd>{r.value + 1}</kbd>
               </button>
             ))}
           </div>

@@ -920,11 +920,9 @@ body:has(.home-box) header { padding-bottom: 0; }
 .face.red .corner { color: var(--suit-red); }
 
 .ratings { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; }
-.rate { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 3px 6px 4px; font-size: 0.85rem; line-height: 1.15; }
-.rate kbd { font: inherit; font-size: 0.7rem; opacity: 0.7; }
+.rate { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 6px 6px; font-size: 1.15rem; line-height: 1.1; letter-spacing: 0.08em; }
 /* The rating buttons sit lower, close to the row of card actions beneath them, with more room between them and the card */
 .study > .ratings, .study > button.gold { margin-top: 12px; margin-bottom: -16px; }
-@media (hover: none) { .rate kbd { display: none; } }
 
 .celebrate { position: relative; }
 .celebrate h2 { font-size: 2.6rem; text-transform: uppercase; color: var(--gold); text-shadow: 0 4px 0 #7a4a00, 0 8px 0 var(--line); }
