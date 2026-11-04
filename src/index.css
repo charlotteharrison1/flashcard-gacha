@@ -774,7 +774,7 @@ body:has(.home-box) header { padding-bottom: 0; }
   min-width: 0;
   position: relative;
   min-height: 200px;
-  max-height: min(50vh, 420px); /* big cards stop growing and scroll inside instead */
+  max-height: min(52vh, 450px); /* big cards stop growing and scroll inside instead */
   padding: 26px 44px;
   display: flex;
   flex-direction: column;
@@ -811,7 +811,7 @@ body:has(.home-box) header { padding-bottom: 0; }
 /* Reserves room for a typical question+answer pair up front, so revealing doesn't visibly grow
    the card for ordinary content — it still grows beyond this for genuinely long text/images. */
 /* width: 100% so the card keeps its full width instead of shrinking to fit the text when the answer is revealed */
-.face.combined { width: 100%; justify-content: flex-start; gap: 10px; padding-top: 36px; height: clamp(300px, 50vh, 420px); max-height: none; }
+.face.combined { width: 100%; justify-content: flex-start; gap: 10px; padding-top: 36px; height: clamp(300px, 52vh, 450px); max-height: none; }
 .face.combined .face-scroll { flex: 1 1 auto; }
 
 /* The text area inside a card: it scrolls when the content is longer than the card allows. */
@@ -1568,8 +1568,8 @@ body:has(.pull)::before { display: none; }
   .pull-side .winnings-panel > h3 { margin-bottom: 4px; font-size: 0.85rem; }
   .pull-side .win { padding: 2px 4px; }
   /* a shorter study card, so the rating buttons stay on screen */
-  .face { max-height: min(44vh, 380px); min-height: 170px; }
-  .face.combined { height: clamp(260px, 44vh, 380px); }
+  .face { max-height: min(44.5vh, 390px); min-height: 170px; }
+  .face.combined { height: clamp(260px, 44.5vh, 390px); }
   .study { gap: 10px; }
 }
 @media (max-height: 690px) {
