@@ -832,6 +832,8 @@ body:has(.home-box) header { padding-bottom: 0; }
 .face-scroll::-webkit-scrollbar-thumb { background: var(--gold-d); border: 2px solid var(--card); }
 .face-scroll > .face-text { width: 100%; }
 
+/* The answer is set smaller than the question (18px), so a long answer fits on the card; Settings > Card text size scales both */
+.face.back .face-text, .combined-divider ~ .face-text { --base: 18px; }
 .face-text.has-list { text-align: left; }
 
 /* Bullet and numbered lines: a small square pixel bullet with a hanging indent */
@@ -1417,6 +1419,7 @@ body:has(.pull)::before { display: none; }
 @media (max-width: 520px) {
   .face { padding: 30px 28px; }
   .face-text { --base: 1.25rem; }
+  .face.back .face-text, .combined-divider ~ .face-text { --base: 17px; }
   .logo { font-size: 2.6rem; }
   .earn-value { font-size: 2.4rem; }
   .slot { padding: 8px 10px 12px; }
