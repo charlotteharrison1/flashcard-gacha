@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { SlotSymbol } from './SlotSymbol'
 import CardAnimToggle from './CardAnimToggle'
 import HoverAnimToggle from './HoverAnimToggle'
+import { TEXT_SIZES, applyTextSize, loadTextSize, type TextSizeId } from '../lib/textSize'
 import { UI_FONTS, applyUiFont, loadUiFont, type UiFontId } from '../lib/uiFont'
 import { SCHEMES, applyScheme, loadScheme, type SchemeId } from '../lib/scheme'
 import { applyLights, loadLights } from '../lib/lights'
@@ -14,6 +15,7 @@ export default function SettingsMenu() {
   const [scheme, setScheme] = useState<SchemeId>(loadScheme)
   const [lights, setLights] = useState(loadLights)
   const [anim, setAnim] = useState(loadAnim)
+  const [textSize, setTextSize] = useState<TextSizeId>(loadTextSize)
   const rootRef = useRef<HTMLDivElement>(null)
 
   // Close on Escape or a click anywhere outside.
@@ -62,6 +64,24 @@ export default function SettingsMenu() {
               {UI_FONTS.map((f) => (
                 <option key={f.id} value={f.id}>
                   {f.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="file-field">
+            <span>Card text size</span>
+            <select
+              value={textSize}
+              onChange={(e) => {
+                const id = e.target.value as TextSizeId
+                applyTextSize(id)
+                setTextSize(id)
+              }}
+            >
+              {TEXT_SIZES.map((z) => (
+                <option key={z.id} value={z.id}>
+                  {z.label}
                 </option>
               ))}
             </select>

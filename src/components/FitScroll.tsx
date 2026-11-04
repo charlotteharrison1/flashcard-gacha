@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
 
-const MIN_FIT = 1 // card text never shrinks; a card too short for its text scrolls instead
+const MIN_FIT = 0.85 // long text shrinks a little to fit, never below 85%; past that the card scrolls instead
 const MIN_FIT_WIDE = 0.35 // a formula too wide for the card may shrink this far before it scrolls sideways
 const STEP = 0.02 // how finely to search for the size
 
