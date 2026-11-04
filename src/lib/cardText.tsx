@@ -2,6 +2,7 @@ import { Fragment, type ReactNode } from 'react'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import { resolveImagePath } from './storage'
+import { HIGHLIGHT_IDS } from './highlights'
 
 /**
  * Renders flashcard text with a small, fixed set of markup:
@@ -104,7 +105,7 @@ const LIST_RE = /^([ \t]*)([-*•]|\d+[.)])[ \t]+(.*)$/
 const TOKEN_RE =
   /!\[([^\]]*)\]\((https?:\/\/[^\s)]+|data:image\/[^\s)]+|[\w./-]+)(?:\s+=(\d+))?\)|\$\$([\s\S]+?)\$\$|\\\[([\s\S]+?)\\\]|\$([^$\n]+?)\$/g
 
-// Pictures and maths are swapped for placeholder characters before **bold**, *italic* and ==highlight== are applied,
+// Pictures and maths are swapped for placeholder characters before **bold**, *italic* and ==highlight== (optionally coloured: =={pink}highlight==) are applied,
 // so formatting can wrap around them: "**the answer is $x^2$**" is bold all the way through. They're put back afterwards.
 const MARK_OPEN = '\uE000'
 const MARK_CLOSE = '\uE001'
@@ -125,7 +126,7 @@ function renderLine(line: string, userId: string) {
   return renderFormatted(masked, tokens, 'f')
 }
 
-const INLINE_RE = /\*\*(.+?)\*\*|\*(.+?)\*|==(.+?)==/g
+const INLINE_RE = new RegExp(`\\*\\*(.+?)\\*\\*|\\*(.+?)\\*|==(?:\\{(${HIGHLIGHT_IDS})\\})?(.+?)==`, 'g') // ==text== or =={pink}text==
 
 /** Puts the saved pictures and maths back into a run of plain text. */
 function withTokens(text: string, tokens: React.ReactNode[], keyBase: string): React.ReactNode[] {
@@ -141,7 +142,7 @@ function withTokens(text: string, tokens: React.ReactNode[], keyBase: string): R
   return out
 }
 
-/** Applies **bold**, *italic* and ==highlight== (which can nest, and can contain pictures and maths). */
+/** Applies **bold**, *italic* and ==highlight== (optionally coloured: =={pink}highlight==) (which can nest, and can contain pictures and maths). */
 function renderFormatted(text: string, tokens: React.ReactNode[], keyBase: string): React.ReactNode[] {
   const nodes: React.ReactNode[] = []
   let last = 0
@@ -153,8 +154,8 @@ function renderFormatted(text: string, tokens: React.ReactNode[], keyBase: strin
     else if (m[2] !== undefined) nodes.push(<em key={key}>{renderFormatted(m[2], tokens, key)}</em>)
     else
       nodes.push(
-        <mark key={key} className="md-mark">
-          {renderFormatted(m[3], tokens, key)}
+        <mark key={key} className="md-mark" data-c={m[3]}>
+          {renderFormatted(m[4], tokens, key)}
         </mark>,
       )
     last = m.index! + m[0].length

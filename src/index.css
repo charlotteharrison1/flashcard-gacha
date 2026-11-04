@@ -920,9 +920,9 @@ body:has(.home-box) header { padding-bottom: 0; }
 .corner.br { bottom: 8px; right: 10px; transform: rotate(180deg); }
 .face.red .corner { color: var(--suit-red); }
 
-.ratings { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; }
-.rate { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 6px; }
-.rate kbd { font: inherit; font-size: 0.85rem; opacity: 0.7; }
+.ratings { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: min(100%, 560px); margin-inline: auto; }
+.rate { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 3px 6px 4px; font-size: 0.85rem; line-height: 1.15; }
+.rate kbd { font: inherit; font-size: 0.7rem; opacity: 0.7; }
 @media (hover: none) { .rate kbd { display: none; } }
 
 .celebrate { position: relative; }
@@ -1978,3 +1978,29 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 
 /* The dashed line runs the full width of the centre box, in thin and wide mode */
 .home-box .home-divider { max-width: none; width: 100%; margin-left: 0; margin-right: 0; }
+
+/* Highlight colours (see lib/highlights.ts); a plain ==highlight== keeps the theme's gold */
+.md-mark[data-c='yellow'] { background: #ffe14d; }
+.md-mark[data-c='orange'] { background: #ffb04d; }
+.md-mark[data-c='pink'] { background: #ff7eb6; }
+.md-mark[data-c='green'] { background: #5ce07f; }
+.md-mark[data-c='blue'] { background: #5cc8ff; }
+.md-mark[data-c='purple'] { background: #b794ff; }
+.md-mark[data-c='cream'] { background: #fff1a6; }
+.md-mark[data-c='peach'] { background: #ffd2b3; }
+.md-mark[data-c='rose'] { background: #ffc7de; }
+.md-mark[data-c='mint'] { background: #c9f2c4; }
+.md-mark[data-c='sky'] { background: #c2e4ff; }
+.md-mark[data-c='lilac'] { background: #dccdff; }
+
+/* The highlight colour picker in the card editor's toolbar */
+.hl-picker { position: relative; display: inline-flex; gap: 0; }
+.hl-picker .hl-main { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.hl-picker .hl-caret { width: 18px; border-left: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; font-size: 0.7rem; }
+.hl-pop { position: absolute; top: calc(100% + 6px); left: 0; z-index: 20; display: flex; flex-direction: column; gap: 8px; padding: 10px; background: var(--panel); border: 3px solid var(--line); border-radius: 8px; box-shadow: 0 6px 0 rgba(0, 0, 0, 0.35); }
+.hl-group { display: flex; flex-direction: column; gap: 4px; }
+.hl-group-label { font-size: 0.8rem; color: var(--muted); }
+.hl-swatches { display: flex; gap: 6px; }
+.hl-swatch { width: 24px; height: 24px; padding: 0; border: 2px solid var(--line); border-radius: 50%; box-shadow: none; }
+.hl-swatch:hover { transform: scale(1.15); }
+.hl-swatch.active { outline: 2px solid var(--gold); outline-offset: 2px; }

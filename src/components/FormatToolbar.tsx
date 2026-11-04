@@ -1,6 +1,7 @@
 import type { ReactNode, RefObject } from 'react'
 import type { TextTarget } from './RichField'
 import { prefixLine, wrapSelection } from '../lib/textEditing'
+import HighlightButton from './HighlightButton'
 
 type Props = {
   targetRef: RefObject<TextTarget | null>
@@ -23,9 +24,7 @@ export default function FormatToolbar({ targetRef, value, setValue, children }: 
       <button type="button" className="fmt-btn" title="Italic" onClick={wrap('*', '*', 'italic')}>
         <i>I</i>
       </button>
-      <button type="button" className="fmt-btn" title="Highlight" onClick={wrap('==', '==', 'highlight')}>
-        <mark className="md-mark">H</mark>
-      </button>
+      <HighlightButton onApply={(id) => wrapSelection(targetRef.current, value, setValue, `=={${id}}`, '==', 'highlight')} />
       <button
         type="button"
         className="fmt-btn"
