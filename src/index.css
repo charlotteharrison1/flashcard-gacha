@@ -774,7 +774,7 @@ body:has(.home-box) header { padding-bottom: 0; }
   min-width: 0;
   position: relative;
   min-height: 200px;
-  max-height: min(calc(100vh - 420px), 640px); /* big cards stop growing and scroll inside instead */
+  max-height: min(calc(100vh - 400px), 640px); /* big cards stop growing and scroll inside instead */
   padding: 26px 44px;
   display: flex;
   flex-direction: column;
@@ -810,7 +810,7 @@ body:has(.home-box) header { padding-bottom: 0; }
 /* Reserves room for a typical question+answer pair up front, so revealing doesn't visibly grow
    the card for ordinary content — it still grows beyond this for genuinely long text/images. */
 /* width: 100% so the card keeps its full width instead of shrinking to fit the text when the answer is revealed */
-.face.combined { width: 100%; justify-content: flex-start; gap: 10px; padding-top: 36px; height: clamp(300px, calc(100vh - 420px), 640px); max-height: none; } /* as tall as the window allows with the buttons still on screen */
+.face.combined { width: 100%; justify-content: flex-start; gap: 10px; padding-top: 36px; height: clamp(320px, calc(100vh - 400px), 640px); max-height: none; } /* as tall as the window allows with the buttons still on screen */
 .face.combined .face-scroll { flex: 1 1 auto; }
 
 /* The text area inside a card: it scrolls when the content is longer than the card allows. */
@@ -922,6 +922,8 @@ body:has(.home-box) header { padding-bottom: 0; }
 .ratings { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; }
 .rate { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 3px 6px 4px; font-size: 0.85rem; line-height: 1.15; }
 .rate kbd { font: inherit; font-size: 0.7rem; opacity: 0.7; }
+/* The rating buttons sit lower, close to the row of card actions beneath them, with more room between them and the card */
+.study > .ratings, .study > button.gold { margin-top: 12px; margin-bottom: -16px; }
 @media (hover: none) { .rate kbd { display: none; } }
 
 .celebrate { position: relative; }
@@ -1571,8 +1573,8 @@ body:has(.pull)::before { display: none; }
   .pull-side .winnings-panel > h3 { margin-bottom: 4px; font-size: 0.85rem; }
   .pull-side .win { padding: 2px 4px; }
   /* a shorter study card, so the rating buttons stay on screen */
-  .face { max-height: min(44.5vh, 390px); min-height: 170px; }
-  .face.combined { height: clamp(260px, 44.5vh, 390px); }
+  .face { max-height: min(46.5vh, 400px); min-height: 170px; }
+  .face.combined { height: clamp(270px, 46.5vh, 400px); }
   .study { gap: 10px; }
 }
 @media (max-height: 690px) {
