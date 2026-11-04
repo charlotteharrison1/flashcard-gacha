@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
 
 const MIN_FIT = 1 // card text keeps its size (Settings > Card text size); a card too short for its text scrolls instead
-const MIN_FIT_WIDE = 0.35 // a formula too wide for the card may shrink this far before it scrolls sideways
+const MIN_MATH = 0.3 // a formula too wide for the card shrinks this far (it never scrolls sideways)
 const STEP = 0.02 // how finely to search for the size
 
 /** The largest f from `floor` to 1 for which `ok(f)` holds (1 if it already does, `floor` if even that is not enough). */
@@ -19,9 +19,9 @@ function largest(ok: (f: number) => boolean, floor: number) {
 }
 
 /**
- * Sets --fit (a multiplier, 1 = full size) to the largest value at which the content fits inside `el`, both
- * ways: not too tall and not too wide. A long formula can't wrap, so it shrinks (down to MIN_FIT_WIDE) rather than
- * pushing the card wider or scrolling sideways.
+ * Sets --fit (a multiplier, 1 = full size) to the largest value at which the content fits inside `el` in height,
+ * but never below MIN_FIT. Cards never scroll sideways: a formula or other element too wide for the card shrinks
+ * on its own (--math-fit), and the rest of the text keeps its size.
  * `comfortable` also asks for the card to stay under about a third of the screen height, so a big card gets
  * smaller type well before it hits its hard height cap (which is where it would start to scroll).
  */
@@ -31,15 +31,23 @@ function fit(el: HTMLElement, comfortable: boolean) {
   const comfort = Math.max(200, window.innerHeight * 0.38)
   const set = (f: number) => el.style.setProperty('--fit', String(f))
   const tallOk = (f: number) => (set(f), el.scrollHeight <= (comfortable ? Math.min(el.clientHeight + 1, comfort) : el.clientHeight + 1))
-  // Display maths scrolls inside its own box, so check those boxes as well as the area itself.
-  const wideOk = (f: number) => (set(f), el.scrollWidth <= el.clientWidth + 1 && [...el.querySelectorAll('.md-math-block')].every((m) => m.scrollWidth <= m.clientWidth + 1))
-  set(Math.min(largest(wideOk, MIN_FIT_WIDE), largest(tallOk, MIN_FIT)))
+  set(largest(tallOk, MIN_FIT))
+
+  // Formulas that can't wrap: shrink each one just enough to fit the card's width.
+  for (const m of el.querySelectorAll<HTMLElement>('.md-math-block, .md-math')) {
+    m.style.removeProperty('--math-fit')
+    const room = m.classList.contains('md-math-block') ? m.clientWidth : el.clientWidth
+    for (let pass = 0; pass < 2 && room > 0 && m.scrollWidth > room + 1; pass++) {
+      const current = Number(m.style.getPropertyValue('--math-fit') || 1)
+      m.style.setProperty('--math-fit', String(Math.max(MIN_MATH, (current * room) / m.scrollWidth)))
+    }
+  }
 }
 
 /**
  * The scrolling text area inside a flashcard. The card has a height cap; this measures the real
  * rendered text (so math, lists and pictures all count) and shrinks the type until it fits, or
- * to a minimum, after which the area scrolls. It measures in a layout effect, which runs before
+ * to a minimum, after which the area scrolls (up and down only). It measures in a layout effect, which runs before
  * the browser paints, so the card never visibly resizes. `watch` changes when the content does.
  */
 export default function FitScroll({ watch, comfortable = false, children }: { watch: string; comfortable?: boolean; children: ReactNode }) {

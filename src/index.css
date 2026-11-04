@@ -820,6 +820,7 @@ body:has(.home-box) header { padding-bottom: 0; }
   min-height: 0;
   flex: 0 1 auto;
   padding: 8px 0; /* room for math that pokes a few px past its line box, which FitScroll would otherwise read as overflow and shrink the whole card's text */
+  overflow-x: hidden;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -888,8 +889,8 @@ body:has(.home-box) header { padding-bottom: 0; }
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
-.md-math, .md-math-block { color: inherit; }
-.md-math-block { margin: 6px 0; overflow-x: auto; }
+.md-math, .md-math-block { color: inherit; font-size: calc(1em * var(--math-fit, 1)); } /* FitScroll shrinks a formula that is too wide for the card (--math-fit); cards never scroll sideways */
+.md-math-block { margin: 6px 0; overflow-x: hidden; }
 .face .katex { color: var(--ink); font-size: 1.05em; } /* KaTeX defaults to 1.21em, which makes symbols like \mu loom over the words around them */
 :root[data-text-size='small'] { --text-scale: 0.85; }
 :root[data-text-size='large'] { --text-scale: 1.15; }
@@ -1524,9 +1525,9 @@ body:has(.pull)::before { display: none; }
   color: #e8e6d8;
   background: #1b1f2a;
   border: 2px solid var(--line);
-  white-space: pre; /* keep the indentation; long lines scroll sideways */
-  overflow-wrap: normal;
-  overflow-x: auto;
+  white-space: pre-wrap; /* keep the indentation; long lines wrap rather than scroll sideways */
+  overflow-wrap: anywhere;
+  overflow-x: hidden;
 }
 .md-code-block code { font: inherit; color: inherit; background: none; padding: 0; border-radius: 0; }
 
