@@ -549,11 +549,7 @@ body:has(.home-box) header { padding-bottom: 0; }
   justify-content: center;
   gap: 16px;
 }
-/* will-change puts each tile on its own GPU layer up front, so hover doesn't re-draw the lattice + shadow. */
-.tile { aspect-ratio: 5 / 7; --tilt: -1.6deg; will-change: transform; transition: transform 0.18s ease-out; }
-.tile:nth-child(even) { --tilt: 1.6deg; }
-
-:root[data-hover='on'] .tile:hover { transform: translateY(-8px) rotate(var(--tilt)); } /* off by default; Settings turns it on */
+.tile { aspect-ratio: 5 / 7; }
 
 .new-deck-tile { position: relative; background: transparent; box-shadow: none; }
 .new-deck-tile:hover { border-color: var(--gold); }
@@ -1876,7 +1872,6 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .list-actions .new-deck-plus { font-size: 1.5rem; }
 .deck-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .deck-row { position: relative; display: flex; align-items: stretch; background: var(--panel); border: 3px solid var(--line); border-left: 12px solid var(--a); border-radius: 6px; box-shadow: 0 4px 0 var(--line); transition: transform 0.12s ease-out; }
-:root[data-hover='on'] .deck-row:hover { transform: translateX(4px); }
 .deck-row.dragging { opacity: 0.45; }
 .deck-row.drop-target { outline: 4px dashed var(--gold); outline-offset: 3px; }
 .row-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 4px 10px; color: var(--text); text-decoration: none; }
