@@ -183,7 +183,7 @@ export default function Deckbox() {
       {decks.length === 0 ? (
         <p className="empty">This box is empty. Add a deck below.</p>
       ) : (
-        <ul className="tiles">
+        <ul className="tiles box-tiles">
           {decks.map((d) => {
             const n = d.cards[0]?.count ?? 0
             return (

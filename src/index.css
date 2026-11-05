@@ -2002,3 +2002,9 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .hl-swatch { width: 24px; height: 24px; padding: 0; border: 2px solid var(--line); border-radius: 50%; box-shadow: none; }
 .hl-swatch:hover { transform: scale(1.15); }
 .hl-swatch.active { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* Decks inside an opened deckbox: landscape index cards, wide enough that names aren't cut off */
+.box-tiles { --tile-w: 230px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.box-tiles .tile { aspect-ratio: 3 / 2; }
+.box-tiles .tile.flashcard .tile-plate { font-size: 1.2rem; -webkit-line-clamp: 3; }
+:root .box-tiles .tile.flashcard .tile-count { font-size: 0.9rem; }
