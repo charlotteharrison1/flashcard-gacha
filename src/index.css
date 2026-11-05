@@ -2009,32 +2009,29 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .box-tiles .tile.flashcard .tile-plate { font-size: 1.2rem; -webkit-line-clamp: 3; }
 :root .box-tiles .tile.flashcard .tile-count { font-size: 0.9rem; }
 
-/* ---------- The door to the Library ---------- */
-.door { --door-h: 140px; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; text-decoration: none; perspective: 500px; }
-.door-frame {
-  position: relative; display: block; width: calc(var(--door-h) * 0.68); height: var(--door-h);
-  border: 5px solid var(--line); border-bottom-width: 0; border-radius: 999px 999px 0 0;
-  background: #0a1218; box-shadow: 0 0 0 3px var(--gold-d), 5px 5px 0 rgba(0, 0, 0, 0.3);
-}
-/* what's behind the door: warm light that spills out as it opens */
-.door-glow { position: absolute; inset: 0; border-radius: 999px 999px 0 0; background: radial-gradient(ellipse at 50% 85%, #ffe27a, #ff9430 55%, #5a2a0a); opacity: 0.35; transition: opacity 0.4s; }
-.door-leaf {
-  position: absolute; inset: 0; border-radius: 999px 999px 0 0; transform-origin: left center; transition: transform 0.5s cubic-bezier(0.3, 0.7, 0.2, 1);
-  background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.25) 0 4px, transparent 4px calc(100% - 4px), rgba(0, 0, 0, 0.25) calc(100% - 4px)),
-    repeating-linear-gradient(90deg, #a36a35 0 14px, #8a5628 14px 16px);
-  box-shadow: inset 0 0 0 3px #5e3a18;
-}
-.door-knob { position: absolute; right: 12%; top: 54%; width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 2px var(--line); }
-.door:hover .door-leaf, .door:focus-visible .door-leaf { transform: rotateY(-72deg); }
-.door:hover .door-glow, .door:focus-visible .door-glow { opacity: 1; }
+/* ---------- The door to the Library: a narrow pixel-art door; the leaf swings open on hover ---------- */
+.door { --door-h: 140px; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; text-decoration: none; perspective: 400px; }
+.door-art { position: relative; display: block; width: calc(var(--door-h) * 0.5); height: var(--door-h); filter: drop-shadow(4px 4px 0 rgba(0, 0, 0, 0.3)); }
+.door-art svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.door-leaf { transform-origin: 20% 50%; transition: transform 0.5s steps(5); }
+.door:hover .door-leaf, .door:focus-visible .door-leaf { transform: rotateY(-75deg); }
 .door:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
 .door-label {
-  margin-top: -2px; padding: 4px 10px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap;
-  color: #0a1218; background: #3ed598; border: 2px solid var(--line); border-radius: 4px; box-shadow: 0 3px 0 #17653a;
+  margin-top: 2px; padding: 3px 7px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; text-align: center; line-height: 1.1; width: calc(var(--door-h) * 0.9);
+  color: #0a1218; background: #3ed598; border: 2px solid var(--line); border-radius: 3px; box-shadow: 0 3px 0 #17653a;
 }
 .door:hover .door-label { filter: brightness(1.08); }
-.home-box .door { --door-h: clamp(110px, 19vh, 170px); }
-/* crowded: the sticker sits on top of the Pull now button's edge instead of pushing everything wider */
-@media (min-width: 481px) { .wallet .sale { margin-right: -26px; z-index: 2; } }
-@media (prefers-reduced-motion: reduce) { .door-leaf, .door-glow { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .door-leaf { transition: none; } }
+
+/* Home wallet row: never wraps. Everything is sized from the width of the row (cqw) so it shrinks to fit; the sticker and Pull now
+   sit at the left (the Pull now button tucks under the sticker's edge) and the door at the right. */
+.wallet-block { container-type: inline-size; }
+.home-box .wallet { flex-wrap: nowrap; justify-content: flex-start; align-items: center; gap: 0; width: 100%; margin: 0; }
+.home-box .sale { --sale-w: min(clamp(150px, 21vh, 230px), 32cqw); margin-right: -2cqw; z-index: 2; }
+.home-box .earnings-col { min-width: 0; }
+.home-box .coin-pile { width: min(clamp(160px, 27vh, 250px), 30cqw); }
+.home-box .earnings-box { gap: 2cqw; }
+.home-box .earn-value { font-size: clamp(1.2rem, 7.5cqw, 3rem); }
+.home-box .earn-label { font-size: clamp(0.6rem, 2.4cqw, 0.85rem); }
+.home-box .library-btn { font-size: clamp(0.7rem, 2.6cqw, 1rem); }
+.home-box .door { --door-h: min(clamp(110px, 19vh, 170px), 34cqw); margin-left: auto; }
