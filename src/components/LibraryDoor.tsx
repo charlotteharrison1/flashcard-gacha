@@ -44,7 +44,6 @@ const Pixels = ({ rects }: { rects: typeof BACK }) => (
 export default function LibraryDoor() {
   return (
     <Link to="/library" className="door" aria-label="Enter the library">
-      <span className="door-label">Enter the library</span>
       <span className="door-art">
         <svg viewBox="0 0 10 20" shapeRendering="crispEdges" aria-hidden="true">
           <Pixels rects={BACK} />
@@ -53,6 +52,7 @@ export default function LibraryDoor() {
           <Pixels rects={LEAF} />
         </svg>
       </span>
+      <span className="door-label">Enter the library</span>
     </Link>
   )
 }
