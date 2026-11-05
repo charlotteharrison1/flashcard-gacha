@@ -2027,7 +2027,7 @@ main.login-main { max-width: 620px; padding-top: 40px; }
    sit at the left (the Pull now button tucks under the sticker's edge) and the door at the right. */
 .wallet-block { container-type: inline-size; }
 .home-box .wallet { flex-wrap: nowrap; justify-content: flex-start; align-items: center; gap: 0; width: 100%; margin: 0; }
-.home-box .sale { --sale-w: min(clamp(150px, 21vh, 230px), 32cqw); margin-left: -5cqw; margin-right: -2cqw; z-index: 2; }
+.home-box .sale { --sale-w: min(clamp(150px, 21vh, 230px), 32cqw); margin-left: max(-5cqw, -30px); margin-right: max(-2cqw, -12px); /* capped, so wide mode doesn't pull it further out */ z-index: 2; }
 .home-box .earnings-col { min-width: 0; }
 .home-box .coin-pile { width: min(clamp(160px, 27vh, 250px), 30cqw); }
 .home-box .earnings-box { gap: 2cqw; }
