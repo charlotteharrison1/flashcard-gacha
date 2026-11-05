@@ -176,7 +176,7 @@ export default function Deckbox() {
         </div>
       </section>
 
-      {customizing && <DeckCustomize table="deckboxes" deckId={id} color={color} iconUrl={iconUrl} description={description} onSaved={load} />}
+      {customizing && <DeckCustomize table="deckboxes" deckId={id} name={name} color={color} iconUrl={iconUrl} description={description} onSaved={load} />}
 
       {error && <p className="error">{error}</p>}
 

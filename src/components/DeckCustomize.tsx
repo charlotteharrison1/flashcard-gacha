@@ -8,6 +8,7 @@ import CardLogo from './CardLogo'
 
 type Props = {
   deckId: string
+  name: string
   color: number | null
   iconUrl: string | null
   /** The pixel logo on the card back (decks only). */
@@ -18,7 +19,7 @@ type Props = {
   table?: 'decks' | 'deckboxes'
 }
 
-export default function DeckCustomize({ deckId, color, iconUrl, logo = null, description = null, onSaved, table = 'decks' }: Props) {
+export default function DeckCustomize({ deckId, name, color, iconUrl, logo = null, description = null, onSaved, table = 'decks' }: Props) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -27,6 +28,19 @@ export default function DeckCustomize({ deckId, color, iconUrl, logo = null, des
     setError(null)
     // Choosing a colour swaps out a custom icon, since the two are alternatives, not layers.
     const { error } = await supabase.from(table).update({ color: i, icon_url: null }).eq('id', deckId)
+    if (error) setError(error.message)
+    else onSaved()
+  }
+
+  async function saveName(text: string, input: HTMLInputElement) {
+    const value = text.trim()
+    if (!value) {
+      input.value = name // a name can't be empty: put the old one back
+      return
+    }
+    if (value === name) return
+    setError(null)
+    const { error } = await supabase.from(table).update({ name: value }).eq('id', deckId)
     if (error) setError(error.message)
     else onSaved()
   }
@@ -74,6 +88,8 @@ export default function DeckCustomize({ deckId, color, iconUrl, logo = null, des
 
   return (
     <div className="customize">
+      <span className="customize-label">Name</span>
+      <input defaultValue={name} maxLength={100} aria-label="Name" onBlur={(e) => saveName(e.target.value, e.target)} onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()} />
       <span className="customize-label">Description</span>
       <textarea
         defaultValue={description ?? ''}
