@@ -5,6 +5,7 @@ import { effectiveColor } from '../lib/theme'
 import CardLogo from '../components/CardLogo'
 import { logoFor } from '../lib/logos'
 import Earnings from '../components/Earnings'
+import LibraryDoor from '../components/LibraryDoor'
 import SaleSticker from '../components/SaleSticker'
 import { SlotSymbol } from '../components/SlotSymbol'
 import { useEarnings } from '../lib/earnings'
@@ -429,7 +430,8 @@ export default function Decks() {
       <div className="wallet-block">
         <section className="wallet">
           <SaleSticker />
-          <Earnings balance={balance} library />
+          <Earnings balance={balance} pull />
+          <LibraryDoor />
         </section>
 
         <div className="home-divider" aria-hidden="true" />
