@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import type { Card, Deck as DeckType } from '../lib/types'
 import { effectiveColor } from '../lib/theme'
@@ -20,11 +20,12 @@ import CardEditor, { type CardValues } from '../components/CardEditor'
 import { useSettings } from '../lib/settings'
 import StudyFilter from '../components/StudyFilter'
 import { StarButton, TagAdder, TagChips } from '../components/CardMeta'
-import { MAX_TAGS, matchesFilter, saveStar, saveTags, sortCards, tagCounts, type CardFilter, type CardSort } from '../lib/cardMeta'
+import { MAX_TAGS, matchesFilter, matchesQuery, saveStar, saveTags, sortCards, tagCounts, type CardFilter, type CardSort } from '../lib/cardMeta'
 
 
 export default function Deck() {
   const { id = '' } = useParams()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { session } = useAuth()
   const userId = session?.user.id ?? ''
@@ -43,8 +44,9 @@ export default function Deck() {
   const [fontNote, setFontNote] = useState<string | null>(null)
   const [filter, setFilter] = useState<CardFilter>('all')
   const [sort, setSort] = useState<CardSort>('newest')
+  const [query, setQuery] = useState('')
   const [taggingId, setTaggingId] = useState<string | null>(null) // the card whose tag field is open
-  const [editingId, setEditingId] = useState<string | null>(null) // the card being edited in the list
+  const [editingId, setEditingId] = useState<string | null>(searchParams.get('edit')) // the card being edited in the list (opened from a deckbox's card search via ?edit=)
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
@@ -328,16 +330,22 @@ export default function Deck() {
         </div>
       ) : (
         <>
-          <CardFilterBar cards={cards} filter={filter} setFilter={setFilter} sort={sort} setSort={setSort} />
+          <CardFilterBar cards={cards} filter={filter} setFilter={setFilter} sort={sort} setSort={setSort} query={query} setQuery={setQuery} />
           {(() => {
             const shown = sortCards(
-              cards.filter((c) => matchesFilter(c, filter)),
+              cards.filter((c) => matchesFilter(c, filter) && matchesQuery(c, query)),
               sort,
             )
             const known = tagCounts(cards).map(([t]) => t)
             return shown.length === 0 ? (
               <p className="muted">No cards match.</p>
             ) : (
+              <>
+                {query.trim() && (
+                  <p className="muted">
+                    {shown.length} of {cards.length} cards match
+                  </p>
+                )}
               <ul className="list">
                 {shown.map((c) =>
                   editingId === c.id ? (
@@ -393,6 +401,7 @@ export default function Deck() {
                   ),
                 )}
               </ul>
+              </>
             )
           })()}
         </>

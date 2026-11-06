@@ -7,16 +7,26 @@ export default function CardFilterBar({
   setFilter,
   sort,
   setSort,
+  query,
+  setQuery,
 }: {
   cards: Taggable[]
   filter: CardFilter
   setFilter: (f: CardFilter) => void
   sort: CardSort
   setSort: (s: CardSort) => void
+  /** The search box, when the list has one: matches words in the front, back or tags. */
+  query?: string
+  setQuery?: (q: string) => void
 }) {
   const tags = tagCounts(cards)
   return (
     <div className="filter-bar row">
+      {setQuery && (
+        <label className="card-search">
+          <input type="search" placeholder="Search cards…" value={query ?? ''} onChange={(e) => setQuery(e.target.value)} aria-label="Search cards" />
+        </label>
+      )}
       <label>
         Show{' '}
         <select value={filter} onChange={(e) => setFilter(e.target.value as CardFilter)}>

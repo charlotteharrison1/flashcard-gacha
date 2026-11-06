@@ -24,6 +24,17 @@ export function matchesFilter(c: Taggable, filter: CardFilter): boolean {
   return c.tags.includes(filter.slice(4))
 }
 
+/**
+ * Search: every word you type has to appear somewhere in the card's front, back or tags (ignoring capitals), in any order.
+ * An empty search matches everything.
+ */
+export function matchesQuery(c: { front?: string; back?: string; tags?: string[] }, query: string): boolean {
+  const words = query.toLowerCase().split(/\s+/).filter(Boolean)
+  if (words.length === 0) return true
+  const haystack = `${c.front ?? ''}\n${c.back ?? ''}\n${(c.tags ?? []).join(' ')}`.toLowerCase()
+  return words.every((w) => haystack.includes(w))
+}
+
 /** Stable sort. "newest" keeps the order given (the queries return newest first). */
 export function sortCards<T extends Taggable>(cards: T[], sort: CardSort): T[] {
   if (sort === 'newest') return cards

@@ -2030,3 +2030,7 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .home-box .earn-label { font-size: clamp(0.6rem, 2.4cqw, 0.85rem); }
 .home-box .library-btn { font-size: clamp(0.7rem, 2.6cqw, 1rem); }
 .home-box .door { --door-h: min(clamp(110px, 19vh, 170px), 34cqw); margin-left: auto; }
+
+/* Search box at the top of a deck's or deckbox's card list */
+.filter-bar .card-search { flex: 1 1 200px; min-width: 160px; }
+.filter-bar .card-search input { width: 100%; padding: 4px 10px; font-size: 0.85rem; }

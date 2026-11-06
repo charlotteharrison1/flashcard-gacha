@@ -10,7 +10,7 @@ import CardFilterBar from '../components/CardFilterBar'
 import { previewText } from '../lib/textFormat'
 import StudyFilter from '../components/StudyFilter'
 import { StarButton, TagAdder, TagChips } from '../components/CardMeta'
-import { MAX_TAGS, matchesFilter, saveStar, saveTags, sortCards, tagCounts, type CardFilter, type CardSort } from '../lib/cardMeta'
+import { MAX_TAGS, matchesFilter, matchesQuery, saveStar, saveTags, sortCards, tagCounts, type CardFilter, type CardSort } from '../lib/cardMeta'
 
 type DeckRow = {
   id: string
@@ -22,7 +22,7 @@ type DeckRow = {
   due: { count: number }[]
 }
 type LooseDeck = { id: string; name: string }
-type BoxCard = { id: string; deck_id: string; front: string; starred: boolean; tags: string[]; due_at: string }
+type BoxCard = { id: string; deck_id: string; front: string; back: string; starred: boolean; tags: string[]; due_at: string }
 const SHOWN_LIMIT = 100 // rows drawn at once; the filter and the study link still cover every card
 
 /** A deckbox is a folder: open it to see its decks, study one at a time, or shuffle them all together. */
@@ -41,6 +41,7 @@ export default function Deckbox() {
   const [cards, setCards] = useState<BoxCard[]>([])
   const [filter, setFilter] = useState<CardFilter>('all')
   const [sort, setSort] = useState<CardSort>('newest')
+  const [query, setQuery] = useState('')
   const [taggingId, setTaggingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -72,7 +73,7 @@ export default function Deckbox() {
     }
     const cs = await supabase
       .from('cards')
-      .select('id, deck_id, front, starred, tags, due_at')
+      .select('id, deck_id, front, back, starred, tags, due_at')
       .in('deck_id', ids)
       .order('created_at', { ascending: false })
       .limit(1000)
@@ -222,10 +223,10 @@ export default function Deckbox() {
       {cards.length > 0 && (
         <section className="panel">
           <h3>Cards in this box ({cards.length})</h3>
-          <CardFilterBar cards={cards} filter={filter} setFilter={setFilter} sort={sort} setSort={setSort} />
+          <CardFilterBar cards={cards} filter={filter} setFilter={setFilter} sort={sort} setSort={setSort} query={query} setQuery={setQuery} />
           {(() => {
             const matching = sortCards(
-              cards.filter((c) => matchesFilter(c, filter)),
+              cards.filter((c) => matchesFilter(c, filter) && matchesQuery(c, query)),
               sort,
             )
             const known = tagCounts(cards).map(([t]) => t)
@@ -234,13 +235,19 @@ export default function Deckbox() {
               <p className="muted">No cards match.</p>
             ) : (
               <>
+                {query.trim() && (
+                  <p className="muted">
+                    {matching.length} of {cards.length} cards match
+                  </p>
+                )}
                 <ul className="list">
                   {matching.slice(0, SHOWN_LIMIT).map((c) => (
                     <li key={c.id} className="row nowrap card-row-main">
                       <StarButton starred={c.starred} onToggle={() => toggleStar(c)} />
                       <span>
                         <span className="card-row-text">
-                          <strong>{previewText(c.front)}</strong> <span className="muted">· {deckName.get(c.deck_id)}</span>
+                          <strong>{previewText(c.front)}</strong> <span className="muted">· {deckName.get(c.deck_id)}</span>{' '}
+                          <Link to={`/decks/${c.deck_id}?edit=${c.id}`}>Edit</Link>
                         </span>
                         <span className="card-row-tags">
                           <TagChips
