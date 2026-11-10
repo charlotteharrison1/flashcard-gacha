@@ -23,8 +23,36 @@ type Props = {
   userId: string
 }
 
+/**
+ * A highlight that runs over several lines (select a few paragraphs, press H) is rewritten as one highlight per line,
+ * since the renderer works a line at a time. Blank lines are left alone, and a line's bullet, number or heading marker stays outside the highlight.
+ * Fenced code blocks are not touched.
+ */
+function spreadHighlights(text: string): string {
+  const span = new RegExp(`==(?:\\{(${HIGHLIGHT_IDS})\\})?([\\s\\S]+?)==`, 'g')
+  return text
+    .split(/(^[ \t]*```[\w+-]*[ \t]*$)/m) // odd pieces are the fence lines; the code between two fences is left as it is
+    .map((piece, i, all) => {
+      const inCode = all.slice(0, i).filter((_, j) => j % 2 === 1).length % 2 === 1
+      if (i % 2 === 1 || inCode || !piece.includes('==')) return piece
+      return piece.replace(span, (m, color: string | undefined, inner: string) => {
+        if (!inner.includes('\n')) return m
+        const open = color ? `=={${color}}` : '=='
+        return inner
+          .split('\n')
+          .map((line) => {
+            if (!line.trim()) return line
+            const prefix = /^[ \t]*(?:#{1,3}\s+|[-*•]\s+|\d+[.)]\s+)?/.exec(line)![0]
+            return prefix + open + line.slice(prefix.length) + '=='
+          })
+          .join('\n')
+      })
+    })
+    .join('')
+}
+
 export default function CardText({ text, userId }: Props) {
-  const lines = text.split('\n')
+  const lines = spreadHighlights(text).split('\n')
   const out: ReactNode[] = []
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
