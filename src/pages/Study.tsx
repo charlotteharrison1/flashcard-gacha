@@ -17,7 +17,7 @@ import { newCardsLeftToday } from '../lib/dailyLimit'
 import { MAX_TAGS, filterLabel, readFilter, saveStar, saveTags, tagCounts } from '../lib/cardMeta'
 
 const SESSION_LIMIT = 100
-const HARD_AT = 7 // a reviewed card with FSRS difficulty at or above this counts as "hard"
+const HARD_AT = 6 // a studied card with difficulty at or above this counts as "hard" (a first "Hard" answer scores about 6.5, "Again" about 7.2)
 const EASY_AT = 4 // ...and at or below this counts as "easy"
 const COIN_POOF_MS = 800
 const SPARK_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315]
