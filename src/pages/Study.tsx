@@ -351,12 +351,18 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   const faceClass = isRedSuit(suit) ? 'face red' : 'face'
   const fitKey = `${card.id}:${card.font}:${card.front.length}:${card.back.length}` // when this changes, the text is re-measured
   // What's left in this round: cards never studied, cards that have been hard for you (FSRS difficulty 7 or more), and easy ones (4 or less).
-  const isFresh = (c: Card) => !c.last_reviewed_at && c.difficulty == null
-  const isHard = (c: Card) => c.difficulty != null && c.difficulty >= HARD_AT
-  const isEasy = (c: Card) => c.difficulty != null && c.difficulty <= EASY_AT
-  const isMedium = (c: Card) => c.difficulty != null && !isHard(c) && !isEasy(c) // studied, neither hard nor easy: so the four counts add up to what's left
+  // A card's difficulty (1 easy .. 10 hard): the FSRS score when it has one, otherwise worked out from the older ease score
+  // (the same rule 0026 uses to convert), for cards studied before FSRS or in a database whose review function is older. null = never studied.
+  const difficultyOf = (c: Card): number | null => {
+    if (c.difficulty != null) return c.difficulty
+    const studied = !!c.last_reviewed_at || c.repetitions > 0 || c.lapses > 0 || c.interval_days > 0
+    return studied ? Math.min(10, Math.max(1, 5.3 - 3.9 * (Number(c.ease) - 2.5))) : null
+  }
+  const isFresh = (c: Card) => difficultyOf(c) == null
+  const isHard = (c: Card) => (difficultyOf(c) ?? 0) >= HARD_AT
+  const isEasy = (c: Card) => difficultyOf(c) != null && (difficultyOf(c) as number) <= EASY_AT
+  const isMedium = (c: Card) => difficultyOf(c) != null && !isHard(c) && !isEasy(c) // every studied card is exactly one of hard, medium or easy
   const mix = { fresh: queue.filter(isFresh).length, hard: queue.filter(isHard).length, easy: queue.filter(isEasy).length, medium: queue.filter(isMedium).length }
-  const hasDifficulty = queue.some((c) => c.difficulty !== undefined) // without the scheduling migration (0026) cards have no difficulty at all, and these counts would be wrong
   // Hovering a count, when studying a deckbox, says which decks those cards come from.
   const whereFrom = (test: (c: Card) => boolean) => {
     if (scope !== 'box') return undefined
@@ -379,14 +385,12 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
       <p className="muted center-text study-count">
         {done} / {total} cleared
       </p>
-      {hasDifficulty && (
-        <p className="center-text study-mix" aria-label="Cards left in this round">
-          <span className="mix mix-new" title={whereFrom(isFresh)}>New {mix.fresh}</span>
-          <span className="mix mix-hard" title={whereFrom(isHard)}>Hard {mix.hard}</span>
-          <span className="mix mix-medium" title={whereFrom(isMedium)}>Medium {mix.medium}</span>
-          <span className="mix mix-easy" title={whereFrom(isEasy)}>Easy {mix.easy}</span>
-        </p>
-      )}
+      <p className="center-text study-mix" aria-label="Cards left in this round">
+        <span className="mix mix-new" title={whereFrom(isFresh)}>New {mix.fresh}</span>
+        <span className="mix mix-hard" title={whereFrom(isHard)}>Hard {mix.hard}</span>
+        <span className="mix mix-medium" title={whereFrom(isMedium)}>Medium {mix.medium}</span>
+        <span className="mix mix-easy" title={whereFrom(isEasy)}>Easy {mix.easy}</span>
+      </p>
 
       <div className={`study${deck.orientation === 'vertical' ? ' portrait' : ''}`} key={turn} ref={cardAreaRef}>
         {deck.show_both ? (
