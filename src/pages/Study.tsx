@@ -354,7 +354,9 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   const isFresh = (c: Card) => !c.last_reviewed_at && c.difficulty == null
   const isHard = (c: Card) => c.difficulty != null && c.difficulty >= HARD_AT
   const isEasy = (c: Card) => c.difficulty != null && c.difficulty <= EASY_AT
-  const mix = { fresh: queue.filter(isFresh).length, hard: queue.filter(isHard).length, easy: queue.filter(isEasy).length }
+  const isMedium = (c: Card) => c.difficulty != null && !isHard(c) && !isEasy(c) // studied, neither hard nor easy: so the four counts add up to what's left
+  const mix = { fresh: queue.filter(isFresh).length, hard: queue.filter(isHard).length, easy: queue.filter(isEasy).length, medium: queue.filter(isMedium).length }
+  const hasDifficulty = queue.some((c) => c.difficulty !== undefined) // without the scheduling migration (0026) cards have no difficulty at all, and these counts would be wrong
   // Hovering a count, when studying a deckbox, says which decks those cards come from.
   const whereFrom = (test: (c: Card) => boolean) => {
     if (scope !== 'box') return undefined
@@ -377,11 +379,14 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
       <p className="muted center-text study-count">
         {done} / {total} cleared
       </p>
-      <p className="center-text study-mix" aria-label="Cards left in this round">
-        <span className="mix mix-new" title={whereFrom(isFresh)}>New {mix.fresh}</span>
-        <span className="mix mix-hard" title={whereFrom(isHard)}>Hard {mix.hard}</span>
-        <span className="mix mix-easy" title={whereFrom(isEasy)}>Easy {mix.easy}</span>
-      </p>
+      {hasDifficulty && (
+        <p className="center-text study-mix" aria-label="Cards left in this round">
+          <span className="mix mix-new" title={whereFrom(isFresh)}>New {mix.fresh}</span>
+          <span className="mix mix-hard" title={whereFrom(isHard)}>Hard {mix.hard}</span>
+          <span className="mix mix-medium" title={whereFrom(isMedium)}>Medium {mix.medium}</span>
+          <span className="mix mix-easy" title={whereFrom(isEasy)}>Easy {mix.easy}</span>
+        </p>
+      )}
 
       <div className={`study${deck.orientation === 'vertical' ? ' portrait' : ''}`} key={turn} ref={cardAreaRef}>
         {deck.show_both ? (

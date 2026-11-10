@@ -2042,3 +2042,4 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .mix-hard { background: var(--red-d); }
 .mix-easy { background: var(--green-d); }
 .mix[title]:not([title='']) { cursor: help; }
+.mix-medium { background: var(--panel-2); }
