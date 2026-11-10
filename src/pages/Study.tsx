@@ -84,7 +84,8 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
       if (d.error) return setError(d.error.message)
       const ids = d.data.map((x) => x.id)
 
-      let cards: Card[] = []
+      let reviewCards: Card[] = [] // cards you've studied before: these always come first
+      let newCards: Card[] = [] // brand-new cards: only after the reviews, and only what the day's allowance and the session size leave room for
       let cardTotal = 0
       if (ids.length > 0) {
         const counted = await supabase.from('cards').select('id', { count: 'exact', head: true }).in('deck_id', ids)
@@ -105,20 +106,24 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
           narrow(base().not('last_reviewed_at', 'is', null)).order('due_at').limit(SESSION_LIMIT),
           newLeft > 0 ? narrow(base().is('last_reviewed_at', null)).order('due_at').order('created_at').limit(newLeft) : Promise.resolve({ data: [], error: null }),
         ])
-        let c = { data: [...(reviewed.data ?? []), ...(fresh.data ?? [])], error: reviewed.error ?? fresh.error }
-        if (c.error) {
+        const prep = (rows: unknown) => (rows as Card[]).map((x) => ({ ...x, starred: x.starred ?? false, tags: x.tags ?? [] })) // tolerate a database without 0017 yet
+        if (reviewed.error || fresh.error) {
           // The database has no last_reviewed_at yet (0026 not run): fall back to one query with no daily limit.
-          c = await narrow(base()).order('due_at').limit(SESSION_LIMIT)
+          const all = await narrow(base()).order('due_at').limit(SESSION_LIMIT)
+          if (all.error) return setError(all.error.message)
+          reviewCards = prep(all.data)
+        } else {
+          reviewCards = prep(reviewed.data ?? [])
+          // Reviews take priority: new cards only fill the room the reviews leave in the session.
+          newCards = prep(fresh.data ?? []).slice(0, Math.max(0, SESSION_LIMIT - reviewCards.length))
         }
-        if (c.error) return setError(c.error.message)
-        cards = (c.data as Card[]).map((x) => ({ ...x, starred: x.starred ?? false, tags: x.tags ?? [] })) // tolerate a database without 0017 yet
       }
-      if (scope === 'deck' && d.data[0]?.shuffle && !d.data[0]?.guided) cards = shuffle(cards) // the deck's "Shuffle the cards when studying" option
-      if (scope === 'box') {
-        // Guided decks (the tutorial) keep their fixed order, up front; everything else is shuffled together.
-        const guidedIds = new Set(d.data.filter((x) => x.guided).map((x) => x.id))
-        cards = [...cards.filter((c) => guidedIds.has(c.deck_id)), ...shuffle(cards.filter((c) => !guidedIds.has(c.deck_id)))]
-      }
+      // Reviews first, then new cards, in every mode. Shuffling (a deckbox always, a deck when its option is on) mixes each group within itself.
+      const guidedIds = new Set(d.data.filter((x) => x.guided).map((x) => x.id)) // the tutorial deck keeps its fixed order
+      const mix = (list: Card[], shuffled: boolean) =>
+        shuffled ? [...list.filter((c) => guidedIds.has(c.deck_id)), ...shuffle(list.filter((c) => !guidedIds.has(c.deck_id)))] : list
+      const shuffled = scope === 'box' || !!(d.data[0]?.shuffle && !d.data[0]?.guided)
+      const cards = [...mix(reviewCards, shuffled), ...mix(newCards, shuffled)]
 
       if (cancelled) return
       setDecks(Object.fromEntries(d.data.map((x) => [x.id, { show_both: x.show_both, float_anim: x.float_anim, orientation: x.orientation ?? 'horizontal', name: x.name }])))
