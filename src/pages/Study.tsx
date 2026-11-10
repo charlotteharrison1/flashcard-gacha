@@ -111,6 +111,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
         if (c.error) return setError(c.error.message)
         cards = (c.data as Card[]).map((x) => ({ ...x, starred: x.starred ?? false, tags: x.tags ?? [] })) // tolerate a database without 0017 yet
       }
+      if (scope === 'deck' && d.data[0]?.shuffle && !d.data[0]?.guided) cards = shuffle(cards) // the deck's "Shuffle the cards when studying" option
       if (scope === 'box') {
         // Guided decks (the tutorial) keep their fixed order, up front; everything else is shuffled together.
         const guidedIds = new Set(d.data.filter((x) => x.guided).map((x) => x.id))

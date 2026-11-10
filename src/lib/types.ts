@@ -20,6 +20,8 @@ export type Deck = {
   logo?: string | null
   /** How big the deck is drawn on the home screen (see lib/deckSize.ts). */
   card_size?: string | null
+  /** Study this deck's cards in a random order (otherwise: due date order). */
+  shuffle?: boolean
   description?: string | null
 }
 

@@ -1,3 +1,3 @@
 # Tyche
 
-(The repository and package are still named `flashcard-gacha`.)
+This app is an experiment in improving learning and focus through introducing gacha mechanics to a flashcard system. I think flaschards are the best way to learn - I've learned lots of subjects by finding a flashcard set that isout of my depth and forcing myself ot do research until I can asnwer all the questions. It is arduous, but so is all learning. I have always been interested in the ability of gacha games to force players to log in daily and complete repetitive, 'grindy' tasks, and I always thought that I would be a much better person if I was able to use that energy to do something productive. This app is an experiment in that regard.

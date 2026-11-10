@@ -138,14 +138,14 @@ export default function Deck() {
     }
   }
 
-  async function updateStudySetting(patch: Partial<Pick<DeckType, 'show_both' | 'float_anim' | 'orientation'>>) {
+  async function updateStudySetting(patch: Partial<Pick<DeckType, 'show_both' | 'float_anim' | 'orientation' | 'shuffle'>>) {
     const { error } = await supabase.from('decks').update(patch).eq('id', id)
-    if (error) return setError(errorMessage(error, 'Could not save setting.'))
+    if (error) return setError(`${errorMessage(error, 'Could not save setting.')} (If this says the column doesn't exist, run supabase/migrations/0032_deck_shuffle.sql.)`)
     load()
   }
 
   async function removeDeck() {
-    if (!confirm(`Delete "${deck?.name}" and all its cards? This also removes the coins earned from reviewing them.`)) return
+    if (!confirm(`Delete "${deck?.name}" and all its cards?`)) return
     const { error: e } = await supabase.from('decks').delete().eq('id', id)
     if (e) return setError(e.message)
     navigate('/')
@@ -278,6 +278,10 @@ export default function Deck() {
               onChange={(e) => updateStudySetting({ float_anim: e.target.checked })}
             />
             Floating animation on the study card
+          </label>
+          <label className="row nowrap">
+            <input type="checkbox" checked={!!deck.shuffle} onChange={(e) => updateStudySetting({ shuffle: e.target.checked })} />
+            Shuffle the cards when studying
           </label>
           <label className="file-field">
             <span>Card shape</span>

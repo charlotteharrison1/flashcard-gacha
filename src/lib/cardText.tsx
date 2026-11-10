@@ -74,24 +74,9 @@ export default function CardText({ text, userId }: Props) {
 // `code`, ``code``, or ```code``` on one line. Tried before everything else so what's inside stays literal.
 const CODE_RE = /```([^`\n]+?)```|``([^\n]+?)``|`([^`\n]+?)`/g
 
-/** Splits a line into code spans (shown as typed) and everything else (pictures, maths, bold, ...). */
+/** One line of rich text: code spans, pictures and maths are set aside first, then bold, italic and highlight are applied around them. */
 function renderRich(line: string, userId: string): ReactNode[] {
-  const matches = [...line.matchAll(CODE_RE)]
-  if (matches.length === 0) return renderLine(line, userId)
-  const nodes: ReactNode[] = []
-  let last = 0
-  let k = 0
-  for (const m of matches) {
-    if (m.index! > last) nodes.push(<Fragment key={k++}>{renderLine(line.slice(last, m.index), userId)}</Fragment>)
-    nodes.push(
-      <code key={k++} className="md-code">
-        {(m[1] ?? m[2] ?? m[3]).trim()}
-      </code>,
-    )
-    last = m.index! + m[0].length
-  }
-  if (last < line.length) nodes.push(<Fragment key={k++}>{renderLine(line.slice(last), userId)}</Fragment>)
-  return nodes
+  return renderLine(line, userId)
 }
 
 // A bullet (-, * or •) or numbered (1. or 1)) line: indent, marker, then the text.
@@ -113,7 +98,16 @@ const MARK_RE = /\uE000(\d+)\uE001/g
 
 function renderLine(line: string, userId: string) {
   const tokens: React.ReactNode[] = []
-  const masked = line.replace(TOKEN_RE, (...m: (string | undefined)[]) => {
+  // `code` is set aside first (so what's inside stays literal), then pictures and maths; each leaves a placeholder behind.
+  const codeMasked = line.replace(CODE_RE, (_m, a?: string, b?: string, c?: string) => {
+    tokens.push(
+      <code key={`t${tokens.length}`} className="md-code">
+        {(a ?? b ?? c ?? '').trim()}
+      </code>,
+    )
+    return `${MARK_OPEN}${tokens.length - 1}${MARK_CLOSE}`
+  })
+  const masked = codeMasked.replace(TOKEN_RE, (...m: (string | undefined)[]) => {
     const key = `t${tokens.length}`
     if (m[2] !== undefined) {
       tokens.push(<Picture key={key} src={resolveImagePath(userId, m[2])} alt={m[1] ?? ''} width={m[3] ? Number(m[3]) : undefined} />)
