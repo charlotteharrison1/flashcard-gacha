@@ -17,6 +17,8 @@ import { newCardsLeftToday } from '../lib/dailyLimit'
 import { MAX_TAGS, filterLabel, readFilter, saveStar, saveTags, tagCounts } from '../lib/cardMeta'
 
 const SESSION_LIMIT = 100
+const HARD_AT = 7 // a reviewed card with FSRS difficulty at or above this counts as "hard"
+const EASY_AT = 4 // ...and at or below this counts as "easy"
 const COIN_POOF_MS = 800
 const SPARK_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315]
 
@@ -28,7 +30,7 @@ const RATINGS: { value: Rating; label: string; color: string }[] = [
 ]
 
 type Poof = { id: number; x: number; y: number }
-type DeckSettings = Pick<Deck, 'show_both' | 'float_anim' | 'orientation'>
+type DeckSettings = Pick<Deck, 'show_both' | 'float_anim' | 'orientation'> & { name?: string }
 
 /** Fisher-Yates, so a deckbox round mixes its decks instead of running through them one after another. */
 function shuffle<T>(items: T[]): T[] {
@@ -119,7 +121,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
       }
 
       if (cancelled) return
-      setDecks(Object.fromEntries(d.data.map((x) => [x.id, { show_both: x.show_both, float_anim: x.float_anim, orientation: x.orientation ?? 'horizontal' }])))
+      setDecks(Object.fromEntries(d.data.map((x) => [x.id, { show_both: x.show_both, float_anim: x.float_anim, orientation: x.orientation ?? 'horizontal', name: x.name }])))
       setQueue(cards)
       setTotal(cards.length)
       setCardCount(cardTotal)
@@ -348,6 +350,19 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   const pct = total ? Math.round((done / total) * 100) : 0
   const faceClass = isRedSuit(suit) ? 'face red' : 'face'
   const fitKey = `${card.id}:${card.font}:${card.front.length}:${card.back.length}` // when this changes, the text is re-measured
+  // What's left in this round: cards never studied, cards that have been hard for you (FSRS difficulty 7 or more), and easy ones (4 or less).
+  const isFresh = (c: Card) => !c.last_reviewed_at && c.difficulty == null
+  const isHard = (c: Card) => c.difficulty != null && c.difficulty >= HARD_AT
+  const isEasy = (c: Card) => c.difficulty != null && c.difficulty <= EASY_AT
+  const mix = { fresh: queue.filter(isFresh).length, hard: queue.filter(isHard).length, easy: queue.filter(isEasy).length }
+  // Hovering a count, when studying a deckbox, says which decks those cards come from.
+  const whereFrom = (test: (c: Card) => boolean) => {
+    if (scope !== 'box') return undefined
+    const byDeck = new Map<string, number>()
+    queue.filter(test).forEach((c) => byDeck.set(c.deck_id, (byDeck.get(c.deck_id) ?? 0) + 1))
+    if (byDeck.size === 0) return 'None left'
+    return [...byDeck].map(([deckId, n]) => `${decks[deckId]?.name ?? 'Deck'}: ${n}`).join('\n')
+  }
   const knownTags = [...new Set([...deckTags, ...tagCounts(queue).map(([t]) => t)])]
 
   return (
@@ -361,6 +376,11 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
       </div>
       <p className="muted center-text study-count">
         {done} / {total} cleared
+      </p>
+      <p className="center-text study-mix" aria-label="Cards left in this round">
+        <span className="mix mix-new" title={whereFrom(isFresh)}>New {mix.fresh}</span>
+        <span className="mix mix-hard" title={whereFrom(isHard)}>Hard {mix.hard}</span>
+        <span className="mix mix-easy" title={whereFrom(isEasy)}>Easy {mix.easy}</span>
       </p>
 
       <div className={`study${deck.orientation === 'vertical' ? ' portrait' : ''}`} key={turn} ref={cardAreaRef}>

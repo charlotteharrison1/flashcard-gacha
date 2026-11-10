@@ -2034,3 +2034,11 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 /* Search box at the top of a deck's or deckbox's card list */
 .filter-bar .card-search { flex: 1 1 200px; min-width: 160px; }
 .filter-bar .card-search input { width: 100%; padding: 4px 10px; font-size: 0.85rem; }
+
+/* "New / Hard / Easy" counts of what's left in the round */
+.study-mix { display: flex; justify-content: center; gap: 8px; margin: 0 0 6px; }
+.mix { padding: 1px 10px; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; color: #fff; border: 2px solid var(--line); border-radius: 999px; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4); }
+.mix-new { background: var(--blue-d); }
+.mix-hard { background: var(--red-d); }
+.mix-easy { background: var(--green-d); }
+.mix[title]:not([title='']) { cursor: help; }

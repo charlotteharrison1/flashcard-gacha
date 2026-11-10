@@ -46,6 +46,9 @@ export type Card = {
   font: CardFont
   starred: boolean
   tags: string[]
+  /** FSRS difficulty, 1 (easy) to 10 (hard); null until the card has been reviewed. */
+  difficulty?: number | null
+  last_reviewed_at?: string | null
 }
 
 /** 0 again, 1 hard, 2 good, 3 easy */
