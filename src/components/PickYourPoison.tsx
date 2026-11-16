@@ -1,9 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import SlotsGame from './SlotsGame'
+import ScratchGame from './games/ScratchGame'
+import RouletteGame from './games/RouletteGame'
+import DiceGame from './games/DiceGame'
+import MinesGame from './games/MinesGame'
+import BlackjackGame from './games/BlackjackGame'
 import { SlotSymbol } from './SlotSymbol'
 
-// More games go here as they're built.
-const GAMES = [{ id: 'slots', label: 'Slots' }] as const
+// More games go here as they're built. Each takes the coin balance and a way to update it.
+const GAMES = [
+  { id: 'slots', label: 'Slots', Game: SlotsGame },
+  { id: 'scratch', label: 'Scratch cards', Game: ScratchGame },
+  { id: 'roulette', label: 'Roulette', Game: RouletteGame },
+  { id: 'dice', label: 'Dice', Game: DiceGame },
+  { id: 'mines', label: 'Mines', Game: MinesGame },
+  { id: 'blackjack', label: 'Blackjack', Game: BlackjackGame },
+] as const
 
 type Props = { balance: number | null; setBalance: (balance: number) => void; onClose: () => void }
 
@@ -38,9 +50,8 @@ export default function PickYourPoison({ balance, setBalance, onClose }: Props) 
               {g.label}
             </button>
           ))}
-          <span className="poison-soon">More games soon</span>
         </div>
-        <div className="poison-body pull-main">{game === 'slots' && <SlotsGame balance={balance} setBalance={setBalance} />}</div>
+        <div className="poison-body pull-main">{GAMES.map(({ id, Game }) => game === id && <Game key={id} balance={balance} setBalance={setBalance} />)}</div>
       </div>
     </div>
   )
