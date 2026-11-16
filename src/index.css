@@ -2043,3 +2043,29 @@ main.login-main { max-width: 620px; padding-top: 40px; }
 .mix-easy { background: var(--green-d); }
 .mix[title]:not([title='']) { cursor: help; }
 .mix-medium { background: var(--panel-2); }
+
+/* ---------- Coins on the study screen, and Pick your poison ---------- */
+.study-coins { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
+.coin-chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px 2px 6px; font-size: 0.9rem; font-weight: 700; color: var(--gold); background: var(--panel); border: 2px solid var(--line); border-radius: 999px; }
+.coin-chip svg { width: 18px; height: 18px; display: block; }
+.poison-btn { padding: 3px 12px; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.03em; color: #fff; background: #7a1fa8; border: 2px solid var(--line); border-radius: 999px; box-shadow: 0 3px 0 #4b0f6b; cursor: pointer; }
+.poison-btn:hover { filter: brightness(1.12); }
+.poison-btn:active { transform: translateY(3px); box-shadow: none; }
+:root[data-poison='off'] :is(.poison-btn, .poison-backdrop) { display: none; }
+
+.poison-backdrop { position: fixed; inset: 0; z-index: 150; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(3, 8, 11, 0.8); }
+.poison {
+  width: min(100%, 620px); max-height: 94vh; overflow-y: auto; padding: 14px 16px 18px;
+  background: conic-gradient(rgba(255, 255, 255, 0.035) 25%, transparent 0 50%, rgba(255, 255, 255, 0.035) 0 75%, transparent 0) 0 0 / 8px 8px, var(--felt-dark);
+  border: 12px solid transparent; border-image: var(--frame) 3 / 12px stretch; box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.35);
+}
+.poison-head { display: flex; align-items: center; gap: 12px; }
+.poison-head h2 { flex: 1; margin: 0; font-size: 1.5rem; color: var(--gold); text-shadow: 0 3px 0 var(--line); }
+.poison-coins { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 1.1rem; color: var(--gold); }
+.poison-coins svg { width: 22px; height: 22px; display: block; }
+.poison-close { padding: 2px 10px; }
+.poison-games { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+.poison-tab { padding: 4px 14px; font-weight: 700; color: var(--text); background: var(--panel); border: 2px solid var(--line); border-radius: 6px 6px 0 0; cursor: pointer; }
+.poison-tab.active { color: #0a1218; background: var(--gold); }
+.poison-soon { margin-left: auto; font-size: 0.85rem; color: var(--muted); }
+.poison-body { min-width: 0; }

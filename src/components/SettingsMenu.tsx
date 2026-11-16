@@ -6,6 +6,7 @@ import { UI_FONTS, applyUiFont, loadUiFont, type UiFontId } from '../lib/uiFont'
 import { SCHEMES, applyScheme, loadScheme, type SchemeId } from '../lib/scheme'
 import { applyLights, loadLights } from '../lib/lights'
 import { applyAnim, loadAnim } from '../lib/anim'
+import { applyPoison, loadPoison } from '../lib/poison'
 
 /** The Settings button in the top bar and its dropdown: look and feel (font, colours) and the animation switches. All saved on this device. */
 export default function SettingsMenu() {
@@ -14,6 +15,7 @@ export default function SettingsMenu() {
   const [scheme, setScheme] = useState<SchemeId>(loadScheme)
   const [lights, setLights] = useState(loadLights)
   const [anim, setAnim] = useState(loadAnim)
+  const [poison, setPoison] = useState(loadPoison)
   const [textSize, setTextSize] = useState<TextSizeId>(loadTextSize)
   const rootRef = useRef<HTMLDivElement>(null)
 
@@ -117,6 +119,18 @@ export default function SettingsMenu() {
           </label>
 
           <CardAnimToggle />
+
+          <label className="row nowrap">
+            <input
+              type="checkbox"
+              checked={poison}
+              onChange={(e) => {
+                applyPoison(e.target.checked)
+                setPoison(e.target.checked)
+              }}
+            />
+            Pick your poison: spend coins on games while studying
+          </label>
 
           <label className="row nowrap">
             <input

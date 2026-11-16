@@ -21,6 +21,7 @@ import { applyTextSize, loadTextSize } from './lib/textSize'
 import { applyUiFont, loadUiFont } from './lib/uiFont'
 import { applyAnim, loadAnim } from './lib/anim'
 import { applyWide, loadWide } from './lib/wide'
+import { applyPoison, loadPoison } from './lib/poison'
 
 applyScheme(loadScheme())
 applyLights(loadLights())
@@ -29,6 +30,7 @@ applyTextSize(loadTextSize())
 applyUiFont(loadUiFont())
 applyAnim(loadAnim())
 applyWide(loadWide())
+applyPoison(loadPoison())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

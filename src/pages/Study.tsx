@@ -11,6 +11,7 @@ import { SlotSymbol } from '../components/SlotSymbol'
 import { faceTextClass } from '../lib/cardDensity'
 import FitScroll from '../components/FitScroll'
 import CardAnimToggle from '../components/CardAnimToggle'
+import PickYourPoison from '../components/PickYourPoison'
 import CardEditor, { type CardValues } from '../components/CardEditor'
 import { StarButton, TagAdder, TagChips } from '../components/CardMeta'
 import { newCardsLeftToday } from '../lib/dailyLimit'
@@ -50,7 +51,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   const [searchParams] = useSearchParams()
   const studyAll = searchParams.get('all') === '1'
   const filter = readFilter(searchParams.get('f')) // all, starred, tagged, or tag:<name>
-  const { setBalance } = useEarnings({ fetch: false })
+  const { balance, setBalance } = useEarnings()
   const { session } = useAuth()
   const userId = session?.user.id ?? '' // Study is behind an authenticated route, so this is always set
   const [decks, setDecks] = useState<Record<string, DeckSettings> | null>(null) // per-deck display settings
@@ -66,6 +67,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   const [done, setDone] = useState(0)
   const [deckTags, setDeckTags] = useState<string[]>([])
   const [earned, setEarned] = useState(0)
+  const [poisonOpen, setPoisonOpen] = useState(false) // the Pick your poison window (spend coins on games mid-study)
   const [turn, setTurn] = useState(0)
   const [poofs, setPoofs] = useState<Poof[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -270,7 +272,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
   useEffect(() => {
     if (!card) return
     function onKey(e: KeyboardEvent) {
-      if (e.metaKey || e.ctrlKey || e.altKey || !card) return
+      if (e.metaKey || e.ctrlKey || e.altKey || !card || poisonOpen) return // (the poison window has its own controls)
       const target = e.target
       if (target instanceof HTMLInputElement || target instanceof HTMLSelectElement || (target instanceof HTMLElement && target.isContentEditable)) return // typing (the card editor's fields are contenteditable)
       if (e.key === '8') {
@@ -389,6 +391,18 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
       </div>
       <p className="muted center-text study-count">
         {done} / {total} cleared
+      </p>
+      <p className="center-text study-coins">
+        <span className="coin-chip" title="Earned this session">
+          <SlotSymbol id="coin" />+{earned} earned
+        </span>
+        <span className="coin-chip" title="Your balance">
+          <SlotSymbol id="coin" />
+          {balance ?? '–'} coins
+        </span>
+        <button className="poison-btn" onClick={() => setPoisonOpen(true)}>
+          Pick your poison
+        </button>
       </p>
       <p className="center-text study-mix" aria-label="Cards left in this round">
         <span className="mix mix-new" title={whereFrom(isFresh)}>New {mix.fresh}</span>
@@ -581,6 +595,7 @@ export default function Study({ scope = 'deck' }: { scope?: 'deck' | 'box' }) {
           ))}
         </div>
       ))}
+      {poisonOpen && <PickYourPoison balance={balance} setBalance={setBalance} onClose={() => setPoisonOpen(false)} />}
     </>
   )
 }
